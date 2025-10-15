@@ -3,5 +3,26 @@
     "README.md"
   ],
   "projectName": "docling-java",
-  "projectOwner": "docling-project"
+  "projectOwner": "docling-project",
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "edeandrea",
+      "name": "Eric Deandrea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/363447?v=4",
+      "profile": "https://developers.redhat.com/author/eric-deandrea",
+      "contributions": [
+        "code",
+        "content",
+        "doc",
+        "ideas",
+        "infra",
+        "maintenance",
+        "projectManagement",
+        "test"
+      ]
+    }
+  ]
 }

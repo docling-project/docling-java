@@ -23,6 +23,23 @@
         "projectManagement",
         "test"
       ]
+    },
+    {
+      "login": "ThomasVitale",
+      "name": "Thomas Vitale",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8523418?v=4",
+      "profile": "http://thomasvitale.com",
+      "contributions": [
+        "code",
+        "content",
+        "doc",
+        "ideas",
+        "infra",
+        "maintenance",
+        "projectManagement",
+        "test",
+        "review"
+      ]
     }
   ]
 }

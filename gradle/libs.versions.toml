@@ -5,13 +5,15 @@
 junit-jupiter = "6.0.0"
 assertj = "3.27.6"
 jspecify = "1.0.0"
-testcontainers = "1.21.3"
+testcontainers = "2.0.1"
+jackson = "2.20.0"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 testcontainers-bom = { group = "org.testcontainers", name = "testcontainers-bom", version.ref = "testcontainers"}
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 
 [bundles]
 assertj = ["assertj-core"]

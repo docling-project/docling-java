@@ -77,6 +77,11 @@ dependencies {
 tasks.withType<Test> {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
+
+  testLogging {
+    events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR")
+    showStandardStreams = true
+  }
 }
 
 tasks.withType<Javadoc> {

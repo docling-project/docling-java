@@ -5,7 +5,7 @@
 junit-jupiter = "6.0.0"
 assertj = "3.27.6"
 jspecify = "1.0.0"
-testcontainers = "1.21.3"
+testcontainers = "2.0.1"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }

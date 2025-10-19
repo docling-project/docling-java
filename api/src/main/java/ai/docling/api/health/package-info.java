@@ -1,7 +1,7 @@
 /**
- * Docling Java API.
+ * Docling Serve - Health APIs.
  */
 @NullMarked
-package ai.docling.api;
+package ai.docling.api.health;
 
 import org.jspecify.annotations.NullMarked;

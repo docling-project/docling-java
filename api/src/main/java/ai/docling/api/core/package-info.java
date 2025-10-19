@@ -1,7 +1,7 @@
 /**
- * Docling Java API.
+ * Docling Core APIs.
  */
 @NullMarked
-package ai.docling.api;
+package ai.docling.api.core;
 
 import org.jspecify.annotations.NullMarked;

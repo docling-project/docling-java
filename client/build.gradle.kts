@@ -9,5 +9,6 @@ dependencies {
   api(project(":docling-api"))
   api("tools.jackson.core:jackson-databind")
 
-  testImplementation("org.testcontainers:junit-jupiter")
+  testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+  testImplementation(project(":docling-testcontainers"))
 }

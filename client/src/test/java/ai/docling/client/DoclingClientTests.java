@@ -3,11 +3,12 @@ package ai.docling.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Base64;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -16,6 +17,8 @@ import ai.docling.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.api.convert.request.options.TableFormerMode;
 import ai.docling.api.convert.response.ConvertDocumentResponse;
 import ai.docling.api.health.HealthCheckResponse;
+import ai.docling.testcontainers.DoclingContainer;
+import ai.docling.testcontainers.config.DoclingContainerConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,8 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DoclingClientTests {
 
   @Container
-  private static final GenericContainer<?> doclingContainer = new GenericContainer<>(Images.DOCLING)
-      .withExposedPorts(Images.DOCLING_DEFAULT_PORT);
+  private static final DoclingContainer doclingContainer = new DoclingContainer(
+    DoclingContainerConfig.builder()
+        .imageName(Images.DOCLING)
+        .enableUi(true)
+        .build(),
+      Optional.of(Duration.ofMinutes(2))
+  );
 
   private static DoclingClient doclingClient;
 

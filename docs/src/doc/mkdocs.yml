@@ -1,0 +1,103 @@
+site_name: Docling Java
+site_url: https://docling-project.github.io/docling-java/
+repo_name: docling-project/docling-java
+repo_url: https://github.com/docling-project/docling-java
+
+theme:
+  name: material
+  custom_dir: mkdocs-customizations/overrides
+  palette:
+    # Default dark mode
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+
+    # System preference (dark)
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to system preference
+
+  logo: assets/img/logo.svg
+  favicon: assets/img/logo.svg
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - content.tooltips
+    - announce.dismiss
+    - navigation.footer
+    - navigation.tabs
+    - navigation.indexes  # <= if set, each "section" can have its own page, if index.md is used
+    - navigation.instant
+    - navigation.instant.prefetch
+    # - navigation.instant.preview
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections  # <=
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
+nav:
+  - Home:
+    - "Docling Java": index.md
+    - Getting started:
+      - Getting started: getting-started.md
+  - Artifacts:
+    - API: api.md
+    - Client: client.md
+    - Testing: testing.md
+    - Testcontainers: testcontainers.md
+
+markdown_extensions:
+  - pymdownx.critic
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - mkdocs-click
+plugins:
+  - search
+  - markdownextradata
+#  - macros:
+#      verbose: true
+#      module_name: mkdocs-customizations/macros/docissimo
+#      include_dir: mkdocs-customizations/macros
+  - mkdocstrings:
+      default_handler: python
+#      options:
+#        extensions:
+#          - griffe_pydantic:
+#              schema: true
+#        preload_modules:
+#          - api
+#          - client
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/docling-project/docling-java

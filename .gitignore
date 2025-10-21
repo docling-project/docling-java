@@ -6,4 +6,4 @@ build
 
 .idea
 .profileconfig.json
-.kotlin
+/docs/src/doc/docs/_data/

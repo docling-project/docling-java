@@ -1,7 +1,7 @@
 [versions]
 junit-jupiter = "6.0.0"
 assertj = "3.27.6"
-jackson = "3.0.0"
+jackson = "3.0.1"
 jspecify = "1.0.0"
 testcontainers = "2.0.1"
 

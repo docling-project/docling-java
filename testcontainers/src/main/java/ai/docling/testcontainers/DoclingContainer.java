@@ -21,11 +21,6 @@ public class DoclingContainer extends GenericContainer<DoclingContainer> {
     private static final Logger LOG = Logger.getLogger(DoclingContainer.class.getName());
 
     /**
-     * The default container port that docling runs on
-     */
-    public static final int DEFAULT_DOCLING_PORT = 5001;
-
-    /**
      * The dynamic host name determined from TestContainers
      */
     private DoclingContainerConfig config;
@@ -43,7 +38,7 @@ public class DoclingContainer extends GenericContainer<DoclingContainer> {
         this.config = config;
 
         // Configure the container
-        withExposedPorts(DEFAULT_DOCLING_PORT);
+        withExposedPorts(DoclingContainerConfig.DEFAULT_DOCLING_PORT);
         withEnv(config.containerEnv());
         waitingFor(Wait.forHttp("/health"));
 
@@ -60,6 +55,6 @@ public class DoclingContainer extends GenericContainer<DoclingContainer> {
    * @return the dynamically mapped port on the host machine for the Docling container
    */
   public int getPort() {
-        return getMappedPort(DEFAULT_DOCLING_PORT);
+        return getMappedPort(DoclingContainerConfig.DEFAULT_DOCLING_PORT);
     }
 }

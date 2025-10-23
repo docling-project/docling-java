@@ -16,14 +16,14 @@ class ConvertDocumentResponseTests {
 
   @Test
   void createResponseWithAllFields() {
-    DocumentResponse document = new DocumentResponse(
-        "doctags content",
-        "test-file.pdf",
-        "<html>content</html>",
-        Map.of("key", "value"),
-        "# Markdown content",
-        "Plain text content"
-    );
+    DocumentResponse document = DocumentResponse.builder()
+        .doctagsContent("doctags content")
+        .filename("test-file.pdf")
+        .htmlContent("<html>content</html>")
+        .jsonContent(Map.of("key", "value"))
+        .markdownContent("# Markdown content")
+        .textContent("Plain text content")
+        .build();
 
     List<ErrorItem> errors = List.of(
         new ErrorItem("parser", "Parse error", "pdf_module"),
@@ -71,14 +71,11 @@ class ConvertDocumentResponseTests {
 
   @Test
   void createResponseWithEmptyCollections() {
-    DocumentResponse document = new DocumentResponse(
-        null,
-        "empty-file.txt",
-        null,
-        Map.of(),
-        null,
-        ""
-    );
+    DocumentResponse document = DocumentResponse.builder()
+        .filename("empty-file.txt")
+        .jsonContent(Map.of())
+        .textContent("")
+        .build();
 
     List<ErrorItem> errors = List.of();
     Map<String, Object> timings = Map.of();

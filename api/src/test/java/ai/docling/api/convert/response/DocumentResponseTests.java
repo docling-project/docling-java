@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for {@link DocumentResponse}.
  */
 class DocumentResponseTests {
-
   @Test
   void createResponseWithAllFields() {
     String doctagsContent = "doctags content";
@@ -25,14 +24,14 @@ class DocumentResponseTests {
     String markdownContent = "# Test Document\n\nThis is a test document.";
     String textContent = "Test Document\n\nThis is a test document.";
 
-    DocumentResponse response = new DocumentResponse(
-        doctagsContent,
-        filename,
-        htmlContent,
-        jsonContent,
-        markdownContent,
-        textContent
-    );
+    DocumentResponse response = DocumentResponse.builder()
+        .doctagsContent(doctagsContent)
+        .filename(filename)
+        .htmlContent(htmlContent)
+        .jsonContent(jsonContent)
+        .markdownContent(markdownContent)
+        .textContent(textContent)
+        .build();
 
     assertThat(response.doctagsContent()).isEqualTo(doctagsContent);
     assertThat(response.filename()).isEqualTo(filename);
@@ -44,19 +43,12 @@ class DocumentResponseTests {
 
   @Test
   void createResponseWithNullFields() {
-    DocumentResponse response = new DocumentResponse(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    );
+    DocumentResponse response = DocumentResponse.builder().build();
 
     assertThat(response.doctagsContent()).isNull();
     assertThat(response.filename()).isNull();
     assertThat(response.htmlContent()).isNull();
-    assertThat(response.jsonContent()).isNull();
+    assertThat(response.jsonContent()).isNotNull().isEmpty();
     assertThat(response.markdownContent()).isNull();
     assertThat(response.textContent()).isNull();
   }
@@ -68,14 +60,12 @@ class DocumentResponseTests {
     String markdownContent = "";
     String textContent = "";
 
-    DocumentResponse response = new DocumentResponse(
-        null,
-        filename,
-        null,
-        jsonContent,
-        markdownContent,
-        textContent
-    );
+    DocumentResponse response = DocumentResponse.builder()
+        .filename(filename)
+        .jsonContent(jsonContent)
+        .markdownContent(markdownContent)
+        .textContent(textContent)
+        .build();
 
     assertThat(response.doctagsContent()).isNull();
     assertThat(response.filename()).isEqualTo(filename);
@@ -92,14 +82,9 @@ class DocumentResponseTests {
         "count", 1
     ));
 
-    DocumentResponse response = new DocumentResponse(
-        null,
-        null,
-        null,
-        jsonContent,
-        null,
-        null
-    );
+    DocumentResponse response = DocumentResponse.builder()
+        .jsonContent(jsonContent)
+        .build();
 
     assertThat(response.jsonContent()).isEqualTo(jsonContent);
 

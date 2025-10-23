@@ -13,7 +13,12 @@ public interface DoclingContainerConfig {
   /**
    * Default image name
    */
-  String DOCLING_IMAGE = "quay.io/docling-project/docling-serve:v1.6.0";
+  String DOCLING_IMAGE = "ghcr.io/docling-project/docling-serve:v1.6.0";
+
+  /**
+   * The default container port that docling runs on
+   */
+  int DEFAULT_DOCLING_PORT = 5001;
 
   /**
    * The container image name to use.

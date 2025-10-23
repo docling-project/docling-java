@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import ai.docling.api.DoclingApi;
 import ai.docling.api.convert.request.ConvertDocumentRequest;
 import ai.docling.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.api.convert.request.options.TableFormerMode;
@@ -27,22 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Testcontainers
 class DoclingClientTests {
-
   @Container
   private static final DoclingContainer doclingContainer = new DoclingContainer(
     DoclingContainerConfig.builder()
-        .imageName(Images.DOCLING)
+        .imageName(DoclingContainerConfig.DOCLING_IMAGE)
         .enableUi(true)
         .build(),
       Optional.of(Duration.ofMinutes(2))
   );
 
-  private static DoclingClient doclingClient;
+  private static DoclingApi doclingClient;
 
   @BeforeAll
   static void setUp() {
     doclingClient = DoclingClient.builder()
-        .baseUrl("http://localhost:%s".formatted(doclingContainer.getMappedPort(Images.DOCLING_DEFAULT_PORT)))
+        .baseUrl("http://localhost:%s".formatted(doclingContainer.getMappedPort(DoclingContainerConfig.DEFAULT_DOCLING_PORT)))
         .build();
   }
 
@@ -50,8 +50,10 @@ class DoclingClientTests {
   void shouldSuccessfullyCallHealthEndpoint() {
     HealthCheckResponse response = doclingClient.health();
 
-    assertThat(response).isNotNull();
-    assertThat(response.status()).isEqualTo("ok");
+    assertThat(response)
+        .isNotNull()
+        .extracting(HealthCheckResponse::status)
+        .isEqualTo("ok");
   }
 
   @Test
@@ -124,5 +126,4 @@ class DoclingClientTests {
       return inputStream.readAllBytes();
     }
   }
-
 }

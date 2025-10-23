@@ -1,4 +1,5 @@
 plugins {
+  id("docling-shared")
   `java-library`
   `maven-publish`
 }

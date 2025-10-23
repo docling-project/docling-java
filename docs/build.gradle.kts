@@ -1,13 +1,6 @@
 plugins {
-  id("docling-java-shared")
+  id("docling-shared")
   id("ru.vyarus.mkdocs") version "4.0.1"
-}
-
-dependencies {
-  compileOnly(project(":docling-api"))
-  compileOnly(project(":docling-client"))
-  compileOnly(project(":docling-testing"))
-  compileOnly(project(":docling-testcontainers"))
 }
 
 python {
@@ -42,4 +35,8 @@ tasks.withType<PublishToMavenRepository>().configureEach {
 
 tasks.withType<PublishToMavenLocal>().configureEach {
   enabled = false
+}
+
+tasks.register("build") {
+  dependsOn(tasks.named("mkdocsBuild"))
 }

@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
-  api(libs.bundles.junit.jupiter)
+  api(platform(libs.junit.bom))
+  api(libs.junit.jupiter)
   api(libs.bundles.assertj)
 }

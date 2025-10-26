@@ -67,11 +67,10 @@ dependencies {
   api(libs.findLibrary("jspecify").get())
 
   // These dependencies are used internally, and not exposed to consumers on their own compile classpath.
-  //  implementation(libs.guava)
-
-  testImplementation(libs.findBundle("junit.jupiter").get())
+  testImplementation(platform(libs.findLibrary("junit.bom").get()))
+  testImplementation(libs.findLibrary("junit.jupiter").get())
   testImplementation(libs.findBundle("assertj").get())
-  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testRuntimeOnly(libs.findLibrary("junit.platform").get())
 }
 
 tasks.withType<Test> {

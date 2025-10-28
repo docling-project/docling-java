@@ -5,5 +5,5 @@ plugins {
 dependencies {
   api(platform(libs.junit.bom))
   api(libs.junit.jupiter)
-  api(libs.bundles.assertj)
+  api(libs.assertj.core)
 }

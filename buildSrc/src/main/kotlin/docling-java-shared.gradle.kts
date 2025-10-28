@@ -1,10 +1,8 @@
 plugins {
+  id("docling-shared")
   `java-library`
   `maven-publish`
 }
-
-group = "ai.docling"
-version = property("version").toString()
 
 repositories {
   mavenCentral()
@@ -69,7 +67,7 @@ dependencies {
   // These dependencies are used internally, and not exposed to consumers on their own compile classpath.
   testImplementation(platform(libs.findLibrary("junit.bom").get()))
   testImplementation(libs.findLibrary("junit.jupiter").get())
-  testImplementation(libs.findBundle("assertj").get())
+  testImplementation(libs.findLibrary("assertj-core").get())
   testRuntimeOnly(libs.findLibrary("junit.platform").get())
 }
 

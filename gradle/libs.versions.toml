@@ -11,8 +11,8 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 jackson-bom = { group = "tools.jackson", name = "jackson-bom", version.ref = "jackson" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations" }
+jackson-databind = { group = "tools.jackson.core", name = "jackson-databind" }
 jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 testcontainers-bom = { group = "org.testcontainers", name = "testcontainers-bom", version.ref = "testcontainers"}
-
-[bundles]
-assertj = ["assertj-core"]
+testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }

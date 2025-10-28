@@ -3,12 +3,11 @@ plugins {
 }
 
 dependencies {
-  implementation(platform(libs.jackson.bom))
-  implementation(platform(libs.testcontainers.bom))
-
+  api(platform(libs.jackson.bom))
   api(project(":docling-api"))
-  api("tools.jackson.core:jackson-databind")
+  api(libs.jackson.databind)
 
-  testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+  testImplementation(platform(libs.testcontainers.bom))
+  testImplementation(libs.testcontainers.junit.jupiter)
   testImplementation(project(":docling-testcontainers"))
 }

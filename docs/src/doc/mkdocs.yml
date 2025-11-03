@@ -57,8 +57,9 @@ nav:
     - Getting started:
       - Getting started: getting-started.md
   - Artifacts:
-    - API: api.md
-    - Serve Client: serve-client.md
+    - Docling Serve:
+      - API: docling-serve/serve-api.md
+      - Client: docling-serve/serve-client.md
     - Testing: testing.md
     - Testcontainers: testcontainers.md
 

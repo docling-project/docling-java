@@ -26,8 +26,8 @@ This is repository for Docling Java, a Java API for using [Docling](https://gith
 
 This project aims to provide the following artifacts:
 
-* [`docling-api`](docling-api): The core API for interacting with Docling. Should be framework-agnostic.
-* [`docling-serve-client`](docling-serve-client): A reference implementation of the [`docling-api`](docling-api) using Java's [`HttpClient`](https://openjdk.org/groups/net/httpclient/intro.html) and [Jackson](https://github.com/FasterXML/jackson) to connect to a [Docling Serve](https://github.com/docling-project/docling-serve) endpoint.
+* [`docling-serve-api`](docling-serve/docling-serve-api): The core API for interacting with Docling. Should be framework-agnostic.
+* [`docling-serve-client`](docling-serve/docling-serve-client): A reference implementation of the [`docling-serve-api`](docling-serve/docling-serve-api) using Java's [`HttpClient`](https://openjdk.org/groups/net/httpclient/intro.html) and [Jackson](https://github.com/FasterXML/jackson) to connect to a [Docling Serve](https://github.com/docling-project/docling-serve) endpoint.
 * [`docling-testing`](docling-testing): Utilities for testing Docling integration.
 * [`docling-testcontainers`](docling-testcontainers): A [Testcontainers module](https://testcontainers.com/) for running Docling in a Docker container.
 
@@ -36,13 +36,13 @@ This project aims to provide the following artifacts:
 Use `DoclingApi.convertSource()` to convert individual documents. For example:
 
 ```java
-import ai.docling.api.DoclingApi;
-import ai.docling.api.convert.request.ConvertDocumentRequest;
-import ai.docling.api.convert.request.source.HttpSource;
-import ai.docling.api.convert.response.ConvertDocumentResponse;
+import ai.docling.api.serve.DoclingServeApi;
+import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
+import ai.docling.api.serve.convert.request.source.HttpSource;
+import ai.docling.api.serve.convert.response.ConvertDocumentResponse;
 import ai.docling.client.serve.DoclingServeClientBuilderFactory;
 
-DoclingApi doclingApi = DoclingServeClientBuilderFactory.newBuilder()
+DoclingServeApi doclingServeApi = DoclingServeClientBuilderFactory.newBuilder()
     .baseUrl("<location of docling serve instance>")
     .build();
 

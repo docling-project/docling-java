@@ -28,7 +28,7 @@ jobs:
           - 21
           - 25
         module:
-          - docling-api
+          - docling-serve-api
           - docling-serve-client
           - docling-testing
           - docling-testcontainers

@@ -1,5 +1,6 @@
 package ai.docling.testcontainers.serve.config;
 
+import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -11,14 +12,21 @@ import java.util.Map;
  */
 public interface DoclingServeContainerConfig {
   /**
-   * Default image name
+   * Represents the organizational identifier or namespace for the Docling project.
+   * This value is used as a constant identifier throughout the configuration or interactions
+   * with the Docling-related containers and components.
    */
-  String DOCLING_SERVE_IMAGE = "ghcr.io/docling-project/docling-serve:v1.6.0";
+  String DOCLING_ORG = "docling-project";
 
   /**
-   * The default container port that docling runs on
+   * The default name of the container image used for the Docling Service.
    */
-  int DEFAULT_DOCLING_SERVE_PORT = 5001;
+  String DOCLING_IMAGE_NAME = "docling-serve";
+
+  /**
+   * Default image name
+   */
+  String DOCLING_IMAGE = "quay.io/" + DOCLING_ORG + "/" + DOCLING_IMAGE_NAME + ":v1.6.0";
 
   /**
    * The container image name to use.
@@ -37,6 +45,20 @@ public interface DoclingServeContainerConfig {
    * Environment variables that are passed to the container
    */
   Map<String, String> containerEnv();
+
+  /**
+   * Specifies the maximum duration to wait for the container to fully start up.
+   * <p>
+   * This value determines the timeout period for the startup process, ensuring
+   * that the container is operational within a defined timeframe.
+   * </p>
+   * <p>
+   *   Default Value: 1 minute
+   * </p>
+   *
+   * @return a {@link Duration} representing the startup timeout for the container.
+   */
+  Duration startupTimeout();
 
   /**
    * Creates a new instance of {@link Builder} initialized with the current configuration values.
@@ -92,6 +114,17 @@ public interface DoclingServeContainerConfig {
     protected Map<String, String> containerEnv;
 
     /**
+     * Specifies the timeout duration allowed for the container startup process.
+     * This value helps determine how long the system should wait for the container
+     * to become operational before considering the startup process to have failed.
+     * <p>
+     * The timeout is represented using the {@link Duration} class, which
+     * allows precise specification of time intervals.
+     * </p>
+     */
+    protected Duration startupTimeout;
+
+    /**
      * Initializes a new instance of the {@link Builder} class.
      * This constructor is protected to restrict direct instantiation outside the package
      * and is primarily used for creating builder instances within the {@link DoclingServeContainerConfig} implementation.
@@ -109,6 +142,7 @@ public interface DoclingServeContainerConfig {
       this.imageName = config.imageName();
       this.enableUi = config.enableUi();
       this.containerEnv = config.containerEnv();
+      this.startupTimeout = config.startupTimeout();
     }
 
     /**
@@ -158,6 +192,17 @@ public interface DoclingServeContainerConfig {
      */
     public Builder containerEnv(String key, String value) {
       this.containerEnv.put(key, value);
+      return this;
+    }
+
+    /**
+     * Sets the maximum duration allowed for the container to start.
+     *
+     * @param startupTimeout the {@link Duration} to wait for the startup to complete
+     * @return the {@link Builder} instance for method chaining
+     */
+    public Builder startupTimeout(Duration startupTimeout) {
+      this.startupTimeout = startupTimeout;
       return this;
     }
 

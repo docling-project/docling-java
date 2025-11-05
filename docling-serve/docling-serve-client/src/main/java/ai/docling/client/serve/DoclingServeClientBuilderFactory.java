@@ -37,6 +37,7 @@ public final class DoclingServeClientBuilderFactory {
    * @return a compatible {@link DoclingServeClientBuilder} instance
    * @throws IllegalStateException if neither Jackson 2 nor Jackson 3 is available on the classpath
    */
+  @SuppressWarnings("unchecked")
   public static <C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> B newBuilder(ClassLoader classLoader) {
     if (JacksonVersion.JACKSON_3.isOnClasspath(classLoader)) {
       return (B) DoclingServeJackson3Client.builder();

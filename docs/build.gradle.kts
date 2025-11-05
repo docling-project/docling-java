@@ -24,7 +24,6 @@ mkdocs {
       "project-artifactId" to "${rootProject.name}",
       "serve-api-artifactId" to project(":docling-serve-api").name,
       "serve-client-artifactId" to project(":docling-serve-client").name,
-      "testing-artifactId" to project(":docling-testing").name,
       "testcontainers-artifactId" to project(":docling-testcontainers").name
   )
 

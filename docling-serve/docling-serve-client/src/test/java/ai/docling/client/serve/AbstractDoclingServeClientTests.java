@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.time.Duration;
 import java.util.Base64;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,10 +23,9 @@ import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 abstract class AbstractDoclingServeClientTests {
   protected static final DoclingServeContainer doclingContainer = new DoclingServeContainer(
     DoclingServeContainerConfig.builder()
-        .imageName(DoclingServeContainerConfig.DOCLING_SERVE_IMAGE)
+        .imageName(DoclingServeContainerConfig.DOCLING_IMAGE)
         .enableUi(true)
-        .build(),
-      Optional.of(Duration.ofMinutes(2))
+        .build()
   );
 
   static {

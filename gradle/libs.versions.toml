@@ -6,7 +6,11 @@ jspecify = "1.0.0"
 junit = "6.0.1"
 lombok = "1.18.42"
 lombok-gradle = "9.0.0"
+semver4j = "6.0.0"
 testcontainers = "2.0.1"
+quarkus = "3.29.0"
+quarkus-github-api = "1.330.0"
+quarkus-wiremock = "1.5.1"
 
 [libraries]
 # assertj
@@ -30,6 +34,13 @@ junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher
 # Testcontainers
 testcontainers-bom = { group = "org.testcontainers", name = "testcontainers-bom", version.ref = "testcontainers"}
 testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
+quarkus-bom = { group = "io.quarkus.platform", name = "quarkus-bom", version.ref = "quarkus" }
+semver4j = { group = "org.semver4j", name = "semver4j", version.ref = "semver4j" }
+quarkus-wiremock = { group = "io.quarkiverse.wiremock", name = "quarkus-wiremock", version.ref = "quarkus-wiremock" }
+quarkus-github-api = { group = "io.quarkiverse.githubapi", name = "quarkus-github-api", version.ref = "quarkus-github-api" }
+quarkus-wiremock-test = { group = "io.quarkiverse.wiremock", name = "quarkus-wiremock-test", version.ref = "quarkus-wiremock" }
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-gradle" }
+quarkus = { id = "io.quarkus", version.ref = "quarkus" }
+

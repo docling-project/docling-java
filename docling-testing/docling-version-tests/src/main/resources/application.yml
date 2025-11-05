@@ -1,0 +1,41 @@
+quarkus:
+  rest-client:
+    github-container-registry:
+      url: https://ghcr.io
+      enable-local-proxy: true
+      logging:
+        scope: request-response
+      follow-redirects: true
+  qute:
+    suffixes:
+      - md
+
+"%no-wiremock":
+  quarkus:
+    rest-client:
+      github-container-registry:
+        url: https://ghcr.io
+        enable-local-proxy: true
+    wiremock:
+      devservices:
+        enabled: false
+  docling-client-tester:
+    log-requests: true
+    log-responses: true
+
+"%dev,test":
+  quarkus:
+    rest-client:
+      github-container-registry:
+        enable-local-proxy: false
+        url: http://localhost:${quarkus.wiremock.devservices.port}
+    wiremock:
+      devservices:
+        files-mapping: src/test/resources/wiremock
+    log:
+      category:
+        "io.quarkiverse.wiremock.devservice.WireMockServer":
+          level: ERROR
+  docling-client-tester:
+    log-requests: true
+    log-responses: true

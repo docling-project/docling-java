@@ -1,0 +1,40 @@
+{
+  "request": {
+    "urlPathTemplate": "/v2/{image}/tags/list",
+    "method": "GET",
+    "headers": {
+      "Authorization": {
+        "matches": "Bearer .+"
+      }
+    },
+    "pathParameters": {
+      "image": {
+        "matches": ".+"
+      }
+    },
+    "queryParameters": {
+      "n": {
+        "or": [
+          { "matches": "\\d+" },
+          { "absent": true }
+        ]
+      },
+      "last": {
+        "or": [
+          { "matches": ".*" },
+          { "absent": true }
+        ]
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "ghcr-tags.json",
+    "headers": {
+      "Content-Type": "application/json",
+      "docker-distribution-api-version": "registry/2.0",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "x-github-request-id": "D326:258ED7:43B91:4EC36:6904CF88"
+    }
+  }
+}

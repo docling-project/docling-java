@@ -31,6 +31,7 @@ public interface DoclingServeApi {
    *
    * @return a {@link DoclingApiBuilder} initialized with the state of the current API instance.
    */
+  @SuppressWarnings("unchecked")
   <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> DoclingApiBuilder<T, B> toBuilder();
 
   /**

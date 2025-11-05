@@ -36,6 +36,7 @@ jobs:
           - docling-serve-api
           - docling-serve-client
           - docling-testcontainers
+          - docling-version-tests
     name: jvm-build-test-${{ matrix.module }}-java${{ matrix.java }}
     steps:
       - uses: actions/checkout@v5

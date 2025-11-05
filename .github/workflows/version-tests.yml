@@ -1,0 +1,90 @@
+name: Version tests
+
+env:
+  JAVA_VERSION: 25
+
+on:
+  workflow_dispatch:
+    inputs:
+      parallelism:
+        description: The number of versions to verify in parallel
+        required: false
+        type: number
+        default: 1
+      image:
+        description: The docling-serve image to fetch
+        required: true
+        type: string
+        default: docling-project/docling-serve
+      registry:
+        description: The registry to fetch the image from
+        required: true
+        type: string
+        default: ghcr.io
+      outputDir:
+        description: The output directory to write the results to
+        required: true
+        type: string
+        default: results
+      tags:
+        description: The tags to test (comma separated)
+        required: false
+        type: string
+      createGithubIssue:
+        description: Create a GitHub issue if any of the tests fail
+        required: true
+        type: boolean
+        default: true
+
+concurrency:
+  group: "workflow = ${{ github.workflow }}, ref = ${{ github.event.ref }}, pr = ${{ github.event.pull_request.id }}"
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  version-test:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Java ${{ JAVA_VERSION }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ JAVA_VERSION }}
+          distribution: temurin
+          cache: gradle
+
+      - name: Build version tester
+        run: ./gradlew --no-daemon -Pjava.version=${{ JAVA_VERSION }} :docling-version-tests:build
+
+      - name: Process tags and flags
+        run: |
+          INPUT="${{ inputs.tags }}"
+          TAGS=${INPUT:+$(echo "$INPUT" | tr -d ' ' | sed 's/,/ -t /g' | sed 's/^/-t /')}
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+          
+          CREATE_GITHUB_ISSUE_FLAG=""
+          if [ "${{ inputs.createGithubIssue }}" == "false" ]; then
+            CREATE_GITHUB_ISSUE_FLAG="-g"
+          fi
+          
+          echo "CREATE_GITHUB_ISSUE_FLAG=$CREATE_GITHUB_ISSUE_FLAG" >> $GITHUB_ENV
+
+      - name: Run version tester
+        working-directory: docling-testing/docling-version-tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          java -jar build/quarkus-app/quarkus-run.jar \
+            -p ${{ inputs.parallelism || '3' }} \
+            -i ${{ inputs.image }} \
+            -r ${{ inputs.registry }} \
+            -o ${{ inputs.outputDir }} \
+            ${{ env.TAGS }} ${{ env.CREATE_GITHUB_ISSUE_FLAG }}

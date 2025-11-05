@@ -192,6 +192,7 @@ public abstract class DoclingServeClient implements DoclingServeApi {
    * @param <C> the type of {@link DoclingServeClient} being built
    * @param <B> the type of the builder implementation
    */
+  @SuppressWarnings("unchecked")
   public abstract static class DoclingServeClientBuilder<C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> implements DoclingApiBuilder<C, B> {
     private URI baseUrl = DEFAULT_BASE_URL;
     private HttpClient.Builder httpClientBuilder = HttpClient.newBuilder();

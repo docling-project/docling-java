@@ -8,7 +8,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -26,10 +25,9 @@ class DoclingServeContainerAvailableTests {
   @Container
   private final DoclingServeContainer doclingContainer = new DoclingServeContainer(
     DoclingServeContainerConfig.builder()
-        .imageName(DoclingServeContainerConfig.DOCLING_SERVE_IMAGE)
+        .imageName(DoclingServeContainerConfig.DOCLING_IMAGE)
         .enableUi(true)
-        .build(),
-      Optional.of(Duration.ofMinutes(2))
+        .build()
   );
 
   @Test

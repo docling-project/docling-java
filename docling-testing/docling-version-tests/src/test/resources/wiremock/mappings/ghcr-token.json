@@ -1,0 +1,22 @@
+{
+  "name": "ghcr-token",
+  "request": {
+    "urlPath": "/token",
+    "method": "GET",
+    "queryParameters": {
+      "scope": {
+        "matches": "repository:.+:pull"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"token\": \"some-long-token-value\"}",
+    "headers": {
+      "Content-Type": "application/json",
+      "docker-distribution-api-version": "registry/2.0",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "x-github-request-id": "D110:253873:30172:37A35:6904CE7C"
+    }
+  }
+}

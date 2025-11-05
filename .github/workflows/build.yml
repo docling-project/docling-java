@@ -98,7 +98,7 @@ jobs:
           path: build-reports-artifacts
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v6
         with:
           # Aggregate all JUnit XMLs from all matrix jobs
           report_paths: |

@@ -62,7 +62,7 @@ jobs:
           cache: gradle
 
       - name: Build version tester
-        run: ./gradlew --no-daemon -Pjava.version=${{ JAVA_VERSION }} :docling-version-tests:build
+        run: ./gradlew --no-daemon -Pjava.version=${{ env.JAVA_VERSION }} :docling-version-tests:build
 
       - name: Process tags and flags
         run: |

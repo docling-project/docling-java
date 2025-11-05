@@ -54,10 +54,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Set up Java ${{ JAVA_VERSION }}
+      - name: Set up Java ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v5
         with:
-          java-version: ${{ JAVA_VERSION }}
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
           cache: gradle
 

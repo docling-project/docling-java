@@ -102,10 +102,11 @@ jobs:
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
         uses: mikepenz/action-junit-report@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Aggregate all JUnit XMLs from all matrix jobs
-          report_paths: |
-            build-reports-artifacts/**/build/test-results/**/*.xml
+          report_paths: build-reports-artifacts/**/build/test-results/**/*.xml
           check_name: Gradle Test Results (all modules & JDKs)
           comment: true
           detailed_summary: true
@@ -113,6 +114,7 @@ jobs:
           include_skipped: false
           require_tests: false
           fail_on_failure: false
+          token: ${{ env.GITHUB_TOKEN }}
 
       - name: Comment with HTML reports link
         uses: actions/github-script@v8

@@ -54,7 +54,7 @@ jobs:
 
       - name: Prepare build reports
         if: always() && (github.event_name == 'pull_request')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-reports-${{ github.run_attempt }}-${{ matrix.module }}-java${{ matrix.java }}
           path: |

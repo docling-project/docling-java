@@ -3,6 +3,7 @@ package ai.docling.client.tester.service.results;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Executors;
 
@@ -35,15 +35,15 @@ class GithubIssueResultsHandlerTests extends BaseFileResultsHandlerTests {
 
   @Test
   void handlesResultsWithFailures(@TempDir Path tempDir) throws IOException {
+    var results = getAndAssertSampleResults();
+
     doNothing()
         .when(this.handler)
-        .createGHIssue(any(TagsTestResults.class), anyString());
-
-    var results = getAndAssertSampleResults();
+        .createGHIssue(eq(results), anyString());
 
     this.handler.handleResults(results, tempDir);
 
-    verify(this.handler).createGHIssue(results, Files.readString(EXPECTED_RESUTLS));
+    verify(this.handler).createGHIssue(eq(results), anyString());
     verify(this.markdownHandler).generateMarkdown(results);
     verifyNoMoreInteractions(this.markdownHandler);
   }

@@ -17,11 +17,6 @@ defaults:
   run:
     shell: bash
 
-permissions:
-  contents: read
-  checks: write
-  pull-requests: write
-
 jobs:
   jvm-build-test:
     runs-on: ubuntu-latest
@@ -93,6 +88,10 @@ jobs:
     name: Build report
     needs: jvm-build-test
     if: always() && (github.event_name == 'pull_request')
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     steps:
       - name: Download test report artifacts
         uses: actions/download-artifact@v6

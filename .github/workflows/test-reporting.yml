@@ -24,7 +24,7 @@ jobs:
       pr_number: ${{ steps.pr.outputs.number }}
     steps:
       - name: Download PR metadata
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: pr-metadata
           path: pr-metadata
@@ -42,7 +42,7 @@ jobs:
     needs: get-pr-info
     steps:
       - name: Download test report artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: build-reports-java*-${{ github.event.workflow_run.run_attempt }}*
 #          merge-multiple: true

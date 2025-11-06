@@ -33,6 +33,7 @@ jobs:
           name: pr-metadata
           path: pr-metadata
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read PR number
         id: pr
@@ -50,6 +51,7 @@ jobs:
           merge-multiple: true
           path: build-reports-artifacts
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
         uses: mikepenz/action-junit-report@v6

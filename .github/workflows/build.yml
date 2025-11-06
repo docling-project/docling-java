@@ -21,6 +21,7 @@ jobs:
   save-pr-info:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    needs: jvm-build-test
     steps:
       - name: Save PR number
         run: |

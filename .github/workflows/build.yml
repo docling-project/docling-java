@@ -41,7 +41,7 @@ jobs:
       matrix:
         java:
           - 17
-          - 21
+          - 21x
           - 25
         module:
           - docling-serve-api

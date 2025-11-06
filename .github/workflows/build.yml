@@ -61,6 +61,20 @@ jobs:
             **/build/test-results/**/*.xml
           retention-days: 7
 
+      - name: Save PR number
+        if: always() && (github.event_name == 'pull_request')
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.pull_request.number }} > ./pr/number
+          echo ${{ github.event.pull_request.head.sha }} > ./pr/sha
+
+      - name: Upload PR metadata
+        if: always() && (github.event_name == 'pull_request')
+        uses: actions/upload-artifact@v5
+        with:
+          name: pr-metadata
+          path: pr/
+
   docs:
     runs-on: ubuntu-latest
     name: build-docs-pr

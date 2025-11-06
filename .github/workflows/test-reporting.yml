@@ -14,6 +14,14 @@ permissions:
   pull-requests: write
 
 jobs:
+  print-gh-context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
   build-report:
     runs-on: ubuntu-latest
     name: Build test report

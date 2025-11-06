@@ -18,7 +18,7 @@ python {
 }
 
 mkdocs {
-  extras = mutableMapOf(
+  extras = mapOf(
       "project-version" to "${project.version}",
       "project-groupId" to "${project.group}",
       "project-artifactId" to "${rootProject.name}",
@@ -27,10 +27,22 @@ mkdocs {
       "testing-artifactId" to project(":docling-testing").name,
       "testcontainers-artifactId" to project(":docling-testcontainers").name
   )
+
+  publish {
+    // This is a hack because versionAliases is created final as an array without a setter
+    // So it isn't friendly to the Gradle Kotlin DSL
+    org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf("dev"))
+    rootRedirectTo = "dev"
+    generateVersionsFile = true
+  }
 }
 
 tasks.register("build") {
-  dependsOn(tasks.named("mkdocsBuild"))
+  dependsOn(tasks.named("mkdocsVersionsFile"))
+}
+
+tasks.register("clean") {
+  delete("build")
 }
 
 tasks.withType<PublishToMavenRepository>().configureEach {
@@ -38,5 +50,9 @@ tasks.withType<PublishToMavenRepository>().configureEach {
 }
 
 tasks.withType<PublishToMavenLocal>().configureEach {
+  enabled = false
+}
+
+tasks.named("gitPublishReset").configure {
   enabled = false
 }

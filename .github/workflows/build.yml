@@ -33,6 +33,7 @@ jobs:
         with:
           name: pr-metadata
           path: pr/
+          retention-days: 7
 
   jvm-build-test:
     runs-on: ubuntu-latest
@@ -41,7 +42,7 @@ jobs:
       matrix:
         java:
           - 17
-          - 21x
+          - 21
           - 25
         module:
           - docling-serve-api

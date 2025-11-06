@@ -44,7 +44,7 @@ jobs:
       - name: Download test report artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: "*build-reports-java*-${{ github.event.workflow_run.run_attempt }}-*"
+          pattern: build-reports-java*-${{ github.event.workflow_run.run_attempt }}*
 #          merge-multiple: true
           path: build-reports-artifacts
           run-id: ${{ github.event.workflow_run.id }}

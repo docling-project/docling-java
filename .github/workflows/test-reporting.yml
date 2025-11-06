@@ -56,8 +56,50 @@ jobs:
           JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]*' | sort -u))
           for version in "${JAVA_VERSIONS[@]}"; do
             mkdir -p pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
-            cp -r build-reports-artifacts/build-reports-${version}-${{ github.event.workflow_run.run_attempt }}/test-report-aggregation/build/reports/tests/test/aggregated-results/pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
+            cp -r build-reports-artifacts/build-reports-${version}-${{ github.event.workflow_run.run_attempt }}/test-report-aggregation/build/reports/tests/test/aggregated-results/* pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
           done
+          
+          PR_NUMBER="${{ needs.get-pr-info.outputs.pr_number}}"
+          BASE_DIR="pr-${PR_NUMBER}"
+          # Start HTML file
+          cat > ${BASE_DIR}/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Test Reports - PR #PR_NUMBER_PLACEHOLDER</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              h1 { color: #333; }
+              .report-list { list-style: none; padding: 0; }
+              .report-list li { margin: 10px 0; }
+              .report-list a { display: block; padding: 15px; background: #f5f5f5; text-decoration: none; color: #0366d6; border-radius: 5px; transition: background 0.2s; }
+              .report-list a:hover { background: #e1e4e8; }
+            </style>
+          </head>
+          <body>
+            <h1>Test Reports - PR #PR_NUMBER_PLACEHOLDER</h1>
+            <ul class="report-list">
+          EOF
+          
+          # Replace placeholder
+          sed -i "s/PR_NUMBER_PLACEHOLDER/${PR_NUMBER}/g" ${BASE_DIR}/index.html
+          
+          # Add links for each Java version
+          for dir in ${BASE_DIR}/*/; do
+            if [ -d "$dir" ]; then
+              version=$(basename "$dir")
+              echo "        <li><a href=\"${version}/index.html\">${version} Test Report</a></li>" >> ${BASE_DIR}/index.html
+            fi
+          done
+          
+          # Close HTML
+          cat >> ${BASE_DIR}/index.html << 'EOF'
+            </ul>
+          </body>
+          </html>
+          EOF
 
       - name: Setup pages
         uses: actions/configure-pages@v5

@@ -52,7 +52,7 @@ jobs:
 
       - name: Copy html reports to gh-pages
         run: |
-          JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]+' | sort -u))
+          JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]*' | sort -u))
           for version in "${JAVA_VERSIONS[@]}"; do
             mkdir -p pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
             cp -r test-report-aggregation/build/reports/tests/test/aggregated-results/ pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}

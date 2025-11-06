@@ -73,6 +73,14 @@ dependencies {
   testRuntimeOnly(libs.findLibrary("junit.platform").get())
 }
 
+testing {
+  suites {
+    val test by getting(JvmTestSuite::class) {
+      useJUnitJupiter()
+    }
+  }
+}
+
 tasks.withType<Test> {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
@@ -84,6 +92,21 @@ tasks.withType<Test> {
     showExceptions = true
     showStackTraces = true
     exceptionFormat = TestExceptionFormat.FULL
+  }
+
+  reports {
+    val currentLocation = junitXml.outputLocation.getOrElse(
+      layout.buildDirectory.dir("test-results/$name").get()
+    )
+
+    html.required.set(true)
+    junitXml.required.set(true)
+    junitXml.outputLocation.set(
+      junitXml.outputLocation.getOrElse(
+        layout.buildDirectory.dir("test-results/$name").get()
+      )
+      .dir("java${project.property("java.version").toString()}")
+    )
   }
 }
 

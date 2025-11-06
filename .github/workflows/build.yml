@@ -20,7 +20,7 @@ defaults:
 jobs:
   save-pr-info:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: always() && (github.event_name == 'pull_request')
     needs: jvm-build-test
     steps:
       - name: Save PR number
@@ -69,14 +69,40 @@ jobs:
           ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} \
             :${{ matrix.module }}:clean :${{ matrix.module }}:build
 
+  prepare-test-reports:
+    runs-on: ubuntu-latest
+    if: always() && (github.event_name == 'pull_request')
+    strategy:
+      fail-fast: false
+      matrix:
+        java:
+          - 17
+          - 21
+          - 25
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Create aggregated test report
+        run: ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check
+
       - name: Prepare build reports
-        if: always() && (github.event_name == 'pull_request')
+        if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: build-reports-${{ github.run_attempt }}-${{ matrix.module }}-java${{ matrix.java }}
+          name: build-reports-java${{ matrix.java }}-${{ github.run_attempt }}
           path: |
-            **/build/reports/
             **/build/test-results/**/*.xml
+            test-report-aggregation/build/reports/tests/test/aggregated-results/**
           retention-days: 7
 
   docs:

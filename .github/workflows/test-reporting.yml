@@ -11,13 +11,17 @@ permissions:
   contents: read
   checks: write
   statuses: write
+  pages: write
+  id-token: write
   pull-requests: write
 
 jobs:
-  build-report:
+  get-pr-info:
     runs-on: ubuntu-latest
-    name: Build test report
+    name: Get PR info
     if: github.event.workflow_run.event == 'pull_request'
+    outputs:
+      pr_number: ${{ steps.pr.outputs.number }}
     steps:
       - name: Download PR metadata
         uses: actions/download-artifact@v5
@@ -29,23 +33,30 @@ jobs:
 
       - name: Read PR number
         id: pr
-        run: |
-          echo "number=$(cat pr-metadata/number)" >> $GITHUB_OUTPUT
-          echo "sha=$(cat pr-metadata/sha)" >> $GITHUB_OUTPUT
+        run: echo "number=$(cat pr-metadata/number)" >> $GITHUB_OUTPUT
 
+  build-reports:
+    runs-on: ubuntu-latest
+    name: Build test report
+    if: github.event.workflow_run.event == 'pull_request'
+    needs: get-pr-info
+    steps:
       - name: Download test report artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: build-reports-${{ github.event.workflow_run.run_attempt }}-*
-          merge-multiple: true
+          pattern: "*build-reports-java*-${{ github.event.workflow_run.run_attempt }}-*"
+#          merge-multiple: true
           path: build-reports-artifacts
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy html reports to gh-pages
         run: |
-          mkdir -p pr-${{ steps.pr.outputs.number }}
-          cp -r build-reports-artifacts/**/build/reports/tests/test/* pr-${{ steps.pr.outputs.number }}/
+          JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]+') | sort -u)
+          for version in "${JAVA_VERSIONS[@]}"; do
+            mkdir -p pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
+            cp -r test-report-aggregation/build/reports/tests/test/aggregated-results/ pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
+          done
 
       - name: Setup pages
         uses: actions/configure-pages@v5
@@ -53,10 +64,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: pr-${{ steps.pr.outputs.number }}
+          path: pr-${{ needs.get-pr-info.outputs.pr_number}}
 
       - name: Deploy to GH Pages
-        id: deployment
         uses: actions/deploy-pages@v4
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
@@ -77,14 +87,14 @@ jobs:
           fail_on_parse_error: true
           token: ${{ env.GITHUB_TOKEN }}
           commit: ${{ github.event.workflow_run.head_sha }}
-          pr_id: ${{ steps.pr.outputs.number }}
+          pr_id: ${{ needs.get-pr-info.outputs.pr_number}}
           check_annotations: true
 
       - name: Comment with HTML reports link
         uses: actions/github-script@v8
         env:
           RUN_ID: ${{ github.event.workflow_run.id }}
-          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_NUMBER: ${{ needs.get-pr-info.outputs.pr_number}}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

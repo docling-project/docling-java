@@ -17,6 +17,12 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+  checks: write
+  statuses: write
+  pull-requests: write
+
 jobs:
   jvm-build-test:
     runs-on: ubuntu-latest
@@ -88,10 +94,6 @@ jobs:
     name: Build report
     needs: jvm-build-test
     if: always() && (github.event_name == 'pull_request')
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: write
     steps:
       - name: Download test report artifacts
         uses: actions/download-artifact@v6
@@ -110,10 +112,10 @@ jobs:
           check_name: Gradle Test Results (all modules & JDKs)
           comment: true
           detailed_summary: true
-          include_passed: false
-          include_skipped: false
+          include_passed: true
+          include_skipped: true
           require_tests: false
-          fail_on_failure: false
+          fail_on_failure: true
           token: ${{ env.GITHUB_TOKEN }}
 
       - name: Comment with HTML reports link

@@ -53,7 +53,7 @@ jobs:
           comment: true
           detailed_summary: true
           group_suite: true
-          include_passed: true
+          include_passed: false
           include_skipped: true
           require_tests: false
           fail_on_failure: true

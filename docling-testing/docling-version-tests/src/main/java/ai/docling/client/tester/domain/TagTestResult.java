@@ -5,11 +5,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public record TagTestResult(String tag, Result result, String serverLogs) {
-  public record Result(Status status, String message, Throwable error) {
+  public record Result(Status status, String message, String fullStackTrace) {
     public enum Status { SUCCESS, FAILURE }
 
     public static Result failure(String message, Throwable error) {
-      return new Result(Status.FAILURE, message, error);
+      return new Result(Status.FAILURE, message, getFullStackTrace(error));
     }
 
     public static Result failure(Throwable error) {
@@ -20,11 +20,11 @@ public record TagTestResult(String tag, Result result, String serverLogs) {
       return new Result(Status.SUCCESS, message, null);
     }
 
-    public String getFullStackTrace() {
-      if (this.error != null) {
+    private static String getFullStackTrace(Throwable error) {
+      if (error != null) {
         try (var sw = new StringWriter();
              var pw = new PrintWriter(sw)) {
-          this.error.printStackTrace(pw);
+          error.printStackTrace(pw);
           return sw.toString();
         }
         catch (IOException e) {

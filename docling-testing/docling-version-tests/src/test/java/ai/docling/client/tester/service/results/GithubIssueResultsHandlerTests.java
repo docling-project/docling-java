@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Executors;
 
@@ -43,7 +44,7 @@ class GithubIssueResultsHandlerTests extends BaseFileResultsHandlerTests {
 
     this.handler.handleResults(results, tempDir);
 
-    verify(this.handler).createGHIssue(eq(results), anyString());
+    verify(this.handler).createGHIssue(eq(results), eq(Files.readString(EXPECTED_RESUTLS)));
     verify(this.markdownHandler).generateMarkdown(results);
     verifyNoMoreInteractions(this.markdownHandler);
   }

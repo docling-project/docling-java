@@ -27,14 +27,14 @@ These are the results:
 
 </details>
 
-{#if it.result.error}
+{#if it.result.fullStackTrace}
 ### Full stack trace
 
 <details open>
 <summary>Click to collapse</summary>
 
 ```
-{it.result.getFullStackTrace()}
+{it.result.fullStackTrace}
 ```
 
 </details>

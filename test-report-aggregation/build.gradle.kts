@@ -11,8 +11,8 @@ repositories {
 dependencies {
   testReportAggregation(project(":docling-serve-api"))
   testReportAggregation(project(":docling-serve-client"))
-  testReportAggregation(project(":docling-testing"))
   testReportAggregation(project(":docling-testcontainers"))
+  testReportAggregation(project(":docling-version-tests"))
 
   api(platform(libs.testcontainers.bom))
   api(platform(libs.jackson.bom))

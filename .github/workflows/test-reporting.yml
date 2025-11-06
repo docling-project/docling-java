@@ -41,13 +41,13 @@ jobs:
     if: github.event.workflow_run.event == 'pull_request'
     needs: get-pr-info
     steps:
-      - name: Download current GitHub Pages
-        continue-on-error: true
-        run: |
-          # Clone the gh-pages branch if it exists
-          git clone --depth 1 --branch gh-pages \
-            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
-            current-site || mkdir -p current-site
+#      - name: Download current GitHub Pages
+#        continue-on-error: true
+#        run: |
+#          # Clone the gh-pages branch if it exists
+#          git clone --depth 1 --branch gh-pages \
+#            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
+#            current-site || mkdir -p current-site
 
       - name: Download test report artifacts
         uses: actions/download-artifact@v6
@@ -58,67 +58,67 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy html reports to gh-pages
-        run: |
-          set -x
-          JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]*' | sort -u))
-          for version in "${JAVA_VERSIONS[@]}"; do
-            mkdir -p current-site/pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
-            cp -r build-reports-artifacts/build-reports-${version}-${{ github.event.workflow_run.run_attempt }}/test-report-aggregation/build/reports/tests/test/aggregated-results/* current-site/pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
-          done
-          
-          PR_NUMBER="${{ needs.get-pr-info.outputs.pr_number}}"
-          BASE_DIR="pr-${PR_NUMBER}"
-          # Start HTML file
-          cat > ${BASE_DIR}/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Test Reports - PR #PR_NUMBER_PLACEHOLDER</title>
-            <style>
-              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
-              h1 { color: #333; }
-              .report-list { list-style: none; padding: 0; }
-              .report-list li { margin: 10px 0; }
-              .report-list a { display: block; padding: 15px; background: #f5f5f5; text-decoration: none; color: #0366d6; border-radius: 5px; transition: background 0.2s; }
-              .report-list a:hover { background: #e1e4e8; }
-            </style>
-          </head>
-          <body>
-            <h1>Test Reports - PR #PR_NUMBER_PLACEHOLDER</h1>
-            <ul class="report-list">
-          EOF
-          
-          # Replace placeholder
-          sed -i "s/PR_NUMBER_PLACEHOLDER/${PR_NUMBER}/g" ${BASE_DIR}/index.html
-          
-          # Add links for each Java version
-          for dir in ${BASE_DIR}/*/; do
-            if [ -d "$dir" ]; then
-              version=$(basename "$dir")
-              echo "        <li><a href=\"${version}/index.html\">${version} Test Report</a></li>" >> ${BASE_DIR}/index.html
-            fi
-          done
-          
-          # Close HTML
-          cat >> ${BASE_DIR}/index.html << 'EOF'
-            </ul>
-          </body>
-          </html>
-          EOF
-
-      - name: Setup pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: current-site
-
-      - name: Deploy to GH Pages
-        uses: actions/deploy-pages@v4
+#      - name: Copy html reports to gh-pages
+#        run: |
+#          set -x
+#          JAVA_VERSIONS=($(ls -1 build-reports-artifacts | grep -o 'java[0-9]*' | sort -u))
+#          for version in "${JAVA_VERSIONS[@]}"; do
+#            mkdir -p current-site/pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
+#            cp -r build-reports-artifacts/build-reports-${version}-${{ github.event.workflow_run.run_attempt }}/test-report-aggregation/build/reports/tests/test/aggregated-results/* current-site/pr-${{ needs.get-pr-info.outputs.pr_number}}/${version}
+#          done
+#
+#          PR_NUMBER="${{ needs.get-pr-info.outputs.pr_number}}"
+#          BASE_DIR="pr-${PR_NUMBER}"
+#          # Start HTML file
+#          cat > ${BASE_DIR}/index.html << 'EOF'
+#          <!DOCTYPE html>
+#          <html lang="en">
+#          <head>
+#            <meta charset="UTF-8">
+#            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#            <title>Test Reports - PR #PR_NUMBER_PLACEHOLDER</title>
+#            <style>
+#              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+#              h1 { color: #333; }
+#              .report-list { list-style: none; padding: 0; }
+#              .report-list li { margin: 10px 0; }
+#              .report-list a { display: block; padding: 15px; background: #f5f5f5; text-decoration: none; color: #0366d6; border-radius: 5px; transition: background 0.2s; }
+#              .report-list a:hover { background: #e1e4e8; }
+#            </style>
+#          </head>
+#          <body>
+#            <h1>Test Reports - PR #PR_NUMBER_PLACEHOLDER</h1>
+#            <ul class="report-list">
+#          EOF
+#
+#          # Replace placeholder
+#          sed -i "s/PR_NUMBER_PLACEHOLDER/${PR_NUMBER}/g" ${BASE_DIR}/index.html
+#
+#          # Add links for each Java version
+#          for dir in ${BASE_DIR}/*/; do
+#            if [ -d "$dir" ]; then
+#              version=$(basename "$dir")
+#              echo "        <li><a href=\"${version}/index.html\">${version} Test Report</a></li>" >> ${BASE_DIR}/index.html
+#            fi
+#          done
+#
+#          # Close HTML
+#          cat >> ${BASE_DIR}/index.html << 'EOF'
+#            </ul>
+#          </body>
+#          </html>
+#          EOF
+#
+#      - name: Setup pages
+#        uses: actions/configure-pages@v5
+#
+#      - name: Upload artifact
+#        uses: actions/upload-pages-artifact@v4
+#        with:
+#          path: current-site
+#
+#      - name: Deploy to GH Pages
+#        uses: actions/deploy-pages@v4
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
         uses: mikepenz/action-junit-report@v6
@@ -141,20 +141,20 @@ jobs:
           pr_id: ${{ needs.get-pr-info.outputs.pr_number}}
           check_annotations: true
 
-      - name: Comment with HTML reports link
-        uses: actions/github-script@v8
-        env:
-          RUN_ID: ${{ github.event.workflow_run.id }}
-          PR_NUMBER: ${{ needs.get-pr-info.outputs.pr_number}}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const runId = process.env.RUN_ID;
-            const prNumber = process.env.PR_NUMBER;
-            
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: `📊 Test reports available at: https://${context.repo.owner}.github.io/${context.repo.repo}/pr-${prNumber}/`
-            });
+#      - name: Comment with HTML reports link
+#        uses: actions/github-script@v8
+#        env:
+#          RUN_ID: ${{ github.event.workflow_run.id }}
+#          PR_NUMBER: ${{ needs.get-pr-info.outputs.pr_number}}
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const runId = process.env.RUN_ID;
+#            const prNumber = process.env.PR_NUMBER;
+#
+#            await github.rest.issues.createComment({
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              issue_number: prNumber,
+#              body: `📊 Test reports available at: https://${context.repo.owner}.github.io/${context.repo.repo}/pr-${prNumber}/`
+#            });

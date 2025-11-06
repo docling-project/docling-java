@@ -17,12 +17,6 @@ defaults:
   run:
     shell: bash
 
-permissions:
-  contents: read
-  checks: write
-  statuses: write
-  pull-requests: write
-
 jobs:
   jvm-build-test:
     runs-on: ubuntu-latest
@@ -87,49 +81,4 @@ jobs:
           cache: gradle
 
       - name: Generate documentation
-        run: ./gradlew --console=plain clean :docs:mkdocsBuild
-
-  build-report:
-    runs-on: ubuntu-latest
-    name: Build report
-    needs: jvm-build-test
-    if: always() && (github.event_name == 'pull_request')
-    steps:
-      - name: Download test report artifacts
-        uses: actions/download-artifact@v6
-        with:
-          pattern: build-reports-${{ github.run_attempt }}-*
-          merge-multiple: true
-          path: build-reports-artifacts
-
-      - name: Publish JUnit test report (PR comment with collapsed failures)
-        uses: mikepenz/action-junit-report@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # Aggregate all JUnit XMLs from all matrix jobs
-          report_paths: build-reports-artifacts/**/build/test-results/**/*.xml
-          check_name: Gradle Test Results (all modules & JDKs)
-          comment: true
-          detailed_summary: true
-          include_passed: true
-          include_skipped: true
-          require_tests: false
-          fail_on_failure: true
-          token: ${{ env.GITHUB_TOKEN }}
-
-      - name: Comment with HTML reports link
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const body = [
-              "HTML test reports are available as workflow artifacts (zipped HTML).",
-              `\n• Download: [Artifacts for this run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
-            ].join("\n");
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            });
+        run: ./gradlew --console=plain clean :docs:build

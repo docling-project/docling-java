@@ -9,6 +9,18 @@ quarkus:
   qute:
     suffixes:
       - md
+  log:
+    category:
+      "ai.docling":
+        level: INFO
+      "tc":
+        level: WARN
+      "org.testcontainers":
+        level: INFO
+      "com.github.dockerjava":
+        level: WARN
+      "com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.wire":
+        level: ERROR
 
 "%no-wiremock":
   quarkus:
@@ -34,6 +46,14 @@ quarkus:
         files-mapping: src/test/resources/wiremock
     log:
       category:
+        "tc":
+          level: INFO
+        "org.testcontainers":
+          level: INFO
+        "com.github.dockerjava":
+          level: INFO
+        "com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.wire":
+          level: ERROR
         "io.quarkiverse.wiremock.devservice.WireMockServer":
           level: ERROR
   docling-client-tester:

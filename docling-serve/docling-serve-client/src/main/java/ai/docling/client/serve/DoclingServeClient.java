@@ -121,7 +121,7 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     }
     finally {
       long duration = System.currentTimeMillis() - startTime;
-      LOG.info(() -> "Request took %d ms".formatted(duration));
+      LOG.info(() -> "Request [%s %s] took %d ms".formatted(request.method(), request.uri(), duration));
     }
   }
 

@@ -4,13 +4,15 @@ env:
   JAVA_VERSION: 25
 
 on:
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 4 AM UTC
   workflow_dispatch:
     inputs:
       parallelism:
         description: The number of versions to verify in parallel
         required: false
         type: number
-        default: 1
+        default: 4
       image:
         description: The docling-serve image to fetch
         required: true
@@ -45,7 +47,7 @@ defaults:
     shell: bash
 
 jobs:
-  version-test:
+  versions-tests:
     runs-on: ubuntu-latest
     permissions:
       actions: read

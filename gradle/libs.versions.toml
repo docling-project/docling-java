@@ -8,7 +8,7 @@ lombok = "1.18.42"
 lombok-gradle = "9.0.0"
 semver4j = "6.0.0"
 testcontainers = "2.0.1"
-quarkus = "3.29.0"
+quarkus = "3.29.1"
 quarkus-github-api = "1.330.0"
 quarkus-wiremock = "1.5.1"
 

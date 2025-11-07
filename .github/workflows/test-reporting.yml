@@ -141,20 +141,24 @@ jobs:
           pr_id: ${{ needs.get-pr-info.outputs.pr_number}}
           check_annotations: true
 
-#      - name: Comment with HTML reports link
-#        uses: actions/github-script@v8
-#        env:
-#          RUN_ID: ${{ github.event.workflow_run.id }}
-#          PR_NUMBER: ${{ needs.get-pr-info.outputs.pr_number}}
-#        with:
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#          script: |
-#            const runId = process.env.RUN_ID;
-#            const prNumber = process.env.PR_NUMBER;
-#
-#            await github.rest.issues.createComment({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              issue_number: prNumber,
-#              body: `📊 Test reports available at: https://${context.repo.owner}.github.io/${context.repo.repo}/pr-${prNumber}/`
-#            });
+      - name: Comment with HTML reports link
+        uses: actions/github-script@v8
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          PR_NUMBER: ${{ needs.get-pr-info.outputs.pr_number}}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = process.env.RUN_ID;
+            const prNumber = process.env.PR_NUMBER;
+            const body = [
+              "HTML test reports are available as workflow artifacts (zipped HTML).",
+              `\n• Download: [Artifacts for this run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });

@@ -10,6 +10,7 @@ permissions:
 jobs:
   dependency-submission:
     runs-on: ubuntu-latest
+    if: github.repository == 'docling-project/docling-java'
     steps:
     - name: Checkout sources
       uses: actions/checkout@v5

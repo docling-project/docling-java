@@ -49,6 +49,7 @@ defaults:
 jobs:
   versions-tests:
     runs-on: ubuntu-latest
+    if: github.repository == 'docling-project/docling-java'
     permissions:
       actions: read
       contents: read

@@ -19,7 +19,7 @@ jobs:
   get-pr-info:
     runs-on: ubuntu-latest
     name: Get PR info
-    if: github.event.workflow_run.event == 'pull_request'
+    if: (github.event.workflow_run.event == 'pull_request') && (github.repository == 'docling-project/docling-java')
     outputs:
       pr_number: ${{ steps.pr.outputs.number }}
     steps:
@@ -38,7 +38,7 @@ jobs:
   build-reports:
     runs-on: ubuntu-latest
     name: Build test report
-    if: github.event.workflow_run.event == 'pull_request'
+    if: (github.event.workflow_run.event == 'pull_request') && (github.repository == 'docling-project/docling-java')
     needs: get-pr-info
     steps:
 #      - name: Download current GitHub Pages

@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.yaml:snakeyaml:2.4")
+  implementation("org.yaml:snakeyaml:2.5")
 }
 
 // Read root gradle.properties

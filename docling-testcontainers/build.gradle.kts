@@ -1,6 +1,9 @@
 plugins {
   id("docling-java-shared")
+  id("docling-release")
 }
+
+description = "Testcontainers for Docling services"
 
 dependencies {
   api(platform(libs.testcontainers.bom))

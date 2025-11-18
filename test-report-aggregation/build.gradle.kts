@@ -23,14 +23,6 @@ dependencies {
   }
 }
 
-//reporting {
-//    reports {
-//        val testAggregateTestReport by creating(AggregateTestReport::class) {
-//            testSuiteName = "test"
-//        }
-//    }
-//}
-
 tasks.named("check") {
     dependsOn(tasks.named<TestReport>("testAggregateTestReport"))
 }

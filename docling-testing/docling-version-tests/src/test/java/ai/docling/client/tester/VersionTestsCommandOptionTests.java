@@ -24,7 +24,7 @@ import ai.docling.client.tester.service.TagsTester;
 @TestProfile(NoActualTestingProfile.class)
 class VersionTestsCommandOptionTests {
   @Test
-  @Launch({ "-t", "v1.0.0", "--tags", "v1.0.1" })
+  @Launch({ "-t", "v1.0.0", "--tags", "v1.0.1", "-o", "build/results" })
   void providedTags(LaunchResult result) {
     assertThat(result.getOutput())
         .isNotNull()
@@ -33,7 +33,7 @@ class VersionTestsCommandOptionTests {
   }
 
   @Test
-  @Launch({})
+  @Launch({ "-o", "build/results" })
   void noTagsProvided(LaunchResult result) {
     assertThat(result.getOutput())
         .isNotNull()
@@ -43,7 +43,7 @@ class VersionTestsCommandOptionTests {
   }
 
   @Test
-  @Launch("-g")
+  @Launch({ "-g", "-o", "build/results" })
   void dontCreateGithubIssue(LaunchResult result) {
     assertThat(result.getOutput())
         .isNotNull()

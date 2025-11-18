@@ -2,6 +2,7 @@
 assertj = "3.27.6"
 jackson2 = "2.20.1"
 jackson3 = "3.0.2"
+jreleaser = "1.20.0"
 jspecify = "1.0.0"
 junit = "6.0.1"
 lombok = "1.18.42"
@@ -26,6 +27,9 @@ jackson2-databind = { group = "com.fasterxml.jackson.core", name = "jackson-data
 # JSpecify
 jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 
+# JReleaser
+jreleaser-gradle-plugin = { group = "org.jreleaser", name = "jreleaser-gradle-plugin", version.ref = "jreleaser" }
+
 # JUnit
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
@@ -34,8 +38,10 @@ junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher
 # Testcontainers
 testcontainers-bom = { group = "org.testcontainers", name = "testcontainers-bom", version.ref = "testcontainers"}
 testcontainers-junit-jupiter = { group = "org.testcontainers", name = "testcontainers-junit-jupiter" }
-quarkus-bom = { group = "io.quarkus.platform", name = "quarkus-bom", version.ref = "quarkus" }
 semver4j = { group = "org.semver4j", name = "semver4j", version.ref = "semver4j" }
+
+# Quarkus
+quarkus-bom = { group = "io.quarkus.platform", name = "quarkus-bom", version.ref = "quarkus" }
 quarkus-wiremock = { group = "io.quarkiverse.wiremock", name = "quarkus-wiremock", version.ref = "quarkus-wiremock" }
 quarkus-github-api = { group = "io.quarkiverse.githubapi", name = "quarkus-github-api", version.ref = "quarkus-github-api" }
 quarkus-wiremock-test = { group = "io.quarkiverse.wiremock", name = "quarkus-wiremock-test", version.ref = "quarkus-wiremock" }
@@ -43,4 +49,4 @@ quarkus-wiremock-test = { group = "io.quarkiverse.wiremock", name = "quarkus-wir
 [plugins]
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-gradle" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
-
+jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }

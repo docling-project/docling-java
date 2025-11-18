@@ -45,11 +45,3 @@ tasks.register("build") {
 tasks.register("clean") {
   delete("build")
 }
-
-tasks.withType<PublishToMavenRepository>().configureEach {
-  enabled = false
-}
-
-tasks.withType<PublishToMavenLocal>().configureEach {
-  enabled = false
-}

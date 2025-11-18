@@ -1,7 +1,10 @@
 plugins {
   id("docling-java-shared")
+  id("docling-release")
   alias(libs.plugins.lombok)
 }
+
+description = "Docling Serve API"
 
 lombok {
   version = libs.versions.lombok.asProvider().get()

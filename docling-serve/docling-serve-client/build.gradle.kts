@@ -1,6 +1,9 @@
 plugins {
   id("docling-java-shared")
+  id("docling-release")
 }
+
+description = "Docling Serve Client"
 
 dependencies {
   api(project(":docling-serve-api"))

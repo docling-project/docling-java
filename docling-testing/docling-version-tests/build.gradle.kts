@@ -35,11 +35,3 @@ tasks.withType<JavaCompile> {
   options.encoding = "UTF-8"
   options.compilerArgs.add("-parameters")
 }
-
-tasks.withType<PublishToMavenRepository>().configureEach {
-  enabled = false
-}
-
-tasks.withType<PublishToMavenLocal>().configureEach {
-  enabled = false
-}

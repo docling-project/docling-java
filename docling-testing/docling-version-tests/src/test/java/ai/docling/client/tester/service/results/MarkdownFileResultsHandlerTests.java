@@ -21,7 +21,6 @@ class MarkdownFileResultsHandlerTests extends BaseFileResultsHandlerTests {
   @Test
   void handlesResults(@TempDir Path tempDir) throws IOException {
     var results = getAndAssertSampleResults();
-    System.out.println("tempDir: " + tempDir);
 
     this.handler.handleResults(results, tempDir);
     var outputFile = tempDir.resolve("results.md");

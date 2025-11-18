@@ -1,5 +1,8 @@
 name: Perform release
 
+env:
+  JAVA_VERSION: 17
+
 on:
   pull_request:
     types:
@@ -30,12 +33,15 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
           cache: gradle
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
+
+      - name: Build artifacts
+        run: ./gradlew --no-daemon -Pjava.version=${{ env.JAVA_VERSION }} assemble
 
       - name: Release
         env:

@@ -9,6 +9,7 @@ on:
       - closed
     paths:
       - .github/project.yml
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

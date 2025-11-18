@@ -54,9 +54,8 @@ theme:
 nav:
   - Home:
     - "Docling Java": index.md
-    - Getting started:
-      - Getting started: getting-started.md
-  - Artifacts:
+    - Getting started: getting-started.md
+  - Modules:
     - Docling Serve:
       - API: docling-serve/serve-api.md
       - Client: docling-serve/serve-client.md

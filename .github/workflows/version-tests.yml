@@ -52,7 +52,7 @@ jobs:
     if: github.repository == 'docling-project/docling-java'
     permissions:
       actions: read
-      contents: read
+      contents: write
       issues: write
     steps:
       - uses: actions/checkout@v5
@@ -91,19 +91,6 @@ jobs:
       - name: Build version tester
         run: ./gradlew --no-daemon -Pjava.version=${{ env.JAVA_VERSION }} :docling-version-tests:build
 
-      - name: Process tags and flags
-        run: |
-          INPUT="${{ inputs.tags }}"
-          TAGS=${INPUT:+$(echo "$INPUT" | tr -d ' ' | sed 's/,/ -t /g' | sed 's/^/-t /')}
-          echo "TAGS=$TAGS" >> $GITHUB_ENV
-          
-          CREATE_GITHUB_ISSUE_FLAG="--create-github-issue"
-          if [ "${{ inputs.createGithubIssue }}" == "false" ]; then
-            CREATE_GITHUB_ISSUE_FLAG="--no-create-github-issue"
-          fi
-          
-          echo "CREATE_GITHUB_ISSUE_FLAG=$CREATE_GITHUB_ISSUE_FLAG" >> $GITHUB_ENV
-
       - name: Run version tester
         working-directory: docling-testing/docling-version-tests
         env:
@@ -115,3 +102,29 @@ jobs:
             -r ${{ env.REGISTRY }} \
             -o ${{ env.OUTPUT_DIR }} \
             ${{ env.TAGS }} ${{ env.CREATE_GITHUB_ISSUE_FLAG }}
+
+      - name: Copy output markdown to docs
+        run: find docling-testing/docling-version-tests/${{ env.OUTPUT_DIR }} -name 'results.md' -exec cp -r '{}' docs/src/doc/docs/includes/docling-serve/serve-compatibility.md ';'
+
+      - name: Create docs PR
+        id: create-pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: docs/src/doc/docs/includes/docling-serve/serve-compatibility.md
+          commit-message: "Update docling-serve compatibility table (from ${{ github.workflow }} run # ${{ github.run_number }})"
+          branch: update-serve-compatibility/sourceref
+          branch-suffix: short-commit-hash
+          delete-branch: true
+          base: main
+          title: "Update docling-serve compatibility table (from ${{ github.workflow }} run # ${{ github.run_number }})"
+          body: "Update docling-serve compatibility table from [${{ github.workflow }} run # ${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}), which was triggered by commit ${{ env.REF }}."
+          labels: |
+            automation
+            documentation
+            area:docling-serve
+
+      - name: Merge PR
+        if: (steps.create-pr.outputs.pull-request-operation == 'created') && steps.create-pr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr merge --merge --delete-branch "${{ steps.create-pr.outputs.pull-request-url }}"

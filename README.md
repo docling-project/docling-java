@@ -22,6 +22,10 @@ This is repository for Docling Java, a Java API for using [Docling](https://gith
 * 👓 Support of several Visual Language Models ([GraniteDocling](https://huggingface.co/ibm-granite/granite-docling-258M))
 * 🎙️ Audio support with Automatic Speech Recognition (ASR) models
 
+## Documentation
+
+[See the documentation](https://docling-project.github.io/docling-java/) for complete information on the [various artifacts](#artifacts) that are provided by this project.
+
 ## Artifacts
 
 This project aims to provide the following artifacts:

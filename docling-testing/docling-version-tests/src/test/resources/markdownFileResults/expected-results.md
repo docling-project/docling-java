@@ -1,20 +1,20 @@
-# Results for ghcr.io/docling-project/docling-serve at 2025-11-05T12:45:20.447675Z
+# Results for ghcr.io/docling-project/docling-serve as of 2025-11-05T12:45:20.447675Z
 
-These are the results:
+Here are the results:
 
 | Tag | Result | Details |
 | --- | ------ | ------- |
-| v1.7.2 | FAILURE | [Click for run details](#v1.7.2-details) |
-| v1.6.0 | FAILURE | [Click for run details](#v1.6.0-details) |
+| v1.7.2 | ❌ FAILURE | [Click for run details](#v1.7.2-details) |
+| v1.6.0 | ❌ FAILURE | [Click for run details](#v1.6.0-details) |
 
-# Details
+## Details
 
-## ghcr.io/docling-project/docling-serve:v1.7.2
+### ghcr.io/docling-project/docling-serve:v1.7.2
 
 <details id="v1.7.2-details">
 <summary>Click to expand</summary>
 
-### Message
+#### Message
 
 <details open>
 <summary>Click to collapse</summary>
@@ -47,7 +47,7 @@ Docling Hero Image
 
 </details>
 
-### Full stack trace
+#### Full stack trace
 
 <details open>
 <summary>Click to collapse</summary>
@@ -118,7 +118,7 @@ Docling Hero Image
 
 </details>
 
-### Docling server logs
+#### Docling server logs
 
 <details>
 <summary>click to expand</summary>
@@ -152,12 +152,12 @@ INFO:     192.168.127.1:18978 - "POST /v1/convert/source HTTP/1.1" 200 OK
 
 </details>
 
-## ghcr.io/docling-project/docling-serve:v1.6.0
+### ghcr.io/docling-project/docling-serve:v1.6.0
 
 <details id="v1.6.0-details">
 <summary>Click to expand</summary>
 
-### Message
+#### Message
 
 <details open>
 <summary>Click to collapse</summary>
@@ -190,7 +190,7 @@ Docling Hero Image
 
 </details>
 
-### Full stack trace
+#### Full stack trace
 
 <details open>
 <summary>Click to collapse</summary>
@@ -261,7 +261,7 @@ Docling Hero Image
 
 </details>
 
-### Docling server logs
+#### Docling server logs
 
 <details>
 <summary>click to expand</summary>

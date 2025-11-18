@@ -6,7 +6,20 @@ import java.io.StringWriter;
 
 public record TagTestResult(String tag, Result result, String serverLogs) {
   public record Result(Status status, String message, String fullStackTrace) {
-    public enum Status { SUCCESS, FAILURE }
+    public enum Status {
+      SUCCESS("✅"),
+      FAILURE("❌");
+
+      private final String icon;
+
+      Status(String icon) {
+        this.icon = icon;
+      }
+
+      public String getIcon() {
+        return this.icon;
+      }
+    }
 
     public static Result failure(String message, Throwable error) {
       return new Result(Status.FAILURE, message, getFullStackTrace(error));

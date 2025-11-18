@@ -1,22 +1,22 @@
-# Results for {results.registry}/{results.image} at {results.timestamp}
+# Results for {results.registry}/{results.image} as of {results.timestamp}
 
-These are the results:
+Here are the results:
 
 | Tag | Result | Details |
 | --- | ------ | ------- |
 {#each results.results}
-| {it.tag} | {it.result.status} | [Click for run details](#{it.tag}-details) |
+| {it.tag} | {it.result.status.icon} {it.result.status.name()} | [Click for run details](#{it.tag}-details) |
 {/each}
 
-# Details
+## Details
 
 {#each results.results}
-## {results.registry}/{results.image}:{it.tag}
+### {results.registry}/{results.image}:{it.tag}
 
 <details id="{it.tag}-details">
 <summary>Click to expand</summary>
 
-### Message
+#### Message
 
 <details open>
 <summary>Click to collapse</summary>
@@ -28,7 +28,7 @@ These are the results:
 </details>
 
 {#if it.result.fullStackTrace}
-### Full stack trace
+#### Full stack trace
 
 <details open>
 <summary>Click to collapse</summary>
@@ -41,7 +41,7 @@ These are the results:
 {/if}
 
 {#if it.serverLogs}
-### Docling server logs
+#### Docling server logs
 
 <details>
 <summary>click to expand</summary>

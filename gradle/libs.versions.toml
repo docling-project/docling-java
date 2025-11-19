@@ -11,7 +11,7 @@ semver4j = "6.0.0"
 testcontainers = "2.0.2"
 quarkus = "3.29.3"
 quarkus-github-api = "1.330.0"
-quarkus-wiremock = "1.5.1"
+quarkus-wiremock = "1.5.2"
 
 [libraries]
 # assertj

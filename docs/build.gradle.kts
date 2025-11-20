@@ -35,11 +35,12 @@ mkdocs {
     org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf("dev"))
     rootRedirectTo = "dev"
     generateVersionsFile = true
+    existingVersionsFile = layout.buildDirectory.dir("mkdocs").get().file("versions.json").asFile.absolutePath
   }
 }
 
 tasks.register("build") {
-  dependsOn(tasks.named("mkdocsVersionsFile"))
+  dependsOn(tasks.named("mkdocsBuild"))
 }
 
 tasks.register("clean") {

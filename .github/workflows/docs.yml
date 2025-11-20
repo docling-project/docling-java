@@ -45,8 +45,14 @@ jobs:
           distribution: temurin
           cache: gradle
 
+      - name: Download existing pages
+        uses: actions/download-artifact@v5
+        with:
+          name: github-pages
+          path: docs/build/mkdocs
+
       - name: Generate documentation
-        run: ./gradlew --console=plain clean :docs:build
+        run: ./gradlew --console=plain :docs:build
 
       - name: Setup pages
         uses: actions/configure-pages@v5

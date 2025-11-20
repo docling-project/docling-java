@@ -52,7 +52,7 @@ jobs:
           - docling-version-tests
     name: jvm-build-test-${{ matrix.module }}-java${{ matrix.java }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Reclaim disk space
         working-directory: .github
@@ -85,7 +85,7 @@ jobs:
           - 21
           - 25
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Reclaim disk space
         working-directory: .github
@@ -120,7 +120,7 @@ jobs:
     name: build-docs-pr
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Reclaim disk space
         working-directory: .github

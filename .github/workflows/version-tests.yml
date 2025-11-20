@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'docling-project/docling-java'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Reclaim disk space
         working-directory: .github

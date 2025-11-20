@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     if: (github.repository == 'docling-project/docling-java') && ((github.event_name == 'workflow_dispatch') || ((github.event_name == 'pull_request_target') && (github.event.pull_request.merged == true)))
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}

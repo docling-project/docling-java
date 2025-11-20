@@ -1,93 +1,11 @@
 plugins {
   `maven-publish`
-  id("org.jreleaser")
-}
-
-jreleaser {
-  gitRootSearch = true
-  strict = true
-
-  project {
-    license = "MIT"
-    inceptionYear = "2025"
-    tags = listOf("docling", "java", "AI")
-    vendor = "IBM"
-    authors = listOf("Eric Deandrea", "Thomas Vitale", "Alex Soto")
-    maintainers = listOf("Eric Deandrea", "Thomas Vitale", "Alex Soto")
-    copyright = "2025-Present IBM"
-    description = "A Java API for Docling"
-
-    languages {
-      java {
-        version = property("java.version").toString()
-      }
-    }
-
-    links {
-      homepage = "https://docling-project.github.io/docling-java"
-      documentation = "https://docling-project.github.io/docling-java"
-      license = "https://opensource.org/license/mit"
-      bugTracker = "https://github.com/docling-project/docling-java/issues"
-      help = "https://github.com/docling-project/docling-java/discussions"
-      contribute = "https://github.com/docling-project/docling-java/blob/main/CONTRIBUTING.md"
-    }
-  }
-
-  signing {
-    active = org.jreleaser.model.Active.ALWAYS
-    armored = true
-  }
-
-  release {
-    github {
-      repoOwner = "docling-project"
-      name = rootProject.name
-      sign = true
-
-      changelog {
-        links = true
-        preset = "conventional-commits"
-      }
-
-      issues {
-        enabled = true
-        comment = "🎉 This issue has been resolved in `{{tagName}}` ([Release Notes]({{releaseNotesUrl}}))"
-      }
-    }
-  }
-
-  deploy {
-    maven {
-      mavenCentral {
-        create("sonatype") {
-          retryDelay = 100
-          maxRetries = 100
-          connectTimeout = 18000
-          active = org.jreleaser.model.Active.ALWAYS
-          url = "https://central.sonatype.com/api/v1/publisher"
-          applyMavenCentralRules = true
-          stagingRepository(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
-        }
-      }
-    }
-  }
-
-  announce {
-    active = org.jreleaser.model.Active.ALWAYS
-
-    discussions {
-      organization = "docling-project"
-      team = "docling-java"
-      title = "{{projectNameCapitalized}} {{projectVersion}} released!"
-      message = "🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}"
-    }
-  }
 }
 
 publishing {
   repositories {
     maven {
-      url = uri(layout.buildDirectory.dir("staging-deploy"))
+      url = uri(rootProject.layout.buildDirectory.dir("staging-deploy"))
     }
   }
 

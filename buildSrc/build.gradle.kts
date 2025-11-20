@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-  implementation(libs.jreleaser.gradle.plugin)
+//  implementation(libs.jreleaser.gradle.plugin)
   implementation("org.yaml:snakeyaml:2.5")
 }
 

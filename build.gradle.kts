@@ -81,13 +81,15 @@ jreleaser {
   }
 
   announce {
-    active = org.jreleaser.model.Active.ALWAYS
+    discord {
+      active = org.jreleaser.model.Active.RELEASE
+    }
 
     discussions {
+      active = org.jreleaser.model.Active.RELEASE
       organization = "docling-project"
       team = "docling-java"
       title = "{{projectNameCapitalized}} {{projectVersion}} released!"
-      message = "🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}"
     }
   }
 }

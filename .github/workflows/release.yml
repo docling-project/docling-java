@@ -15,6 +15,11 @@ on:
         description: The version to release (e.g. 1.0.0)
         required: true
         type: string
+      dryrun:
+        description: Perform a dry-run release
+        required: true
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -96,7 +101,7 @@ jobs:
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
-          JRELEASER_DRY_RUN: true
+          JRELEASER_DRY_RUN: ${{ inputs.dryrun }}
         run: |
           echo "Releasing version ${{ env.PREVIOUS_VERSION }} -> ${{ env.CURRENT_VERSION }}"
           ./gradlew --no-daemon :jreleaserFullRelease

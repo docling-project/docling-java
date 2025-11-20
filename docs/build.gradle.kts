@@ -35,7 +35,7 @@ mkdocs {
     org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf("dev"))
     rootRedirectTo = "dev"
     generateVersionsFile = true
-    existingVersionsFile = "https://docling-project.github.io/docling-java/versions.json"
+    existingVersionsFile = layout.buildDirectory.dir("mkdocs").get().file("versions.json").asFile.absolutePath
   }
 }
 

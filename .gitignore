@@ -10,3 +10,4 @@ build
 /docs/src/doc/mkdocs-customizations/macros/__pycache__
 
 .DS_Store
+.log

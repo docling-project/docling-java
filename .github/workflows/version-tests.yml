@@ -60,6 +60,8 @@ jobs:
     if: github.repository == 'docling-project/docling-java'
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Reclaim disk space
         working-directory: .github/scripts
@@ -90,7 +92,9 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build version tester
         run: ./gradlew --no-daemon -Pjava.version=${{ env.JAVA_VERSION }} :docling-version-tests:build

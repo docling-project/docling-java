@@ -6,6 +6,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
+
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
 /**
@@ -59,4 +61,26 @@ public class DoclingServeContainer extends GenericContainer<DoclingServeContaine
   public int getPort() {
     return getMappedPort(DEFAULT_DOCLING_PORT);
   }
+
+  /**
+   * The URL where to access the Docling Serve API.
+   */
+  public String getApiUrl() {
+    return "http://" + getHost() + ":" + getPort();
+  }
+
+  /**
+   * The URL where to access the Docling Serve UI, if enabled.
+   */
+  public String getUiUrl() {
+    return getApiUrl() + "/ui";
+  }
+
+  @Override
+  protected void containerIsStarted(InspectContainerResponse containerInfo) {
+    if (config.enableUi()) {
+      LOG.info(() -> "Docling Serve UI: %s".formatted(getUiUrl()));
+    }
+  }
+
 }

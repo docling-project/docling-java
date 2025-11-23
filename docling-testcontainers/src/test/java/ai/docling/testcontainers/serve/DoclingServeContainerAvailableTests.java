@@ -15,11 +15,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Testcontainers
 class DoclingServeContainerAvailableTests {
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
   private record HealthResponse(String status) {}
 
   @Container
@@ -33,7 +33,7 @@ class DoclingServeContainerAvailableTests {
   @Test
   void containerAvailable() throws IOException, InterruptedException {
     var healthRequest = HttpRequest.newBuilder(
-        URI.create("http://localhost:%d/health".formatted(this.doclingContainer.getPort()))
+        URI.create("%s/health".formatted(this.doclingContainer.getApiUrl()))
     )
         .header("Accept", "application/json")
         .timeout(Duration.ofSeconds(10))
@@ -48,6 +48,9 @@ class DoclingServeContainerAvailableTests {
         .isNotNull()
         .usingRecursiveComparison()
         .isEqualTo(new HealthResponse("ok"));
+
+    assertThat(this.doclingContainer.getUiUrl())
+        .isEqualTo(this.doclingContainer.getApiUrl() + "/ui");
   }
 
   private static <T> HttpResponse.BodyHandler<T> jsonBodyHandler(Class<T> type) {
@@ -55,7 +58,7 @@ class DoclingServeContainerAvailableTests {
         HttpResponse.BodySubscribers.ofByteArray(),
         bytes -> {
           try {
-            return OBJECT_MAPPER.readValue(bytes, type);
+            return JSON_MAPPER.readValue(bytes, type);
           } catch (Exception e) {
             throw new RuntimeException(e);
           }

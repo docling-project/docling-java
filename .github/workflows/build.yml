@@ -30,7 +30,7 @@ jobs:
           echo ${{ github.event.pull_request.head.sha }} > ./pr/sha
 
       - name: Upload PR metadata
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: pr-metadata
           path: pr/
@@ -52,7 +52,7 @@ jobs:
           - docling-version-tests
     name: jvm-build-test-${{ matrix.module }}-java${{ matrix.java }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
 
@@ -62,13 +62,13 @@ jobs:
         run: scripts/ci-reclaim-disk-space.sh
 
       - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
 
       - name: build-test-${{ matrix.module }}-java${{ matrix.java }}
         run: |
@@ -86,7 +86,7 @@ jobs:
           - 21
           - 25
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
 
@@ -96,20 +96,20 @@ jobs:
         run: ./ci-reclaim-disk-space.sh
 
       - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
 
       - name: Create aggregated test report
         run: ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check
 
       - name: Prepare build reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: build-reports-java${{ matrix.java }}-${{ github.run_attempt }}
           path: |
@@ -122,7 +122,7 @@ jobs:
     name: build-docs-pr
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
       - name: Reclaim disk space
         working-directory: .github/scripts
@@ -130,18 +130,18 @@ jobs:
         run: ./ci-reclaim-disk-space.sh
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: '3.x'
 
       - name: Setup Java 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           java-version: 25
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
 
       - name: Generate documentation
         run: ./gradlew --console=plain clean :docs:build

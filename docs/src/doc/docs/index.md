@@ -22,7 +22,7 @@ Docling Java is the official Java client and tooling for [Docling](https://docli
 
 This repository provides a set of artifacts you can mix and match depending on your needs:
 
-- [`docling-core`](core.md): Java API for working with the data types used by Docling for document representation.
+- [`docling-core`](core.md): Java API for working with the data types used by Docling for document representation (see [Docling Core](https://github.com/docling-project/docling-core)).
 - [`docling-serve-api`](docling-serve/serve-api.md): Java API for interacting with a [Docling Serve](https://github.com/docling-project/docling-serve) backend (framework‑agnostic).
 - [`docling-serve-client`](docling-serve/serve-client.md): Reference HTTP client built with Java `HttpClient` and [Jackson](https://github.com/FasterXML/jackson) for connecting to a [Docling Serve](https://github.com/docling-project/docling-serve) endpoint.
 - [`docling-testing`](testing.md): Utilities for testing Docling integrations in your codebase.

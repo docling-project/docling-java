@@ -54,6 +54,7 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
           path: before
           token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
 
       - name: Checkout current ref
         if: github.event_name == 'workflow_dispatch'
@@ -62,6 +63,7 @@ jobs:
           ref: ${{ github.ref }}
           path: before
           token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
 
       - name: Capture version before PR
         if: github.event_name == 'pull_request_target'
@@ -76,6 +78,7 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           path: after
+          fetch-depth: 0
 
       - name: Capture current version
         run: echo "CURRENT_VERSION=$(yq '.release.current-version' after/.github/project.yml)" >> $GITHUB_ENV

@@ -2,7 +2,6 @@ package ai.docling.client.tester.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.atIndex;
-import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
 import java.net.URI;
 import java.time.Duration;
@@ -10,10 +9,12 @@ import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.testcontainers.DockerClientFactory;
 
 import io.quarkus.logging.Log;
 
+import ai.docling.api.core.DoclingDocument;
 import ai.docling.api.serve.DoclingServeApi;
 import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
 import ai.docling.api.serve.convert.request.options.ConvertDocumentOptions;
@@ -156,8 +157,8 @@ public class TagsTester {
         .satisfies(o ->
                 assertThat(o)
                     .as("Document should have JSON content")
-                    .asInstanceOf(MAP)
-                    .isNotEmpty(),
+                    .asInstanceOf(InstanceOfAssertFactories.type(DoclingDocument.class))
+                    .isNotNull(),
             atIndex(3)
         );
   }

@@ -3,6 +3,7 @@ package ai.docling.client.serve;
 import static ai.docling.api.serve.util.ValidationUtils.ensureNotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
@@ -70,7 +71,10 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
    * <p>The builder supports method chaining for fluent configuration.
    */
   public static final class Builder extends DoclingServeClientBuilder<DoclingServeJackson2Client, Builder> {
-    private JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder();
+    private JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder()
+        // This is the default in Jackson 3 whereas it needs to be set explicitly in Jackson 2.
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     private Builder() {
     }
 

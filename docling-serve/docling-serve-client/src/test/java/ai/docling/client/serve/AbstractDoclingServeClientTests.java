@@ -9,9 +9,12 @@ import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
 
+import ai.docling.api.core.DoclingDocument;
+import ai.docling.api.core.DoclingDocument.DocItemLabel;
 import ai.docling.api.serve.DoclingServeApi;
 import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
 import ai.docling.api.serve.convert.request.options.ConvertDocumentOptions;
+import ai.docling.api.serve.convert.request.options.OutputFormat;
 import ai.docling.api.serve.convert.request.options.TableFormerMode;
 import ai.docling.api.serve.convert.request.source.FileSource;
 import ai.docling.api.serve.convert.request.source.HttpSource;
@@ -108,6 +111,29 @@ abstract class AbstractDoclingServeClientTests {
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isNotEmpty();
     assertThat(response.getDocument()).isNotNull();
+  }
+
+  @Test
+  void shouldHandleResponseWithDoclingDocument() {
+    ConvertDocumentOptions options = ConvertDocumentOptions.builder()
+        .toFormat(OutputFormat.JSON)
+        .build();
+
+    ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+        .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+        .options(options)
+        .build();
+
+    ConvertDocumentResponse response = getDoclingClient().convertSource(request);
+
+    assertThat(response).isNotNull();
+    assertThat(response.getStatus()).isNotEmpty();
+    assertThat(response.getDocument()).isNotNull();
+
+    DoclingDocument doclingDocument = response.getDocument().getJsonContent();
+    assertThat(doclingDocument).isNotNull();
+    assertThat(doclingDocument.getName()).isNotEmpty();
+    assertThat(doclingDocument.getTexts().get(0).getLabel()).isEqualTo(DocItemLabel.TITLE);
   }
 
   private static byte[] readFileFromClasspath(String filePath) throws IOException {

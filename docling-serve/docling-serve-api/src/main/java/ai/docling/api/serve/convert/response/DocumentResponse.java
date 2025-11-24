@@ -1,13 +1,11 @@
 package ai.docling.api.serve.convert.response;
 
-import java.util.Map;
-
 import org.jspecify.annotations.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
+
+import ai.docling.api.core.DoclingDocument;
 
 /**
  * A simple mutable POJO representing the converted document returned by the
@@ -47,9 +45,8 @@ public class DocumentResponse {
   private String htmlContent;
 
   @JsonProperty("json_content")
-  @JsonSetter(nulls = Nulls.AS_EMPTY)
-  @lombok.Singular("jsonContent")
-  private Map<String, Object> jsonContent;
+  @Nullable
+  private DoclingDocument jsonContent;
 
   @JsonProperty("md_content")
   @Nullable

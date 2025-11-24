@@ -9,6 +9,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import ai.docling.api.core.DoclingDocument;
+import ai.docling.api.core.DoclingDocument.TitleItem;
+
 /**
  * Unit tests for {@link ConvertDocumentResponse}.
  */
@@ -20,7 +23,10 @@ class ConvertDocumentResponseTests {
         .doctagsContent("doctags content")
         .filename("test-file.pdf")
         .htmlContent("<html>content</html>")
-        .jsonContent("key", "value")
+        .jsonContent(DoclingDocument.builder()
+            .name("test-file.pdf")
+            .text(TitleItem.builder().text("Docling Rocks!").build())
+            .build())
         .markdownContent("# Markdown content")
         .textContent("Plain text content")
         .build();

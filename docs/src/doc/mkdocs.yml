@@ -56,6 +56,7 @@ nav:
     - "Docling Java": index.md
     - Getting started: getting-started.md
   - Modules:
+    - Docling Core: core.md
     - Docling Serve:
       - API: docling-serve/serve-api.md
       - Client: docling-serve/serve-client.md

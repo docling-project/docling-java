@@ -2,10 +2,14 @@ package ai.docling.api.serve.convert.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import ai.docling.api.core.DoclingDocument;
+import ai.docling.api.core.DoclingDocument.DocItemLabel;
+import ai.docling.api.core.DoclingDocument.TitleItem;
 
 /**
  * Unit tests for {@link DocumentResponse}.
@@ -16,11 +20,10 @@ class DocumentResponseTests {
     String doctagsContent = "doctags content";
     String filename = "test-document.pdf";
     String htmlContent = "<html><body>Test content</body></html>";
-    Map<String, Object> jsonContent = Map.of(
-        "title", "Test Document",
-        "author", "Test Author",
-        "pages", 5
-    );
+    DoclingDocument doclingDocument = DoclingDocument.builder()
+        .name("test-file.pdf")
+        .text(TitleItem.builder().label(DocItemLabel.TITLE).text("Docling Rocks!").build())
+        .build();
     String markdownContent = "# Test Document\n\nThis is a test document.";
     String textContent = "Test Document\n\nThis is a test document.";
 
@@ -28,7 +31,7 @@ class DocumentResponseTests {
         .doctagsContent(doctagsContent)
         .filename(filename)
         .htmlContent(htmlContent)
-        .jsonContent(new HashMap<>(jsonContent))
+        .jsonContent(doclingDocument)
         .markdownContent(markdownContent)
         .textContent(textContent)
         .build();
@@ -36,7 +39,9 @@ class DocumentResponseTests {
     assertThat(response.getDoctagsContent()).isEqualTo(doctagsContent);
     assertThat(response.getFilename()).isEqualTo(filename);
     assertThat(response.getHtmlContent()).isEqualTo(htmlContent);
-    assertThat(response.getJsonContent()).containsExactlyInAnyOrderEntriesOf(jsonContent);
+    assertThat(response.getJsonContent()).isNotNull();
+    assertThat(response.getJsonContent().getName()).isEqualTo(doclingDocument.getName());
+    assertThat(response.getJsonContent().getTexts()).hasSize(1);
     assertThat(response.getMarkdownContent()).isEqualTo(markdownContent);
     assertThat(response.getTextContent()).isEqualTo(textContent);
   }
@@ -48,7 +53,7 @@ class DocumentResponseTests {
     assertThat(response.getDoctagsContent()).isNull();
     assertThat(response.getFilename()).isNull();
     assertThat(response.getHtmlContent()).isNull();
-    assertThat(response.getJsonContent()).isNotNull().isEmpty();
+    assertThat(response.getJsonContent()).isNull();
     assertThat(response.getMarkdownContent()).isNull();
     assertThat(response.getTextContent()).isNull();
   }
@@ -68,33 +73,31 @@ class DocumentResponseTests {
     assertThat(response.getDoctagsContent()).isNull();
     assertThat(response.getFilename()).isEqualTo(filename);
     assertThat(response.getHtmlContent()).isNull();
-    assertThat(response.getJsonContent()).isNotNull().isEmpty();
+    assertThat(response.getJsonContent()).isNull();
     assertThat(response.getMarkdownContent()).isEmpty();
     assertThat(response.getTextContent()).isEmpty();
   }
 
   @Test
-  void documentResponseJsonContentReflectsOriginalMapChanges() {
-    Map<String, Object> jsonContent = new HashMap<>(Map.of(
-        "original", "value",
-        "count", 1
-    ));
-
-    DocumentResponse response = DocumentResponse.builder()
-        .jsonContent(jsonContent)
+  void documentResponseJsonContentIsImmutable() {
+    List<TitleItem> texts = new ArrayList<>();
+    texts.add(TitleItem.builder().text("Text content").build());
+    DoclingDocument doclingDocument = DoclingDocument.builder()
+        .name("test-document.pdf")
+        .texts(texts)
         .build();
 
-    assertThat(response.getJsonContent()).containsExactlyInAnyOrderEntriesOf(jsonContent);
+    DocumentResponse response = DocumentResponse.builder()
+        .jsonContent(doclingDocument)
+        .build();
 
-    jsonContent.put("modified", "new value");
+    assertThat(response.getJsonContent()).isNotNull();
+    assertThat(response.getJsonContent().getName()).isEqualTo(doclingDocument.getName());
+    assertThat(response.getJsonContent().getTexts()).containsExactlyInAnyOrderElementsOf(doclingDocument.getTexts());
 
-    assertThat(response.getJsonContent()).hasSize(2);
+    texts.add(TitleItem.builder().text("new value").build());
 
-    response = response.toBuilder().jsonContent(jsonContent).build();
-    assertThat(response.getJsonContent()).hasSize(3);
-
-    assertThat(response.getJsonContent().get("original")).isEqualTo("value");
-    assertThat(response.getJsonContent().get("count")).isEqualTo(1);
-    assertThat(response.getJsonContent()).containsKey("modified");
+    assertThat(response.getJsonContent().getTexts()).hasSize(1);
   }
+
 }

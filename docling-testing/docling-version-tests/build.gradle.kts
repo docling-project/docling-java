@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.semver4j)
   implementation(libs.assertj.core)
   implementation(libs.quarkus.github.api)
+  implementation(project(":docling-core"))
   implementation(project(":docling-serve-client"))
   implementation(project(":docling-testcontainers"))
 

@@ -1,6 +1,6 @@
 # Welcome to the Docling Java Project!
 
-This is repository for Docling Java, a Java API for using [Docling](https://github.com/docling-project).
+This is the repository for Docling Java, a Java API for using [Docling](https://github.com/docling-project).
 
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://docling-project.github.io/docling-java/)
 [![docling-serve-api version](https://img.shields.io/maven-central/v/ai.docling/docling-serve-api?label=docling-serve-api
@@ -11,7 +11,7 @@ This is repository for Docling Java, a Java API for using [Docling](https://gith
 [![Discord](https://img.shields.io/discord/1399788921306746971?color=6A7EC2&logo=discord&logoColor=ffffff)](https://docling.ai/discord)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11397/badge)](https://www.bestpractices.dev/projects/11397)
 
-[Docling](https://github.com/docling-project) simplifies document processing, parsing diverse formats — including advanced PDF understanding — and providing seamless integrations with the gen AI ecosystem.
+[Docling](https://github.com/docling-project) simplifies document processing, parsing diverse formats, including advanced PDF understanding, and providing seamless integrations with the Generative AI ecosystem.
 
 ## Features
 
@@ -31,16 +31,17 @@ This is repository for Docling Java, a Java API for using [Docling](https://gith
 
 ## Artifacts
 
-This project aims to provide the following artifacts:
+This project provides the following artifacts:
 
-* [`docling-serve-api`](docling-serve/docling-serve-api): The core API for interacting with Docling. Should be framework-agnostic.
+- [`docling-core`](docling-core): Java API for working with the data types used by Docling for document representation (see [Docling Core](https://github.com/docling-project/docling-core)).
+- [`docling-serve-api`](docling-serve/docling-serve-api): Java API for interacting with a [Docling Serve](https://github.com/docling-project/docling-serve) backend. It's framework‑agnostic.
 * [`docling-serve-client`](docling-serve/docling-serve-client): A reference implementation of the [`docling-serve-api`](docling-serve/docling-serve-api) using Java's [`HttpClient`](https://openjdk.org/groups/net/httpclient/intro.html) and [Jackson](https://github.com/FasterXML/jackson) to connect to a [Docling Serve](https://github.com/docling-project/docling-serve) endpoint.
 * [`docling-testing`](docling-testing): Utilities for testing Docling integration.
 * [`docling-testcontainers`](docling-testcontainers): A [Testcontainers module](https://testcontainers.com/) for running Docling in a Docker container.
 
 ## Getting started
 
-Use `DoclingApi.convertSource()` to convert individual documents. For example:
+Use `DoclingServeApi.convertSource()` to convert individual documents. For example:
 
 ```java
 import ai.docling.api.serve.DoclingServeApi;
@@ -61,7 +62,7 @@ ConvertDocumentResponse response = doclingApi.convertSource(request);
 System.out.println(response.getDocument().getMarkdownContent());
 ```
 
-More [usage information](https://docling-project.github.io/docling-java) are available in the docs.
+More [usage information](https://docling-project.github.io/docling-java) is available in the docs.
 
 ## Get help and support
 
@@ -108,6 +109,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
 
 ### IBM ❤️ Open Source AI

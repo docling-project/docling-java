@@ -2,6 +2,8 @@
 
 echo "Fetching latest pages deployment..."
 
+REPO="${REPO:=docling-project/docling-java}"
+
 # Get the latest successful pages deployment
 ARTIFACT_ID=$(gh api "/repos/${REPO}/actions/artifacts?name=github-pages" --jq '.artifacts[0].id')
 

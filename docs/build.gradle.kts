@@ -29,13 +29,16 @@ mkdocs {
   )
 
   publish {
+    val alias = findProperty("docs.alias")?.toString() ?: "dev"
+    val versionsFile = findProperty("docs.versionsFile")?.toString() ?: layout.buildDirectory.dir("mkdocs").get().file("versions.json").asFile.absolutePath
+
     // This is a hack because versionAliases is created final as an array without a setter
     // So it isn't friendly to the Gradle Kotlin DSL
+    org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf(alias))
     docPath = "${project.version}"
-    org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf("dev"))
-    rootRedirectTo = "dev"
+    rootRedirectTo = alias
     generateVersionsFile = true
-    existingVersionsFile = layout.buildDirectory.dir("mkdocs").get().file("versions.json").asFile.absolutePath
+    existingVersionsFile = versionsFile
   }
 }
 

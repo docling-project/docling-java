@@ -54,11 +54,11 @@ DoclingServeApi doclingServeApi = DoclingServeClientBuilderFactory.newBuilder()
     .baseUrl("<location of docling serve instance>")
     .build();
 
-ConvertDocumentRequest request = new ConvertDocumentRequest()
-    .withSources(List.of(new HttpSource().withUrl(URI.create("https://arxiv.org/pdf/2408.09869"))))
+ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+    .sources(List.of(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2408.09869")).build()))
     .build();
 
-ConvertDocumentResponse response = doclingApi.convertSource(request);
+ConvertDocumentResponse response = doclingServeApi.convertSource(request);
 System.out.println(response.getDocument().getMarkdownContent());
 ```
 

@@ -1,0 +1,18 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+.idea
+.profileconfig.json
+/docs/src/doc/docs/_data/
+/docs/src/doc/mkdocs-customizations/macros/__pycache__
+
+.DS_Store
+.log
+
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+

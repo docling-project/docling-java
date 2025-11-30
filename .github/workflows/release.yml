@@ -20,7 +20,6 @@ permissions:
   attestations: write
   id-token: write
   contents: write
-  pages: write
   discussions: write
 
 defaults:
@@ -30,7 +29,8 @@ defaults:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: (github.repository == 'docling-project/docling-java') && ((github.event_name == 'pull_request_target') && (github.event.pull_request.merged == true))
+#    Verifies that the PR was merged into main, that the PR only runs in the docling-java repo (not a fork), and that the PR branch is NOT from a fork.
+    if: (github.event.pull_request.merged == true) && (github.repository == 'docling-project/docling-java') && (github.event.pull_request.head.repo.full_name == 'docling-project/docling-java')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -62,11 +62,6 @@ jobs:
       - name: Capture current version
         run: echo "CURRENT_VERSION=$(yq '.release.current-version' after/.github/project.yml)" >> $GITHUB_ENV
 
-      - name: Setup Python
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
-        with:
-          python-version: '3.x'
-
       - name: Setup Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
@@ -94,32 +89,6 @@ jobs:
         run: |
           echo "Releasing version ${{ env.PREVIOUS_VERSION }} -> ${{ env.CURRENT_VERSION }}"
           ./gradlew --no-daemon :jreleaserFullRelease
-
-      - name: Build current version docs
-        working-directory: after
-        run: ./gradlew --no-daemon :docs:build
-
-      - name: Build previous version docs
-        working-directory: before
-        run: ./gradlew --no-daemon :docs:build -Pdocs.alias=release -Pdocs.versionsFile=$(realpath ../after/build/mkdocs/versions.json)
-
-      - name: Merge docs together
-        run: |
-          mkdir -p docs
-          cp -vRf after/docs/build/mkdocs docs/
-          cp -vRf before/docs/build/mkdocs docs/
-
-      - name: Setup pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
-        with:
-          path: docs
-
-      - name: Deploy to GH Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
 
       # Persist logs
       - name: JReleaser release output

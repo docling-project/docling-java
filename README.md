@@ -55,7 +55,11 @@ DoclingServeApi doclingServeApi = DoclingServeClientBuilderFactory.newBuilder()
     .build();
 
 ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-    .sources(List.of(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2408.09869")).build()))
+    .source(
+        HttpSource.builder()
+            .url(URI.create("https://arxiv.org/pdf/2408.09869"))
+            .build()
+    )
     .build();
 
 ConvertDocumentResponse response = doclingServeApi.convertSource(request);

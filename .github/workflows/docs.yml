@@ -47,6 +47,7 @@ jobs:
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
+          path: app
 
       - name: Get release sources
         if: github.event_name == 'release'
@@ -54,6 +55,13 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name }}
+          path: app
+
+      - name: Get docs
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: gh-pages
+          path: docs
 
       - name: Setup Python
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
@@ -69,24 +77,38 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
 
-      - name: Download existing GitHub Pages artifact
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: .github/scripts/get-current-gh-pages.sh
-
       - name: Generate documentation
+        working-directory: app
         run: ./gradlew --console=plain :docs:build -Pdocs.alias=${{ env.DOCS_ALIAS }}
 
-      - name: Setup pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Copy to gh-pages
+        run: cp -Rf app/docs/build/mkdocs/ docs/
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+      - uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2.2.0
+        id: app-token
         with:
-          path: docs/build/mkdocs
+          app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}
+          private-key: ${{ secrets.DOCLING_JAVA_CI_PRIVATE_KEY }}
 
-      - name: Deploy to GH Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+      - name: Create PR
+        id: create-pr
+        uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412 # v7.0.9
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          add-paths: .
+          commit-message: "docs: Build and publish docs (from ${{ github.workflow }} run # ${{ github.run_number }})"
+          branch: build-docs/sourceref
+          branch-suffix: short-commit-hash
+          delete-branch: true
+          base: gh-pages
+          signoff: true
+          sign-commits: true
+          title: "docs: Build and publish docs (from ${{ github.workflow }} run # ${{ github.run_number }})"
+          body: "docs: Build and publish docs from [${{ github.workflow }} run # ${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}), which was triggered by commit ${{ env.REF }}."
+          labels: documentation
+
+      - name: Merge PR
+        if: (steps.create-pr.outputs.pull-request-operation == 'created') && steps.create-pr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: gh pr merge --merge --admin --delete-branch "${{ steps.create-pr.outputs.pull-request-url }}"

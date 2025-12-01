@@ -25,7 +25,8 @@ mkdocs {
       "project-artifactId" to "${rootProject.name}",
       "serve-api-artifactId" to project(":docling-serve-api").name,
       "serve-client-artifactId" to project(":docling-serve-client").name,
-      "testcontainers-artifactId" to project(":docling-testcontainers").name
+      "testcontainers-artifactId" to project(":docling-testcontainers").name,
+      "core-artifactId" to project(":docling-core").name
   )
 
   publish {

@@ -104,7 +104,7 @@ extra_css:
 extra:
   version:
     provider: mike
-    default: dev
+    default: release
     alias: true
   social:
     - icon: fontawesome/brands/github

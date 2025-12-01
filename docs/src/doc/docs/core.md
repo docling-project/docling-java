@@ -16,7 +16,7 @@ Add the dependency to your project.
 
     ``` kotlin
     dependencies {
-      implementation("{{ gradle.project_groupId }}:docling-core:{{ gradle.project_version }}")
+      implementation("{{ gradle.project_groupId }}:{{ gradle.core_artifactId }}:{{ gradle.project_version }}")
     }
     ```
 
@@ -25,7 +25,7 @@ Add the dependency to your project.
     ``` xml
     <dependency>
       <groupId>{{ gradle.project_groupId }}</groupId>
-      <artifactId>docling-core</artifactId>
+      <artifactId>{{ gradle.core_artifactId }}</artifactId>
       <version>{{ gradle.project_version }}</version>
     </dependency>
     ```

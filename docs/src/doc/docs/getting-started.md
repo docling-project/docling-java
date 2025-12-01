@@ -3,11 +3,11 @@
 Use the [`DoclingServeApi`](docling-serve/serve-api.md) to convert a document by pointing at a running [Docling Serve](https://github.com/docling-project/docling-serve) instance.
 
 ```java
-import ai.docling.api.serve.DoclingServeApi;
-import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
-import ai.docling.api.serve.convert.request.source.HttpSource;
-import ai.docling.api.serve.convert.response.ConvertDocumentResponse;
-import ai.docling.client.serve.DoclingServeClientBuilderFactory;
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 
 DoclingServeApi doclingServeApi = DoclingServeClientBuilderFactory.newBuilder()
     .baseUrl("<location of docling serve instance>")

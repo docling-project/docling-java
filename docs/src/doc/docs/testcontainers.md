@@ -49,9 +49,9 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import ai.docling.api.serve.DoclingServeApi;
-import ai.docling.api.serve.health.HealthCheckResponse;
-import ai.docling.client.serve.DoclingServeClientBuilderFactory;
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.health.HealthCheckResponse;
+import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -91,12 +91,12 @@ Once the container is up, you can call the Convert endpoint through `docling-ser
 
 ```java
 import java.net.URI;
-import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
-import ai.docling.api.serve.convert.request.options.ConvertDocumentOptions;
-import ai.docling.api.serve.convert.request.options.OutputFormat;
-import ai.docling.api.serve.convert.request.source.HttpSource;
-import ai.docling.api.serve.convert.request.target.InBodyTarget;
-import ai.docling.api.serve.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.request.target.InBodyTarget;
+import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 
 String baseUrl = "http://" + docling.getHost() + ":" + docling.getPort();
 DoclingServeApi api = DoclingServeClientBuilderFactory.newBuilder().baseUrl(baseUrl).build();

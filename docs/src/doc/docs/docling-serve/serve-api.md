@@ -51,14 +51,14 @@ build a conversion request, and retrieve Markdown output. The request/response t
 
 ```java
 import java.net.URI;
-import ai.docling.api.serve.DoclingServeApi;
-import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
-import ai.docling.api.serve.convert.request.options.ConvertDocumentOptions;
-import ai.docling.api.serve.convert.request.options.OutputFormat;
-import ai.docling.api.serve.convert.request.source.HttpSource;
-import ai.docling.api.serve.convert.request.target.InBodyTarget;
-import ai.docling.api.serve.convert.response.ConvertDocumentResponse;
-import ai.docling.client.serve.DoclingServeClientBuilderFactory; // from docling-serve-client
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.request.target.InBodyTarget;
+import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.client.DoclingServeClientBuilderFactory; // from docling-serve-client
 
 DoclingServeApi api = DoclingServeClientBuilderFactory
     .newBuilder()
@@ -83,7 +83,7 @@ System.out.println(response.getDocument().getMarkdownContent());
 
 ### The `DoclingServeApi` interface
 
-Defined in `ai.docling.api.serve.DoclingServeApi`, this interface exposes two primary operations:
+Defined in `ai.docling.serve.api.DoclingServeApi`, this interface exposes two primary operations:
 
 - `health()` → returns a `HealthCheckResponse` with service status.
 - `convertSource(request)` → submits one or more sources plus options and an optional target,
@@ -104,16 +104,16 @@ ConvertDocumentRequest request = ConvertDocumentRequest.builder()
     .build();
 ```
 
-Supported sources (`ai.docling.api.serve.convert.request.source`):
+Supported sources (`ai.docling.serve.api.convert.request.source`):
 - `HttpSource` — fetch content from a URL (optional custom headers)
 - `FileSource` — embed content as Base64 with a filename
 
-Targets (`ai.docling.api.serve.convert.request.target`):
+Targets (`ai.docling.serve.api.convert.request.target`):
 - `InBodyTarget` — receive results directly in the API response body (default use case)
 - `PutTarget` — the service uploads converted content via HTTP PUT to a specified URI
 - `ZipTarget` — receive a zipped result
 
-Options (`ai.docling.api.serve.convert.request.options.ConvertDocumentOptions`) let you control:
+Options (`ai.docling.serve.api.convert.request.options.ConvertDocumentOptions`) let you control:
 - Input/output formats (e.g., `fromFormats`, `toFormats`)
 - OCR (e.g., `doOcr`, `forceOcr`, `ocrEngine`, `ocrLang`)
 - PDF processing (e.g., `pdfBackend`)
@@ -138,7 +138,7 @@ Explore the `options` package for the full list of knobs you can turn.
 You can ping the service to check readiness and basic status:
 
 ```java
-import ai.docling.api.serve.health.HealthCheckResponse;
+import ai.docling.serve.api.health.HealthCheckResponse;
 
 HealthCheckResponse health = api.health();
 System.out.println("Service status: " + health.getStatus());

@@ -54,7 +54,8 @@ theme:
 nav:
   - Home:
     - "Docling Java": index.md
-    - Getting started: getting-started.md
+    - Getting Started: getting-started.md
+    - What's New: whats-new.md
   - Modules:
     - Docling Core: core.md
     - Docling Serve:

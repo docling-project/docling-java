@@ -51,14 +51,14 @@ Create a client with `DoclingServeClientBuilderFactory`, build a request, and ca
 
 ```java
 import java.net.URI;
-import ai.docling.api.serve.DoclingServeApi;
-import ai.docling.api.serve.convert.request.ConvertDocumentRequest;
-import ai.docling.api.serve.convert.request.options.ConvertDocumentOptions;
-import ai.docling.api.serve.convert.request.options.OutputFormat;
-import ai.docling.api.serve.convert.request.source.HttpSource;
-import ai.docling.api.serve.convert.request.target.InBodyTarget;
-import ai.docling.api.serve.convert.response.ConvertDocumentResponse;
-import ai.docling.client.serve.DoclingServeClientBuilderFactory;
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.request.target.InBodyTarget;
+import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 
 DoclingServeApi api = DoclingServeClientBuilderFactory
     .newBuilder()
@@ -138,7 +138,7 @@ DoclingServeApi noisy = DoclingServeClientBuilderFactory.newBuilder()
 ### Health checks
 
 ```java
-import ai.docling.api.serve.health.HealthCheckResponse;
+import ai.docling.serve.api.health.HealthCheckResponse;
 
 HealthCheckResponse health = api.health();
 System.out.println("Service status: " + health.getStatus());
@@ -151,7 +151,7 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
 - HTTP source
 
   ```java
-  import ai.docling.api.serve.convert.request.source.HttpSource;
+  import ai.docling.serve.api.convert.request.source.HttpSource;
   var httpSource = HttpSource.builder()
       .url(URI.create("https://example.com/file.pdf"))
       // .header("Authorization", "Bearer ...")
@@ -162,7 +162,7 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
 
   ```java
   import java.util.Base64;
-  import ai.docling.api.serve.convert.request.source.FileSource;
+  import ai.docling.serve.api.convert.request.source.FileSource;
   byte[] bytes = /* read file */
   var fileSource = FileSource.builder()
       .filename("report.pdf")
@@ -173,14 +173,14 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
 - Deliver results in the response body (default)
 
   ```java
-  import ai.docling.api.serve.convert.request.target.InBodyTarget;
+  import ai.docling.serve.api.convert.request.target.InBodyTarget;
   var target = InBodyTarget.builder().build();
   ```
 
 - Upload results to your storage via HTTP PUT
 
   ```java
-  import ai.docling.api.serve.convert.request.target.PutTarget;
+  import ai.docling.serve.api.convert.request.target.PutTarget;
   var put = PutTarget.builder()
       .uri(URI.create("https://storage.example.com/out/report.md"))
       // .header("Authorization", "Bearer ...")

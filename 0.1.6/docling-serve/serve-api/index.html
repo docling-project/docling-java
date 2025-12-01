@@ -349,6 +349,8 @@
       
         
       
+        
+      
     
     
     
@@ -406,7 +408,30 @@
   
   
   <span class="md-ellipsis">
-    Getting started
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../whats-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What's New
     
   </span>
   
@@ -1618,14 +1643,14 @@ an implementation such as <a href="../serve-client/"><code>docling-serve-client<
 build a conversion request, and retrieve Markdown output. The request/response types all come from
 <code>docling-serve-api</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.URI</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.DoclingServeApi</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.options.ConvertDocumentOptions</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.options.OutputFormat</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.source.HttpSource</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.target.InBodyTarget</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.client.serve.DoclingServeClientBuilderFactory</span><span class="p">;</span><span class="w"> </span><span class="c1">// from docling-serve-client</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.options.ConvertDocumentOptions</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.options.OutputFormat</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.target.InBodyTarget</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span><span class="w"> </span><span class="c1">// from docling-serve-client</span>
 
 <span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span>
 <span class="w">    </span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
@@ -1647,7 +1672,7 @@ build a conversion request, and retrieve Markdown output. The request/response t
 </code></pre></div>
 <h2 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">#</a></h2>
 <h3 id="the-doclingserveapi-interface">The <code>DoclingServeApi</code> interface<a class="headerlink" href="#the-doclingserveapi-interface" title="Permanent link">#</a></h3>
-<p>Defined in <code>ai.docling.api.serve.DoclingServeApi</code>, this interface exposes two primary operations:</p>
+<p>Defined in <code>ai.docling.serve.api.DoclingServeApi</code>, this interface exposes two primary operations:</p>
 <ul>
 <li><code>health()</code> → returns a <code>HealthCheckResponse</code> with service status.</li>
 <li><code>convertSource(request)</code> → submits one or more sources plus options and an optional target,
@@ -1663,14 +1688,14 @@ provided by the <code>docling-serve-client</code> module.</p>
 <span class="w">    </span><span class="p">.</span><span class="na">target</span><span class="p">(</span><span class="cm">/* optional delivery target */</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
-<p>Supported sources (<code>ai.docling.api.serve.convert.request.source</code>):
+<p>Supported sources (<code>ai.docling.serve.api.convert.request.source</code>):
 - <code>HttpSource</code> — fetch content from a URL (optional custom headers)
 - <code>FileSource</code> — embed content as Base64 with a filename</p>
-<p>Targets (<code>ai.docling.api.serve.convert.request.target</code>):
+<p>Targets (<code>ai.docling.serve.api.convert.request.target</code>):
 - <code>InBodyTarget</code> — receive results directly in the API response body (default use case)
 - <code>PutTarget</code> — the service uploads converted content via HTTP PUT to a specified URI
 - <code>ZipTarget</code> — receive a zipped result</p>
-<p>Options (<code>ai.docling.api.serve.convert.request.options.ConvertDocumentOptions</code>) let you control:
+<p>Options (<code>ai.docling.serve.api.convert.request.options.ConvertDocumentOptions</code>) let you control:
 - Input/output formats (e.g., <code>fromFormats</code>, <code>toFormats</code>)
 - OCR (e.g., <code>doOcr</code>, <code>forceOcr</code>, <code>ocrEngine</code>, <code>ocrLang</code>)
 - PDF processing (e.g., <code>pdfBackend</code>)
@@ -1690,7 +1715,7 @@ provided by the <code>docling-serve-client</code> module.</p>
 </ul>
 <h2 id="health-checks">Health checks<a class="headerlink" href="#health-checks" title="Permanent link">#</a></h2>
 <p>You can ping the service to check readiness and basic status:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.health.HealthCheckResponse</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.health.HealthCheckResponse</span><span class="p">;</span>
 
 <span class="n">HealthCheckResponse</span><span class="w"> </span><span class="n">health</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="na">health</span><span class="p">();</span>
 <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Service status: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">health</span><span class="p">.</span><span class="na">getStatus</span><span class="p">());</span>

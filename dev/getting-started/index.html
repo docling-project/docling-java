@@ -14,7 +14,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../core/">
+        <link rel="next" href="../whats-new/">
       
       
       <link rel="icon" href="../assets/img/logo.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Getting started - Docling Java</title>
+        <title>Getting Started - Docling Java</title>
       
     
     
@@ -127,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting started
+              Getting Started
             
           </span>
         </div>
@@ -351,6 +351,8 @@
       
         
       
+        
+      
     
     
     
@@ -420,7 +422,7 @@
   
   
   <span class="md-ellipsis">
-    Getting started
+    Getting Started
     
   </span>
   
@@ -433,7 +435,7 @@
   
   
   <span class="md-ellipsis">
-    Getting started
+    Getting Started
     
   </span>
   
@@ -468,6 +470,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whats-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What's New
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -768,11 +793,11 @@
 
 <h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h1>
 <p>Use the <a href="../docling-serve/serve-api/"><code>DoclingServeApi</code></a> to convert a document by pointing at a running <a href="https://github.com/docling-project/docling-serve">Docling Serve</a> instance.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.DoclingServeApi</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.request.source.HttpSource</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.api.serve.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.client.serve.DoclingServeClientBuilderFactory</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
 
 <span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;&lt;location of docling serve instance&gt;&quot;</span><span class="p">)</span>
@@ -852,13 +877,13 @@
         
         
           
-          <a href="../core/" class="md-footer__link md-footer__link--next" aria-label="Next: Docling Core">
+          <a href="../whats-new/" class="md-footer__link md-footer__link--next" aria-label="Next: What&#39;s New">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Docling Core
+                What's New
               </div>
             </div>
             <div class="md-footer__button md-icon">

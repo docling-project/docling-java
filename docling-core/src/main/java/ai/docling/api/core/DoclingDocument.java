@@ -6,9 +6,13 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.Nulls;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a document processed by the Docling service with its structure,
@@ -23,29 +27,35 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class DoclingDocument {
 
   @JsonProperty("schema_name")
+  @Nullable
   private String schemaName;
 
   @JsonProperty("version")
+  @Nullable
   private String version;
 
   @JsonProperty("name")
   private String name;
 
   @JsonProperty("origin")
+  @Nullable
   private DocumentOrigin origin;
 
   @JsonProperty("body")
   private GroupItem body;
 
   @JsonProperty("groups")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<GroupItem> groups;
 
   @JsonProperty("texts")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<BaseTextItem> texts;
 
   @JsonProperty("pictures")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<PictureItem> pictures;
 
@@ -84,6 +94,7 @@ public class DoclingDocument {
     private String filename;
     
     @JsonProperty("uri")
+    @Nullable
     private String uri;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -124,9 +135,11 @@ public class DoclingDocument {
     private String selfRef;
     
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
     
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
     
@@ -134,9 +147,11 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
     
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
     
     @JsonProperty("name")
+    @Nullable
     private String name;
     
     @JsonProperty("label")
@@ -168,6 +183,7 @@ public class DoclingDocument {
   @lombok.ToString
   public static class BaseMeta {
     @JsonProperty("summary")
+    @Nullable
     private SummaryMetaField summary;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -182,9 +198,11 @@ public class DoclingDocument {
   @lombok.ToString
   public static class SummaryMetaField {
     @JsonProperty("confidence")
+    @Nullable
     private Double confidence;
     
     @JsonProperty("created_by")
+    @Nullable
     private String createdBy;
     
     @JsonProperty("text")
@@ -248,6 +266,7 @@ public class DoclingDocument {
 
     String getSelfRef();
 
+    @Nullable
     RefItem getParent();
 
     List<RefItem> getChildren();
@@ -262,8 +281,10 @@ public class DoclingDocument {
 
     String getText();
 
+    @Nullable
     Formatting getFormatting();
 
+    @Nullable
     String getHyperlink();
   }
 
@@ -281,16 +302,16 @@ public class DoclingDocument {
   @lombok.ToString
   public static class Formatting {
     @JsonProperty("bold")
-    private Boolean bold;
+    private boolean bold;
 
     @JsonProperty("italic")
-    private Boolean italic;
+    private boolean italic;
 
     @JsonProperty("underline")
-    private Boolean underline;
+    private boolean underline;
 
     @JsonProperty("strikethrough")
-    private Boolean strikethrough;
+    private boolean strikethrough;
 
     @JsonProperty("script")
     private Script script;
@@ -310,9 +331,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -320,12 +343,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -336,9 +361,11 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -356,9 +383,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -366,12 +395,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -382,9 +413,11 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @JsonProperty("level")
@@ -405,9 +438,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -415,12 +450,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -431,15 +468,18 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @JsonProperty("enumerated")
-    private Boolean enumerated;
+    private boolean enumerated;
 
     @JsonProperty("marker")
+    @Nullable
     private String marker;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -457,9 +497,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -467,12 +509,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private FloatingMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -483,27 +527,34 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @JsonProperty("captions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
 
     @JsonProperty("references")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
 
     @JsonProperty("footnotes")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
 
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
 
     @JsonProperty("code_language")
+    @Nullable
     private String codeLanguage;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -521,9 +572,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -531,12 +584,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -547,9 +602,11 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -567,9 +624,11 @@ public class DoclingDocument {
     private String selfRef;
 
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
 
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
 
@@ -577,12 +636,14 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
 
     @JsonProperty("meta")
+    @Nullable
     private BaseMeta meta;
 
     @JsonProperty("label")
     private DocItemLabel label;
 
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
 
@@ -593,9 +654,11 @@ public class DoclingDocument {
     private String text;
 
     @JsonProperty("formatting")
+    @Nullable
     private Formatting formatting;
 
     @JsonProperty("hyperlink")
+    @Nullable
     private String hyperlink;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -610,12 +673,14 @@ public class DoclingDocument {
   @lombok.ToString
   public static class PictureItem {
     @JsonProperty("self_ref")
+    @Nullable
     private String selfRef;
     
     @JsonProperty("parent")
     private RefItem parent;
     
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
     
@@ -623,25 +688,31 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
     
     @JsonProperty("meta")
+    @Nullable
     private PictureMeta meta;
     
     @JsonProperty("label")
     private String label;
     
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
     
     @JsonProperty("captions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> captions;
     
     @JsonProperty("references")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> references;
     
     @JsonProperty("footnotes")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> footnotes;
     
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -656,18 +727,23 @@ public class DoclingDocument {
   @lombok.ToString
   public static class PictureMeta {
     @JsonProperty("summary")
+    @Nullable
     private SummaryMetaField summary;
     
     @JsonProperty("description")
+    @Nullable
     private DescriptionMetaField description;
     
     @JsonProperty("classification")
+    @Nullable
     private PictureClassificationMetaField classification;
     
     @JsonProperty("molecule")
+    @Nullable
     private MoleculeMetaField molecule;
     
     @JsonProperty("tabular_chart")
+    @Nullable
     private TabularChartMetaField tabularChart;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -682,9 +758,11 @@ public class DoclingDocument {
   @lombok.ToString
   public static class DescriptionMetaField {
     @JsonProperty("confidence")
+    @Nullable
     private Double confidence;
     
     @JsonProperty("created_by")
+    @Nullable
     private String createdBy;
     
     @JsonProperty("text")
@@ -702,6 +780,7 @@ public class DoclingDocument {
   @lombok.ToString
   public static class PictureClassificationMetaField {
     @JsonProperty("predictions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<PictureClassificationPrediction> predictions;
 
@@ -717,9 +796,11 @@ public class DoclingDocument {
   @lombok.ToString
   public static class PictureClassificationPrediction {
     @JsonProperty("confidence")
+    @Nullable
     private Double confidence;
     
     @JsonProperty("created_by")
+    @Nullable
     private String createdBy;
     
     @JsonProperty("class_name")
@@ -737,9 +818,11 @@ public class DoclingDocument {
   @lombok.ToString
   public static class MoleculeMetaField {
     @JsonProperty("confidence")
+    @Nullable
     private Double confidence;
     
     @JsonProperty("created_by")
+    @Nullable
     private String createdBy;
     
     @JsonProperty("smi")
@@ -757,12 +840,15 @@ public class DoclingDocument {
   @lombok.ToString
   public static class TabularChartMetaField {
     @JsonProperty("confidence")
+    @Nullable
     private Double confidence;
     
     @JsonProperty("created_by")
+    @Nullable
     private String createdBy;
     
     @JsonProperty("title")
+    @Nullable
     private String title;
     
     @JsonProperty("chart_data")
@@ -786,6 +872,7 @@ public class DoclingDocument {
     private BoundingBox bbox;
     
     @JsonProperty("charspan")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("charspan")
     private List<Integer> charspan;
 
@@ -813,6 +900,7 @@ public class DoclingDocument {
     private Double b;
     
     @JsonProperty("coord_origin")
+    @Nullable
     private String coordOrigin;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -870,9 +958,11 @@ public class DoclingDocument {
     private String selfRef;
     
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
     
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
     
@@ -880,28 +970,34 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
     
     @JsonProperty("meta")
+    @Nullable
     private FloatingMeta meta;
     
     @JsonProperty("label")
     private String label;
     
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
     
     @JsonProperty("captions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
     
     @JsonProperty("references")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
     
     @JsonProperty("footnotes")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
     
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
     
     @JsonProperty("data")
@@ -919,9 +1015,11 @@ public class DoclingDocument {
   @lombok.ToString
   public static class FloatingMeta {
     @JsonProperty("summary")
+    @Nullable
     private SummaryMetaField summary;
     
     @JsonProperty("description")
+    @Nullable
     private DescriptionMetaField description;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -936,6 +1034,7 @@ public class DoclingDocument {
   @lombok.ToString
   public static class TableData {
     @JsonProperty("table_cells")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<Object> tableCells;
     
@@ -946,6 +1045,7 @@ public class DoclingDocument {
     private Integer numCols;
     
     @JsonProperty("grid")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("grid")
     private List<List<TableCell>> grid;
 
@@ -985,16 +1085,16 @@ public class DoclingDocument {
     private String text;
     
     @JsonProperty("column_header")
-    private Boolean columnHeader;
+    private boolean columnHeader;
     
     @JsonProperty("row_header")
-    private Boolean rowHeader;
+    private boolean rowHeader;
     
     @JsonProperty("row_section")
-    private Boolean rowSection;
+    private boolean rowSection;
     
     @JsonProperty("fillable")
-    private Boolean fillable;
+    private boolean fillable;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -1011,9 +1111,11 @@ public class DoclingDocument {
     private String selfRef;
     
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
     
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
     
@@ -1021,28 +1123,34 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
     
     @JsonProperty("meta")
+    @Nullable
     private FloatingMeta meta;
     
     @JsonProperty("label")
     private String label;
     
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
     
     @JsonProperty("captions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
     
     @JsonProperty("references")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
     
     @JsonProperty("footnotes")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
     
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
     
     @JsonProperty("graph")
@@ -1060,10 +1168,12 @@ public class DoclingDocument {
   @lombok.ToString
   public static class GraphData {
     @JsonProperty("cells")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<GraphCell> cells;
     
     @JsonProperty("links")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<GraphLink> links;
 
@@ -1098,9 +1208,11 @@ public class DoclingDocument {
     private String orig;
     
     @JsonProperty("prov")
+    @Nullable
     private ProvenanceItem prov;
     
     @JsonProperty("item_ref")
+    @Nullable
     private RefItem itemRef;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -1146,9 +1258,11 @@ public class DoclingDocument {
     private String selfRef;
     
     @JsonProperty("parent")
+    @Nullable
     private RefItem parent;
     
     @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
     
@@ -1156,28 +1270,34 @@ public class DoclingDocument {
     private ContentLayer contentLayer;
     
     @JsonProperty("meta")
+    @Nullable
     private FloatingMeta meta;
     
     @JsonProperty("label")
     private String label;
     
     @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
     
     @JsonProperty("captions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
     
     @JsonProperty("references")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
     
     @JsonProperty("footnotes")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
     
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
     
     @JsonProperty("graph")
@@ -1198,6 +1318,7 @@ public class DoclingDocument {
     private Size size;
     
     @JsonProperty("image")
+    @Nullable
     private ImageRef image;
     
     @JsonProperty("page_no")

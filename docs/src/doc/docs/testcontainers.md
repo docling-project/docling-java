@@ -131,7 +131,7 @@ import ai.docling.testcontainers.serve.DoclingServeContainer;
 
 DoclingServeContainerConfig config = DoclingServeContainerConfig.builder()
     // Override the image if you need a different tag or registry
-    .image("ghcr.io/docling-project/docling-serve:v1.8.0")
+    .image("ghcr.io/docling-project/docling-serve:v1.9.0")
     // Enable the optional web UI served by Docling Serve
     .enableUi(true)
     // Pass environment variables to fine‑tune behavior

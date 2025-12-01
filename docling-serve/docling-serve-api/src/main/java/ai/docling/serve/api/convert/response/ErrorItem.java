@@ -1,7 +1,5 @@
 package ai.docling.serve.api.convert.response;
 
-import org.jspecify.annotations.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,15 +17,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @lombok.ToString
 public class ErrorItem {
   @JsonProperty("component_type")
-  @Nullable
   private String componentType;
 
   @JsonProperty("error_message")
-  @Nullable
   private String errorMessage;
 
   @JsonProperty("module_name")
-  @Nullable
   private String moduleName;
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")

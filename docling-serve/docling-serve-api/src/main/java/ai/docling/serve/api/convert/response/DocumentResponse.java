@@ -37,7 +37,6 @@ public class DocumentResponse {
   private String doctagsContent;
 
   @JsonProperty("filename")
-  @Nullable
   private String filename;
 
   @JsonProperty("html_content")

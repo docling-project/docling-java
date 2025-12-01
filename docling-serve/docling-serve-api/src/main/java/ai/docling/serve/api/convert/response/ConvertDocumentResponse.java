@@ -3,8 +3,6 @@ package ai.docling.serve.api.convert.response;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -24,7 +22,6 @@ import com.fasterxml.jackson.annotation.Nulls;
 @lombok.ToString
 public class ConvertDocumentResponse {
   @JsonProperty("document")
-  @Nullable
   private DocumentResponse document;
 
   @JsonProperty("errors")
@@ -33,11 +30,9 @@ public class ConvertDocumentResponse {
   private List<ErrorItem> errors;
 
   @JsonProperty("processing_time")
-  @Nullable
   private Double processingTime;
 
   @JsonProperty("status")
-  @Nullable
   private String status;
 
   @JsonProperty("timings")

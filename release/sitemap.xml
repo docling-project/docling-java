@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/core/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/getting-started/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/testcontainers/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/testing/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/docling-serve/serve-api/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/docling-serve/serve-client/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://docling-project.github.io/docling-java/0.1.6/includes/docling-serve/serve-compatibility/</loc>
+         <lastmod>2025-11-30</lastmod>
+    </url>
+</urlset>

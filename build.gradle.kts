@@ -1,3 +1,5 @@
+import org.jreleaser.model.Active
+
 plugins {
   `base`
   id("docling-shared")
@@ -48,8 +50,17 @@ jreleaser {
       sign = true
 
       changelog {
+        formatted = Active.ALWAYS
         links = true
         preset = "conventional-commits"
+        contributors {
+          format = "- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}"
+        }
+        hide {
+          categories = listOf("merge")
+          contributors = listOf("GitHub", "dependabot")
+        }
+        extraProperties.put("categorizeScopes", true)
       }
 
       issues {

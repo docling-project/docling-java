@@ -2,3 +2,21 @@
 titleOnly: true
 allowMergeCommits: true
 allowRevertCommits: true
+
+types:
+  - feat
+  - fix
+  - docs
+  - style
+  - refactor
+  - test
+  - build
+  - ci
+  - chore
+  - revert
+
+scopes:
+  - api
+  - client
+  - testcontainers
+  - deps

@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Setup env (release)
         if: github.event_name == 'release'
-        run: echo "DOCS_ALIAS=release" >> $GITHUB_ENV
+        run: echo "DOCS_ALIAS=current" >> $GITHUB_ENV
 
       - name: Setup env (other)
         if: (github.event_name != 'release')

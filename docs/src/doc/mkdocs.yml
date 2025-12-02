@@ -2,6 +2,7 @@ site_name: Docling Java
 site_url: https://docling-project.github.io/docling-java/
 repo_name: docling-project/docling-java
 repo_url: https://github.com/docling-project/docling-java
+edit_uri: docs/src/doc
 
 theme:
   name: material
@@ -105,7 +106,7 @@ extra_css:
 extra:
   version:
     provider: mike
-    default: release
+    default: current
     alias: true
   social:
     - icon: fontawesome/brands/github

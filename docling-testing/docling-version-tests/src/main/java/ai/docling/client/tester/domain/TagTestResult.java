@@ -4,7 +4,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public record TagTestResult(String tag, Result result, String serverLogs) {
+import org.semver4j.Semver;
+
+public record TagTestResult(String tag, Result result, String serverLogs) implements Comparable<TagTestResult> {
+  public int compareTo(TagTestResult o) {
+    return new Semver(o.getVersion())
+        .compareTo(new Semver(getVersion()));
+  }
+
+  private String getVersion() {
+    return tag.startsWith("v") ? tag.substring(1) : tag;
+  }
+
   public record Result(Status status, String message, String fullStackTrace) {
     public enum Status {
       SUCCESS("✅"),

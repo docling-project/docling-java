@@ -3,6 +3,7 @@ package ai.docling.client.tester.domain;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import ai.docling.client.tester.domain.TagTestResult.Result.Status;
 
@@ -11,6 +12,10 @@ public record TagsTestResults(String registry, String image, List<TagTestResult>
       if (timestamp == null) {
         timestamp = Instant.now();
       }
+
+      results = Optional.ofNullable(results)
+          .map(r -> r.stream().sorted().toList())
+          .orElseGet(List::of);
   }
 
   public TagsTestResults(String registry, String image, List<TagTestResult> results) {

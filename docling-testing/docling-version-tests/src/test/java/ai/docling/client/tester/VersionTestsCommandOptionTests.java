@@ -43,6 +43,16 @@ class VersionTestsCommandOptionTests {
   }
 
   @Test
+  @Launch({ "-o", "build/results", "-e", "^v0.*" })
+  void noTagsProvidedWithExclusionFilter(LaunchResult result) {
+    assertThat(result.getOutput())
+        .isNotNull()
+        .isNotEmpty()
+        .contains("Going to test tags: [v1.0.0, v1.0.1, v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.3.0, v1.3.1, v1.4.0, v1.4.1, v1.5.0, v1.5.1, v1.6.0, v1.7.0, v1.7.1, v1.7.2]")
+        .contains("GitHub issue creation is disabled. Skipping.");
+  }
+
+  @Test
   @Launch({ "-o", "build/results" })
   void dontCreateGithubIssue(LaunchResult result) {
     assertThat(result.getOutput())

@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import io.quarkus.logging.Log;
 
@@ -67,6 +69,13 @@ public class VersionTestsCommand implements Runnable {
       }
   )
   List<String> tagsToTest;
+
+  @Option(
+      names = { "-e", "--exclude-tags-regex"},
+      description = "A regex to exclude tags. Tags matching this regex will be excluded.",
+      defaultValue = "(?!)" // This pattern never matches anything
+  )
+  Pattern excludeTagsRegex;
 
   @Option(
       names = { "-g", "--create-github-issue"},
@@ -139,9 +148,11 @@ public class VersionTestsCommand implements Runnable {
         .cleanupContainerImages(this.cleanupContainerImages)
         .executor(executor);
 
+    Stream<String> tagsToTest;
+
     if ((this.tagsToTest != null) && !this.tagsToTest.isEmpty()) {
       // User passed in the set of tags to test
-      requestBuilder.tags(List.copyOf(this.tagsToTest));
+      tagsToTest = this.tagsToTest.stream();
     }
     else {
       // Fetch the tags
@@ -152,10 +163,12 @@ public class VersionTestsCommand implements Runnable {
 
       var versionTags = tags.getVersionTags();
       Log.infof("[%s] Got version tags: %s", this.registry, versionTags);
-      requestBuilder.tags(versionTags);
+      tagsToTest = versionTags.stream();
     }
 
-    return requestBuilder.build();
+    return requestBuilder
+        .tags(tagsToTest.filter(this.excludeTagsRegex.asMatchPredicate().negate()).toList())
+        .build();
   }
 
   private Tags getTags(RegistryClient registryClient) {

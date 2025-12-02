@@ -34,6 +34,10 @@ on:
           If blank, list of tags will be fetched dynamically
         required: false
         type: string
+      excludeTagsRegex:
+        description: A regex to exclude tags from testing. Tags matching this regex will be excluded.
+        required: false
+        type: string
       createGithubIssue:
         description: Create a GitHub issue if any of the tests fail
         required: true
@@ -86,6 +90,7 @@ jobs:
           echo "IMAGE=${{ inputs.image || 'docling-project/docling-serve' }}" >> $GITHUB_ENV
           echo "REGISTRY=${{ inputs.registry || 'ghcr.io' }}" >> $GITHUB_ENV
           echo "OUTPUT_DIR=${{ inputs.outputDir || 'results' }}" >> $GITHUB_ENV
+          echo "EXCLUDE_TAGS_REGEX=${{ inputs.excludeTagsRegex || '^v0.*' }}" >> $GITHUB_ENV
 
       - name: Set up Java ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
@@ -115,6 +120,7 @@ jobs:
             -i ${{ env.IMAGE }} \
             -r ${{ env.REGISTRY }} \
             -o ${{ env.OUTPUT_DIR }} \
+            -e ${{ env.EXCLUDE_TAGS_REGEX }} \
             --cleanup-container-images \
             ${{ env.TAGS }} ${{ env.CREATE_GITHUB_ISSUE_FLAG }}
 

@@ -40,7 +40,7 @@ jobs:
           private-key: ${{ secrets.DOCLING_JAVA_CI_PRIVATE_KEY }}
 
       - name: Checkout before
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           path: before
@@ -51,7 +51,7 @@ jobs:
         run: echo "PREVIOUS_VERSION=$(yq '.release.current-version' before/.github/project.yml)" >> $GITHUB_ENV
 
       - name: Checkout current ref
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ steps.app-token.outputs.token }}
           path: after

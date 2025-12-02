@@ -37,7 +37,7 @@ mkdocs {
     // So it isn't friendly to the Gradle Kotlin DSL
     org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf(alias))
     docPath = "${project.version}"
-    rootRedirectTo = "current"
+    rootRedirectTo = if (System.getenv("IS_PR_BUILD")?.toBoolean() == true) alias else "current"
     generateVersionsFile = true
     existingVersionsFile = versionsFile
   }

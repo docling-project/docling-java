@@ -1,5 +1,8 @@
 package ai.docling.serve.api;
 
+import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
+import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
+import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -23,6 +26,18 @@ public interface DoclingServeApi {
    * @return a {@link ConvertDocumentResponse} containing the processed document data, processing details, and any errors.
    */
   ConvertDocumentResponse convertSource(ConvertDocumentRequest request);
+
+  /**
+   * Converts and chunks the provided document source(s) into a processed document based on the specified options
+   * and using a hierarchical chunker for splitting the document into smaller chunks.
+   */
+  ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request);
+
+  /**
+   * Converts and chunks the provided document source(s) into a processed document based on the specified options
+   * and using a hybrid chunker for splitting the document into smaller chunks.
+   */
+  ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request);
 
   /**
    * Creates and returns a builder instance capable of constructing a duplicate or modified

@@ -18,6 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
+import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
+import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -156,6 +159,30 @@ public abstract class DoclingServeClient implements DoclingServeApi {
         .build();
 
     return execute(httpRequest, ConvertDocumentResponse.class);
+  }
+
+  @Override
+  public ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request) {
+    var httpRequest = HttpRequest.newBuilder()
+        .uri(baseUrl.resolve("/v1/chunk/hierarchical/source"))
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .POST(new LoggingBodyPublisher<>(request))
+        .build();
+
+    return execute(httpRequest, ChunkDocumentResponse.class);
+  }
+
+  @Override
+  public ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request) {
+    var httpRequest = HttpRequest.newBuilder()
+        .uri(baseUrl.resolve("/v1/chunk/hybrid/source"))
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .POST(new LoggingBodyPublisher<>(request))
+        .build();
+
+    return execute(httpRequest, ChunkDocumentResponse.class);
   }
 
   private class LoggingBodyPublisher<T> implements BodyPublisher {

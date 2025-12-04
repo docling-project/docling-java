@@ -128,6 +128,27 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     }
   }
 
+  protected <I, O> executePost(String uri, I request, Class<O> expectedReturnType) {
+    var httpRequest = HttpRequest.newBuilder()
+        .uri(baseUrl.resolve(uri))
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .POST(new LoggingBodyPublisher<>(request))
+        .build();
+
+    return execute(httpRequest, expectedReturnType);
+  }
+
+  protected <O> executeGet(String uri, Class<O> expectedReturnType) {
+    var httpRequest = HttpRequest.newBuilder()
+        .uri(baseUrl.resolve(uri))
+        .header("Accept", "application/json")
+        .GET()
+        .build();
+
+    return execute(httpRequest, expectedReturnType);
+  }
+
   protected <T> T getResponse(HttpResponse<String> response, Class<T> expectedReturnType) {
     var body = response.body();
 
@@ -140,49 +161,22 @@ public abstract class DoclingServeClient implements DoclingServeApi {
 
   @Override
   public HealthCheckResponse health() {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve("/health"))
-        .header("Accept", "application/json")
-        .GET()
-        .build();
-
-    return execute(httpRequest, HealthCheckResponse.class);
+    return executeGet("/health", HealthCheckResponse.class);
   }
 
   @Override
   public ConvertDocumentResponse convertSource(ConvertDocumentRequest request) {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve("/v1/convert/source"))
-        .header("Accept", "application/json")
-        .header("Content-Type", "application/json")
-        .POST(new LoggingBodyPublisher<>(request))
-        .build();
-
-    return execute(httpRequest, ConvertDocumentResponse.class);
+    return executePost("/v1/convert/source", request, ConvertDocumentResponse.class);
   }
 
   @Override
   public ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request) {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve("/v1/chunk/hierarchical/source"))
-        .header("Accept", "application/json")
-        .header("Content-Type", "application/json")
-        .POST(new LoggingBodyPublisher<>(request))
-        .build();
-
-    return execute(httpRequest, ChunkDocumentResponse.class);
+    return executePost("/v1/chunk/hierarchical/source", request, ChunkDocumentResponse.class);
   }
 
   @Override
   public ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request) {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve("/v1/chunk/hybrid/source"))
-        .header("Accept", "application/json")
-        .header("Content-Type", "application/json")
-        .POST(new LoggingBodyPublisher<>(request))
-        .build();
-
-    return execute(httpRequest, ChunkDocumentResponse.class);
+    return executePost("/v1/chunk/hybrid/source", request, ChunkDocumentResponse.class);
   }
 
   private class LoggingBodyPublisher<T> implements BodyPublisher {

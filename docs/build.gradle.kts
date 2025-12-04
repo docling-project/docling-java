@@ -20,7 +20,6 @@ python {
 
 mkdocs {
   extras = mapOf(
-      "version" to "${project.version}",
       "project-version" to "${project.version}",
       "project-groupId" to "${project.group}",
       "project-artifactId" to "${rootProject.name}",
@@ -37,9 +36,9 @@ mkdocs {
     // This is a hack because versionAliases is created final as an array without a setter
     // So it isn't friendly to the Gradle Kotlin DSL
     org.codehaus.groovy.runtime.InvokerHelper.setProperty(this, "versionAliases", arrayOf(alias))
-    docPath = "${project.version}"
+    docPath = project.version.toString()
     rootRedirect = true
-    rootRedirectTo = if (System.getenv("IS_PR_BUILD")?.toBoolean() == true) alias else "current"
+//    rootRedirectTo = if (System.getenv("IS_PR_BUILD")?.toBoolean() == true) alias else "current"
     generateVersionsFile = true
     existingVersionsFile = versionsFile
   }

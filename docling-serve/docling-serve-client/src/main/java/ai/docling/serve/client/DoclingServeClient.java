@@ -129,9 +129,7 @@ public abstract class DoclingServeClient implements DoclingServeApi {
   }
 
   protected <I, O> O executePost(String uri, I request, Class<O> expectedReturnType) {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve(uri))
-        .header("Accept", "application/json")
+    var httpRequest = createRequestBuilder(uri)
         .header("Content-Type", "application/json")
         .POST(new LoggingBodyPublisher<>(request))
         .build();
@@ -140,13 +138,17 @@ public abstract class DoclingServeClient implements DoclingServeApi {
   }
 
   protected <O> O executeGet(String uri, Class<O> expectedReturnType) {
-    var httpRequest = HttpRequest.newBuilder()
-        .uri(baseUrl.resolve(uri))
-        .header("Accept", "application/json")
+    var httpRequest = createRequestBuilder(uri)
         .GET()
         .build();
 
     return execute(httpRequest, expectedReturnType);
+  }
+
+  protected HttpRequest.Builder createRequestBuilder(String uri) {
+    return HttpRequest.newBuilder()
+           .uri(baseUrl.resolve(uri))
+           .header("Accept", "application/json");
   }
 
   protected <T> T getResponse(HttpResponse<String> response, Class<T> expectedReturnType) {

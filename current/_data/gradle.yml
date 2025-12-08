@@ -1,6 +1,7 @@
-project_version: 0.1.5
+project_version: 0.2.1
 project_groupId: ai.docling
 project_artifactId: docling-java
 serve_api_artifactId: docling-serve-api
 serve_client_artifactId: docling-serve-client
 testcontainers_artifactId: docling-testcontainers
+core_artifactId: docling-core

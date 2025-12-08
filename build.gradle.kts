@@ -58,7 +58,7 @@ jreleaser {
         }
         hide {
           categories = listOf("merge")
-          contributors = listOf("GitHub", "dependabot")
+          contributors = listOf("GitHub", "dependabot", "docling-java-ops")
         }
         extraProperties.put("categorizeScopes", true)
       }

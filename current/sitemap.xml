@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/core/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/core/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/getting-started/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/getting-started/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/testcontainers/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/testcontainers/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/testing/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/testing/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/whats-new/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/whats-new/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/docling-serve/serve-api/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/docling-serve/serve-api/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/docling-serve/serve-client/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/docling-serve/serve-client/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
     <url>
-         <loc>https://docling-project.github.io/docling-java/0.2.1/includes/docling-serve/serve-compatibility/</loc>
+         <loc>https://docling-project.github.io/docling-java/0.3.0/includes/docling-serve/serve-compatibility/</loc>
          <lastmod>2025-12-08</lastmod>
     </url>
 </urlset>

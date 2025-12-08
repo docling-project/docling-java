@@ -31,14 +31,6 @@ jobs:
     name: Build/publish Docs
     if: github.repository == 'docling-project/docling-java'
     steps:
-      - name: Setup env (release)
-        if: github.event_name == 'release'
-        run: echo "DOCS_ALIAS=current" >> $GITHUB_ENV
-
-      - name: Setup env (other)
-        if: (github.event_name != 'release')
-        run: echo "DOCS_ALIAS=dev" >> $GITHUB_ENV
-
       - name: Checkout sources
         if: github.event_name != 'release'
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -53,6 +45,20 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name }}
           path: app
+
+      - name: Setup env (release)
+        if: github.event_name == 'release'
+        working-directory: app
+        run: |
+          echo "DOCS_ALIAS=current" >> $GITHUB_ENV
+          echo "DOCS_VERSION=$(yq '.release.previous-version' .github/project.yml)" >> $GITHUB_ENV
+
+      - name: Setup env (other)
+        if: (github.event_name != 'release')
+        working-directory: app
+        run: |
+          echo "DOCS_ALIAS=dev" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=$(yq '.release.current-version' after/.github/project.yml)" >> $GITHUB_ENV
 
       - name: Get docs
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -83,6 +89,7 @@ jobs:
         working-directory: app
         run: |
           ./gradlew --console=plain :docs:build \
+            -Pversion=${{ env.DOCS_VERSION }} \
             -Pdocs.alias=${{ env.DOCS_ALIAS }} \
             -Pdocs.versionsFile=${{ github.workspace }}/docs/versions.json
 

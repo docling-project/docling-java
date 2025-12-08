@@ -1,8 +1,10 @@
-package ai.docling.api.core;
+package ai.docling.core;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.Nulls;
-
-import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a document processed by the Docling service with its structure,

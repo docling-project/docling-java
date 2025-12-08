@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import ai.docling.api.core.DoclingDocument;
-import ai.docling.api.core.DoclingDocument.DocItemLabel;
+import ai.docling.core.DoclingDocument;
+import ai.docling.core.DoclingDocument.DocItemLabel;
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;

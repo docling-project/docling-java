@@ -9,8 +9,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import ai.docling.api.core.DoclingDocument;
-import ai.docling.api.core.DoclingDocument.TitleItem;
+import ai.docling.core.DoclingDocument;
+import ai.docling.core.DoclingDocument.TitleItem;
 
 /**
  * Unit tests for {@link ConvertDocumentResponse}.

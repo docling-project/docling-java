@@ -14,7 +14,11 @@ import org.testcontainers.DockerClientFactory;
 
 import io.quarkus.logging.Log;
 
-import ai.docling.api.core.DoclingDocument;
+import ai.docling.client.tester.domain.TagTestResult;
+import ai.docling.client.tester.domain.TagTestResult.Result;
+import ai.docling.client.tester.domain.TagsTestRequest;
+import ai.docling.client.tester.domain.TagsTestResults;
+import ai.docling.core.DoclingDocument;
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
@@ -24,10 +28,6 @@ import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.DocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
 import ai.docling.serve.client.DoclingServeClientBuilderFactory;
-import ai.docling.client.tester.domain.TagTestResult;
-import ai.docling.client.tester.domain.TagTestResult.Result;
-import ai.docling.client.tester.domain.TagsTestRequest;
-import ai.docling.client.tester.domain.TagsTestResults;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 

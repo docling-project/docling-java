@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ai.docling.api.core.DoclingDocument;
+import ai.docling.core.DoclingDocument;
 
 /**
  * A simple mutable POJO representing the converted document returned by the

@@ -22,6 +22,7 @@ permissions:
   contents: write
   discussions: write
   issues: write
+  pull-requests: write
 
 defaults:
   run:
@@ -38,6 +39,7 @@ jobs:
         with:
           app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}
           private-key: ${{ secrets.DOCLING_JAVA_CI_PRIVATE_KEY }}
+          permission-pull-requests: write
           permission-attestations: write
           permission-contents: write
           permission-discussions: write
@@ -112,6 +114,8 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
           JRELEASER_DISCORD_WEBHOOK: ${{ secrets.RELEASES_DISCORD_WEBHOOK }}
           JRELEASER_DRY_RUN: ${{ inputs.dryrun }}
+          JRELEASER_TAG_NAME: "v${{ env.CURRENT_VERSION }}"
+          JRELEASER_PREVIOUS_TAG_NAME: "v${{ env.PREVIOUS_VERSION }}"
         run: |
           echo "Releasing version ${{ env.PREVIOUS_VERSION }} -> ${{ env.CURRENT_VERSION }}"
           ./gradlew --no-daemon :jreleaserFullRelease

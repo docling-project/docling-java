@@ -1,5 +1,3 @@
-import org.jreleaser.model.Active
-
 plugins {
   `base`
   id("docling-shared")
@@ -48,9 +46,10 @@ jreleaser {
       repoOwner = "docling-project"
       name = rootProject.name
       sign = true
+      discussionCategoryName = "Announcements"
 
       changelog {
-        formatted = Active.ALWAYS
+        formatted = org.jreleaser.model.Active.ALWAYS
         links = true
         preset = "conventional-commits"
         contributors {

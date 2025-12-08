@@ -46,7 +46,7 @@ jreleaser {
       repoOwner = "docling-project"
       name = rootProject.name
       sign = true
-      discussionCategoryName = "Announcements"
+      discussionCategoryName = "announcements"
 
       changelog {
         formatted = org.jreleaser.model.Active.ALWAYS

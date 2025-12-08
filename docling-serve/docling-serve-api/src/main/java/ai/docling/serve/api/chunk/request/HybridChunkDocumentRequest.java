@@ -31,7 +31,7 @@ public class HybridChunkDocumentRequest {
   @lombok.Singular
   private List<Source> sources;
 
-  @JsonProperty("options")
+  @JsonProperty("convert_options")
   @lombok.NonNull
   @lombok.Builder.Default
   private ConvertDocumentOptions options = ConvertDocumentOptions.builder().build();

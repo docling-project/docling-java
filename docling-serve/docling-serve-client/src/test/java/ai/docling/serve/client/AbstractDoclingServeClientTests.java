@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 
@@ -14,8 +15,8 @@ import ai.docling.api.core.DoclingDocument;
 import ai.docling.api.core.DoclingDocument.DocItemLabel;
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
-import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
+import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.chunk.request.options.HybridChunkerOptions;
 import ai.docling.serve.api.chunk.response.Chunk;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
@@ -84,6 +85,7 @@ abstract class AbstractDoclingServeClientTests {
             .base64String(Base64.getEncoder().encodeToString(fileResource))
             .build()
         )
+
         .build();
 
     ConvertDocumentResponse response = getDoclingClient().convertSource(request);
@@ -106,6 +108,7 @@ abstract class AbstractDoclingServeClientTests {
         .doOcr(true)
         .includeImages(true)
         .tableMode(TableFormerMode.FAST)
+        .documentTimeout(Duration.ofMinutes(1))
         .build();
 
     ConvertDocumentRequest request = ConvertDocumentRequest.builder()

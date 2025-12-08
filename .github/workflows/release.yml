@@ -47,10 +47,29 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
 
+      - name: Verify only project.yml was changed
+        id: verify-files
+        run: |
+          FILES_CHANGED=$(curl -s -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" | \
+            jq -r '.[].filename')
+
+          if [ "$(echo "$FILES_CHANGED" | wc -l)" -ne 1 ] || [ "$FILES_CHANGED" != ".github/project.yml" ]; then
+            echo "Warning: Expected only .github/project.yml to be changed, but found:"
+            echo "$FILES_CHANGED"
+            echo "Skipping release process."
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "✓ Verified that only .github/project.yml was changed"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Capture version before PR
+        if: steps.verify-files.outputs.should_release == 'true'
         run: echo "PREVIOUS_VERSION=$(yq '.release.current-version' before/.github/project.yml)" >> $GITHUB_ENV
 
       - name: Checkout current ref
+        if: steps.verify-files.outputs.should_release == 'true'
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ steps.app-token.outputs.token }}
@@ -58,22 +77,27 @@ jobs:
           fetch-depth: 0
 
       - name: Capture current version
+        if: steps.verify-files.outputs.should_release == 'true'
         run: echo "CURRENT_VERSION=$(yq '.release.current-version' after/.github/project.yml)" >> $GITHUB_ENV
 
       - name: Setup Java
+        if: steps.verify-files.outputs.should_release == 'true'
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
 
       - name: Setup Gradle
+        if: steps.verify-files.outputs.should_release == 'true'
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
 
       - name: Build artifacts
+        if: steps.verify-files.outputs.should_release == 'true'
         working-directory: before
         run: ./gradlew --no-daemon -Pjava.version=${{ env.JAVA_VERSION }} publish
 
       - name: Release
+        if: steps.verify-files.outputs.should_release == 'true'
         working-directory: before
         env:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}

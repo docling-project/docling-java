@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.2.1/getting-started/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.2.1/whats-new/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../getting-started/">
       
       
-        <link rel="next" href="../whats-new/">
+        <link rel="next" href="../core/">
       
       
       <link rel="icon" href="../assets/img/logo.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Getting Started - Docling Java</title>
+        <title>What's New - Docling Java</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#whats-new-in-docling-java-021" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              What's New
             
           </span>
         </div>
@@ -393,6 +393,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -410,7 +433,7 @@
   
   
   <span class="md-ellipsis">
-    Getting Started
+    What's New
     
   </span>
   
@@ -423,7 +446,7 @@
   
   
   <span class="md-ellipsis">
-    Getting Started
+    What's New
     
   </span>
   
@@ -446,9 +469,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#links" class="md-nav__link">
+  <a href="#docling-serve" class="md-nav__link">
     <span class="md-ellipsis">
-      Links
+      Docling Serve
     </span>
   </a>
   
@@ -458,29 +481,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../whats-new/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    What's New
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -752,9 +752,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#links" class="md-nav__link">
+  <a href="#docling-serve" class="md-nav__link">
     <span class="md-ellipsis">
-      Links
+      Docling Serve
     </span>
   </a>
   
@@ -779,37 +779,13 @@
   
 
 
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h1>
-<p>Use the <a href="../docling-serve/serve-api/"><code>DoclingServeApi</code></a> to convert a document by pointing at a running <a href="https://github.com/docling-project/docling-serve">Docling Serve</a> instance.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
-
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;&lt;location of docling serve instance&gt;&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-
-<span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">source</span><span class="p">(</span>
-<span class="w">        </span><span class="n">HttpSource</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="n">URI</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;https://arxiv.org/pdf/2408.09869&quot;</span><span class="p">))</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-<span class="w">    </span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-
-<span class="n">ConvertDocumentResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="p">.</span><span class="na">convertSource</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
-<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">getDocument</span><span class="p">().</span><span class="na">getMarkdownContent</span><span class="p">());</span>
-</code></pre></div>
-<p>For more examples and options, explore the modules listed above and the repository README.</p>
-<h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">#</a></h2>
+<h1 id="whats-new-in-docling-java-021">What's New in Docling Java 0.2.1<a class="headerlink" href="#whats-new-in-docling-java-021" title="Permanent link">#</a></h1>
+<p>Docling Java 0.2.1 provides a number of new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each new feature and bug fix.</p>
+<h2 id="docling-serve">Docling Serve<a class="headerlink" href="#docling-serve" title="Permanent link">#</a></h2>
 <ul>
-<li>Source repository: https://github.com/docling-project/docling-java</li>
-<li>Docling (core project): https://github.com/docling-project</li>
-<li>Supported formats: https://docling-project.github.io/docling/usage/supported_formats/</li>
-<li>DoclingDocument concept: https://docling-project.github.io/docling/concepts/docling_document/</li>
-<li>Community Discord: https://docling.ai/discord</li>
+<li>The classes in the <code>docling-serve-api</code> module have been moved from the <code>ai.docling.api.serve</code> package to the <code>ai.docling.serve.api</code> package.</li>
+<li>The classes in the <code>docling-serve-client</code> module have been moved from the <code>ai.docling.client.serve</code> package to the <code>ai.docling.serve.client</code> package.</li>
+<li>The <code>DoclingServeApi</code> provides two new methods: <code>chunkSourceWithHierarchicalChunker()</code> for chunking a source document with a hierarchical chunker and <code>chunkSourceWithHybridChunker()</code> for chunking a source document with a hybrid chunker. Read more about Docling chunkers in the <a href="https://docling-project.github.io/docling/concepts/chunking/">Chunking</a> section of the Docling documentation.</li>
 </ul>
 
 
@@ -848,7 +824,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Docling Java">
+          <a href="../getting-started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting Started">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -858,20 +834,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Docling Java
+                Getting Started
               </div>
             </div>
           </a>
         
         
           
-          <a href="../whats-new/" class="md-footer__link md-footer__link--next" aria-label="Next: What&#39;s New">
+          <a href="../core/" class="md-footer__link md-footer__link--next" aria-label="Next: Docling Core">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                What's New
+                Docling Core
               </div>
             </div>
             <div class="md-footer__button md-icon">

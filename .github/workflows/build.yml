@@ -115,6 +115,7 @@ jobs:
           path: |
             **/build/test-results/**/*.xml
             test-report-aggregation/build/reports/tests/test/aggregated-results/**
+            test-report-aggregation/build/reports/jacoco/testCodeCoverageReport/**
           retention-days: 7
 
   docs:

@@ -1,6 +1,7 @@
 plugins {
   id("docling-shared")
   `java-library`
+  `jacoco`
 }
 
 repositories {
@@ -36,9 +37,15 @@ testing {
   }
 }
 
+jacoco {
+  toolVersion = libs.findVersion("jacoco").get().toString()
+}
+
 tasks.withType<Test> {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
+
+  finalizedBy(tasks.named("jacocoTestReport"))
 
   testLogging {
     events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR")

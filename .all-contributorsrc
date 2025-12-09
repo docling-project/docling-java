@@ -82,6 +82,16 @@
         "promotion",
         "ideas"
       ]
+    },
+    {
+      "login": "jmb-streamsets",
+      "name": "jmb-streamsets",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91207515?v=4",
+      "profile": "https://github.com/jmb-streamsets",
+      "contributions": [
+        "ideas",
+        "design"
+      ]
     }
   ]
 }

@@ -36,9 +36,12 @@ testing {
   }
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
+
+  maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+  forkEvery = 100
 
   testLogging {
     events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR")
@@ -63,6 +66,10 @@ tasks.withType<Test> {
       .dir("java${project.property("java.version").toString()}")
     )
   }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  options.isFork = true
 }
 
 tasks.withType<Javadoc> {

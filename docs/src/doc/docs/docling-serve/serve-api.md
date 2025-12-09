@@ -1,5 +1,7 @@
 # Docling Serve API
 
+[![docling-serve-api version](https://img.shields.io/badge/docling--serve--api_v{{ gradle.project_version }}-orange)](https://docling-project.github.io/docling-java/{{ gradle.project_version }}/docling-serve/serve-api)
+
 The `docling-serve-api` module defines the core, framework-agnostic Java API used to communicate
 with a [Docling Serve](https://github.com/docling-project/docling-serve) backend. It provides the request/response model and the main `DoclingServeApi`
 interface. You can use any implementation of this interface to talk to a running

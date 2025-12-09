@@ -20,5 +20,6 @@ dependencies {
 }
 
 tasks.withType<Javadoc> {
+  source = sourceSets["main"].allJava
   exclude("**/lombok.config")
 }

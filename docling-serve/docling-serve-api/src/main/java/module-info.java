@@ -26,6 +26,14 @@ open module ai.docling.serve.api {
   exports ai.docling.serve.api.convert.request.target;
   exports ai.docling.serve.api.convert.response;
 
+  // Clear API
+  exports ai.docling.serve.api.clear.request;
+  exports ai.docling.serve.api.clear.response;
+
+  // Task API
+  exports ai.docling.serve.api.task.request;
+  exports ai.docling.serve.api.task.response;
+
   // Serialization helpers
   exports ai.docling.serve.api.serialization;
 }

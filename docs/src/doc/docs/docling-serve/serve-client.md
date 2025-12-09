@@ -1,5 +1,7 @@
 # Docling Serve Client
 
+[![docling-serve-client version](https://img.shields.io/badge/docling--serve--client_v{{ gradle.project_version }}-orange)](https://docling-project.github.io/docling-java/{{ gradle.project_version }}/docling-serve/serve-client)
+
 The `docling-serve-client` module is the reference HTTP client for talking to a
 [Docling Serve](https://github.com/docling-project/docling-serve) backend.
 

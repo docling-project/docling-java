@@ -1,5 +1,7 @@
 # Docling Core
 
+[![docling-core version](https://img.shields.io/badge/docling--core_v{{ gradle.project_version }}-orange)](https://docling-project.github.io/docling-java/{{ gradle.project_version }}/core)
+
 The `docling-core` module provides the core data types used by Docling for document representation. It defines the `DoclingDocument` model, which captures the structure and content of documents across various formats, along with utilities for working with these types.
 
 The base Java version is 17. This module has no external dependencies, making it lightweight and easy to integrate into your projects. It represents the foundational building block for the other Docling Java modules.

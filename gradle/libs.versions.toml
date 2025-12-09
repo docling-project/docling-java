@@ -1,5 +1,6 @@
 [versions]
 assertj = "3.27.6"
+awaitility = "4.3.0"
 jackson2 = "2.20.1"
 jackson3 = "3.0.3"
 jreleaser = "1.20.0"
@@ -17,6 +18,9 @@ quarkus-wiremock = "1.5.2"
 [libraries]
 # assertj
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+
+# awaitility
+awaitility = { group = "org.awaitility", name = "awaitility", version.ref = "awaitility" }
 
 # Jackson
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations" }

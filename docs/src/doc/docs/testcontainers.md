@@ -1,5 +1,7 @@
 # Testcontainers
 
+[![docling-testcontainers version](https://img.shields.io/badge/docling--testcontainers_v{{ gradle.project_version }}-orange)](https://docling-project.github.io/docling-java/{{ gradle.project_version }}/testcontainers)
+
 The `docling-testcontainers` module provides a ready-to-use [Testcontainers](https://testcontainers.com/) integration for running a [Docling Serve](https://github.com/docling-project/docling-serve) instance in your tests. It wraps the official container image and exposes a simple Java API so you can spin up Docling as part of your JUnit test lifecycle and exercise client code against a real server.
 
 If you need to talk to a running server from your application code, pair this module with the reference HTTP client:

@@ -3,6 +3,8 @@
 This is the repository for Docling Java, a Java API for using [Docling](https://github.com/docling-project).
 
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://docling-project.github.io/docling-java/)
+[![docling-core version](https://img.shields.io/maven-central/v/ai.docling/docling-core?label=docling-core
+)](https://docling-project.github.io/docling-java/dev/core)
 [![docling-serve-api version](https://img.shields.io/maven-central/v/ai.docling/docling-serve-api?label=docling-serve-api
 )](https://docling-project.github.io/docling-java/dev/docling-serve/serve-api/)
 [![docling-serve-client version](https://img.shields.io/maven-central/v/ai.docling/docling-serve-client?label=docling-serve-client)](https://docling-project.github.io/docling-java/dev/docling-serve/serve-client/)

@@ -1,44 +1,10 @@
 package ai.docling.serve.api;
 
-import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
-import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
-import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
-import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
-import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
-import ai.docling.serve.api.health.HealthCheckResponse;
-
 /**
  * Docling Serve API interface.
  */
-public interface DoclingServeApi {
-
-  /**
-   * Executes a health check for the API and retrieves the health status of the service.
-   *
-   * @return a {@link HealthCheckResponse} object containing the health status of the API.
-   */
-  HealthCheckResponse health();
-
-  /**
-   * Converts the provided document source(s) into a processed document based on the specified options.
-   *
-   * @param request the {@link ConvertDocumentRequest} containing the source(s), conversion options, and optional target.
-   * @return a {@link ConvertDocumentResponse} containing the processed document data, processing details, and any errors.
-   */
-  ConvertDocumentResponse convertSource(ConvertDocumentRequest request);
-
-  /**
-   * Converts and chunks the provided document source(s) into a processed document based on the specified options
-   * and using a hierarchical chunker for splitting the document into smaller chunks.
-   */
-  ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request);
-
-  /**
-   * Converts and chunks the provided document source(s) into a processed document based on the specified options
-   * and using a hybrid chunker for splitting the document into smaller chunks.
-   */
-  ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request);
-
+public interface DoclingServeApi
+    extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
   /**
    * Creates and returns a builder instance capable of constructing a duplicate or modified
    * version of the current API instance. The builder provides a customizable way to adjust
@@ -97,6 +63,30 @@ public interface DoclingServeApi {
      * @return {@code this} builder instance for fluent API usage.
      */
     B logResponses(boolean logResponses);
+
+    /**
+     * Configures whether the API client should format JSON requests and responses in a "pretty" format.
+     * Pretty formatting organizes the response data to improve readability,
+     * typically by adding spacing and line breaks.
+     *
+     * This setting does not affect the functional content of the response but can
+     * assist with debugging or human-readable output for development purposes.
+     *
+     * @param prettyPrint {@code true} to enable pretty-printing of JSON requests and responses;
+     *                    {@code false} to use compact formatting.
+     * @return {@code this} builder instance for fluent API usage.
+     */
+    B prettyPrint(boolean prettyPrint);
+
+    /**
+     * Configures the API client to format JSON requests and responses in a "pretty" format.
+     * Pretty formatting improves readability by including spacing and line breaks.
+     *
+     * @return {@code this} builder instance for fluent API usage.
+     */
+    default B prettyPrint() {
+      return prettyPrint(true);
+    }
 
     /**
      * Builds and returns an instance of the specified type, representing the completed configuration

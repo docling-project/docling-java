@@ -55,7 +55,9 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
   @Override
   protected <T> String writeValueAsString(T value) {
     try {
-      return this.jsonMapper.writeValueAsString(value);
+      return prettyPrintJson() ?
+          this.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(value) :
+          this.jsonMapper.writeValueAsString(value);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }

@@ -1,4 +1,6 @@
 quarkus:
+  http:
+    test-port: -1
   rest-client:
     github-container-registry:
       url: https://ghcr.io

@@ -5,6 +5,7 @@ import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -19,12 +20,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.DoclingServeChunkApi;
+import ai.docling.serve.api.DoclingServeClearApi;
+import ai.docling.serve.api.DoclingServeConvertApi;
+import ai.docling.serve.api.DoclingServeHealthApi;
+import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
+import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
+import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.request.TaskStatusPollRequest;
+import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 
 /**
  * Abstract class representing a client for interacting with the Docling API.
@@ -34,10 +45,15 @@ import ai.docling.serve.api.health.HealthCheckResponse;
  * configurations. It provides abstract methods for JSON serialization and
  * deserialization, allowing implementation-specific customization.
  *
+ * <p>The client is structured hierarchically, with separate nested implementations
+ * for each API interface ({@link DoclingServeHealthApi}, {@link DoclingServeConvertApi},
+ * {@link DoclingServeChunkApi}, {@link DoclingServeClearApi}, {@link DoclingServeTaskApi}).
+ * These implementations share common HTTP execution logic and configuration.
+ *
  * <p>Concrete subclasses must implement {@link #readValue(String, Class)} and
  * {@link #writeValueAsString(Object)} for serialization and deserialization behavior.
  */
-public abstract class DoclingServeClient implements DoclingServeApi {
+public abstract class DoclingServeClient extends HttpOperations implements DoclingServeApi {
   private static final Logger LOG = LoggerFactory.getLogger(DoclingServeClient.class);
   protected static final URI DEFAULT_BASE_URL = URI.create("http://localhost:5001");
 
@@ -45,6 +61,13 @@ public abstract class DoclingServeClient implements DoclingServeApi {
   private final HttpClient httpClient;
   private final boolean logRequests;
   private final boolean logResponses;
+  private final boolean prettyPrintJson;
+  
+  private final HealthOperations healthOps = new HealthOperations(this);
+  private final ConvertOperations convertOps = new ConvertOperations(this);
+  private final ChunkOperations chunkOps = new ChunkOperations(this);
+  private final ClearOperations clearOps = new ClearOperations(this);
+  private final TaskOperations taskOps = new TaskOperations(this);
 
   protected DoclingServeClient(DoclingServeClientBuilder builder) {
     this.baseUrl = ensureNotNull(builder.baseUrl, "baseUrl");
@@ -59,6 +82,7 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     this.httpClient = ensureNotNull(builder.httpClientBuilder, "httpClientBuilder").build();
     this.logRequests = builder.logRequests;
     this.logResponses = builder.logResponses;
+    this.prettyPrintJson = builder.prettyPrintJson;
   }
 
   /**
@@ -81,6 +105,10 @@ public abstract class DoclingServeClient implements DoclingServeApi {
    * @throws RuntimeException if serialization fails
    */
   protected abstract <T> String writeValueAsString(T value);
+
+  protected boolean prettyPrintJson() {
+    return this.prettyPrintJson;
+  }
 
   protected void logRequest(HttpRequest request) {
     if (LOG.isInfoEnabled()) {
@@ -106,7 +134,9 @@ public abstract class DoclingServeClient implements DoclingServeApi {
           stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
       );
 
-      responseBody.ifPresent(body -> stringBuilder.append("  BODY:\n%s".formatted(body)));
+      responseBody
+          .map(body -> this.prettyPrintJson ? writeValueAsString(readValue(body, Object.class)) : body)
+          .ifPresent(body -> stringBuilder.append("  BODY:\n%s".formatted(body)));
       LOG.info(stringBuilder.toString());
     }
   }
@@ -138,7 +168,8 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     return execute(httpRequest, expectedReturnType);
   }
 
-  protected <O> O executeGet(String uri, Class<O> expectedReturnType) {
+  @Override
+  protected  <O> O executeGet(String uri, Class<O> expectedReturnType) {
     var httpRequest = createRequestBuilder(uri)
         .GET()
         .build();
@@ -159,27 +190,60 @@ public abstract class DoclingServeClient implements DoclingServeApi {
       logResponse(response, Optional.ofNullable(body));
     }
 
+    var statusCode = response.statusCode();
+
+    if (statusCode >= 400) {
+      // Handle errors
+      // The Java HTTPClient doesn't throw exceptions on error codes
+      throw new DoclingServeClientException("An error occurred: %s".formatted(body), statusCode, body);
+    }
+
     return readValue(body, expectedReturnType);
   }
 
   @Override
   public HealthCheckResponse health() {
-    return executeGet("/health", HealthCheckResponse.class);
+    return this.healthOps.health();
   }
 
   @Override
   public ConvertDocumentResponse convertSource(ConvertDocumentRequest request) {
-    return executePost("/v1/convert/source", request, ConvertDocumentResponse.class);
+    return this.convertOps.convertSource(request);
   }
 
   @Override
   public ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request) {
-    return executePost("/v1/chunk/hierarchical/source", request, ChunkDocumentResponse.class);
+    return this.chunkOps.chunkSourceWithHierarchicalChunker(request);
   }
 
   @Override
   public ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request) {
-    return executePost("/v1/chunk/hybrid/source", request, ChunkDocumentResponse.class);
+    return this.chunkOps.chunkSourceWithHybridChunker(request);
+  }
+
+  @Override
+  public TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request) {
+    return this.taskOps.pollTaskStatus(request);
+  }
+
+  @Override
+  public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
+    return this.taskOps.convertTaskResult(request);
+  }
+
+  @Override
+  public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
+    return this.taskOps.chunkTaskResult(request);
+  }
+
+  @Override
+  public ClearResponse clearConverters() {
+    return this.clearOps.clearConverters();
+  }
+
+  @Override
+  public ClearResponse clearResults(ClearResultsRequest request) {
+    return this.clearOps.clearResults(request);
   }
 
   private class LoggingBodyPublisher<T> implements BodyPublisher {
@@ -199,7 +263,7 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     @Override
     public void subscribe(Subscriber<? super ByteBuffer> subscriber) {
       if (logRequests) {
-        LOG.info("→ REQUEST BODY: {}", this.stringContent);
+        LOG.info("→ REQUEST BODY: \n{}", this.stringContent);
       }
 
       this.delegate.subscribe(subscriber);
@@ -219,9 +283,10 @@ public abstract class DoclingServeClient implements DoclingServeApi {
   @SuppressWarnings("unchecked")
   public abstract static class DoclingServeClientBuilder<C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> implements DoclingApiBuilder<C, B> {
     private URI baseUrl = DEFAULT_BASE_URL;
-    private HttpClient.Builder httpClientBuilder = HttpClient.newBuilder();
+    private HttpClient.Builder httpClientBuilder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
     private boolean logRequests = false;
     private boolean logResponses = false;
+    private boolean prettyPrintJson = false;
 
     /**
      * Protected constructor for use by subclasses of {@link DoclingServeClientBuilder}.
@@ -298,6 +363,12 @@ public abstract class DoclingServeClient implements DoclingServeApi {
     @Override
     public B logResponses(boolean logResponses) {
       this.logResponses = logResponses;
+      return (B) this;
+    }
+
+    @Override
+    public B prettyPrint(boolean prettyPrint) {
+      this.prettyPrintJson = prettyPrint;
       return (B) this;
     }
   }

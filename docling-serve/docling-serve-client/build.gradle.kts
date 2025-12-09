@@ -20,4 +20,6 @@ dependencies {
   testImplementation(platform(libs.jackson.bom))
   testImplementation(libs.jackson.databind)
   testImplementation(libs.jackson2.databind)
+
+  testImplementation(libs.awaitility)
 }

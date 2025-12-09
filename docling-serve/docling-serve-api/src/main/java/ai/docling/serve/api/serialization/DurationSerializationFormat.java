@@ -23,7 +23,6 @@ import java.time.temporal.ChronoUnit;
  *   private Duration timeout;
  *   }
  *   </pre>
- * </p>
  * @see Jackson2DurationSerializer
  * @see Jackson3DurationSerializer
  */

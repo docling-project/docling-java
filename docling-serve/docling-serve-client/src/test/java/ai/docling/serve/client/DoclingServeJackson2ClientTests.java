@@ -16,6 +16,7 @@ class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
         .baseUrl(doclingContainer.getApiUrl())
         .logRequests()
         .logResponses()
+        .prettyPrint()
         .build();
   }
 

@@ -42,7 +42,9 @@ public class DoclingServeJackson3Client extends DoclingServeClient {
 
   @Override
   protected <T> String writeValueAsString(T value) {
-    return this.jsonMapper.writeValueAsString(value);
+    return prettyPrintJson() ?
+        this.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(value) :
+        this.jsonMapper.writeValueAsString(value);
   }
 
   /**

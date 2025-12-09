@@ -1,4 +1,4 @@
-module ai.docling.serve.api {
+open module ai.docling.serve.api {
   requires transitive ai.docling.core;
   requires static org.jspecify;
   requires static lombok;
@@ -28,14 +28,4 @@ module ai.docling.serve.api {
 
   // Serialization helpers
   exports ai.docling.serve.api.serialization;
-
-  // Open DTO packages for reflection-based JSON serialization
-  opens ai.docling.serve.api.chunk.request to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.chunk.request.options to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.chunk.response to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.convert.request to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.convert.request.options to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.convert.request.source to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.convert.request.target to com.fasterxml.jackson.databind, tools.jackson.databind;
-  opens ai.docling.serve.api.convert.response to com.fasterxml.jackson.databind, tools.jackson.databind;
 }

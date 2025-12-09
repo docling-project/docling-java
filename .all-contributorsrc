@@ -59,8 +59,8 @@
       "contributions": [
         "ideas"
       ]
-     },
-     {
+    },
+    {
       "login": "dolfim-ibm",
       "name": "Michele Dolfi",
       "avatar_url": "https://avatars.githubusercontent.com/u/97102151?v=4",
@@ -70,6 +70,16 @@
         "ideas",
         "infra",
         "question"
+      ]
+    },
+    {
+      "login": "oscerd",
+      "name": "Andrea Cosentino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5106647?v=4",
+      "profile": "http://oscerd.github.io",
+      "contributions": [
+        "design",
+        "promotion"
       ]
     }
   ]

@@ -1,7 +1,11 @@
 package ai.docling.serve.client;
 
+import java.time.Duration;
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
+
 import ai.docling.serve.api.DoclingServeClearApi;
-import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 
 /**
@@ -23,12 +27,17 @@ final class ClearOperations implements DoclingServeClearApi {
   }
 
   /**
-   * Clears previously stored results based on the criteria provided in the request.
+   * Clears the results stored by the service that are older than the specified duration.
    *
-   * @param request the {@link ClearResultsRequest} containing the criteria for clearing results.
-   * @return a {@link ClearResponse} indicating the outcome of the clear operation.
+   * @param olderThen the {@link Duration} indicating the age threshold. Results older than
+   *                  this duration will be cleared.
+   * @return a {@link ClearResponse} containing information about the outcome of the clear operation.
    */
-  public ClearResponse clearResults(ClearResultsRequest request) {
-    return this.httpOperations.executeGet("/v1/clear/results?older_then=%d".formatted(request.getOlderThan().toSeconds()), ClearResponse.class);
+  public ClearResponse clearResults(@Nullable Duration olderThen) {
+    var olderThenSeconds = Optional.ofNullable(olderThen)
+        .orElse(DEFAULT_OLDER_THAN)
+        .toSeconds();
+
+    return this.httpOperations.executeGet("/v1/clear/results?older_then=%d".formatted(olderThenSeconds), ClearResponse.class);
   }
 }

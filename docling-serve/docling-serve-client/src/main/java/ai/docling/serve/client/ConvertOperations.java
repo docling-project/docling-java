@@ -3,6 +3,7 @@ package ai.docling.serve.client;
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.util.ValidationUtils;
 
 /**
  * Base class for document conversion API operations. Provides access to document
@@ -22,6 +23,7 @@ final class ConvertOperations implements DoclingServeConvertApi {
    * @return a {@link ConvertDocumentResponse} containing the processed document data, processing details, and any errors.
    */
   public ConvertDocumentResponse convertSource(ConvertDocumentRequest request) {
+    ValidationUtils.ensureNotNull(request, "request");
     return this.httpOperations.executePost("/v1/convert/source", request, ConvertDocumentResponse.class);
   }
 }

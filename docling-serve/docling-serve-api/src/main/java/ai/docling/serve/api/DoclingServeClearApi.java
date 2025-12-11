@@ -1,9 +1,6 @@
 package ai.docling.serve.api;
 
-import java.time.Duration;
-
-import org.jspecify.annotations.Nullable;
-
+import ai.docling.serve.api.clear.request.ClearRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 
 /**
@@ -14,15 +11,6 @@ import ai.docling.serve.api.clear.response.ClearResponse;
  */
 public interface DoclingServeClearApi {
   /**
-   * Represents the default duration used as a threshold for clearing stale results
-   * or data in the Docling Serve Clear API. Results older than this duration
-   * are considered stale and may be subject to cleanup.
-   *
-   * The value is predefined as 1 hour (3600 seconds).
-   */
-  Duration DEFAULT_OLDER_THAN = Duration.ofSeconds(3600);
-
-  /**
    * Clears all registered converters associated with the API.
    * This method removes any previously configured or cached converters,
    * effectively resetting the converter state to an uninitialized state.
@@ -31,22 +19,15 @@ public interface DoclingServeClearApi {
   ClearResponse clearConverters();
 
   /**
-   * Clears stored results that are older than the specified duration threshold.
-   * This method is used for housekeeping to remove stale or outdated data from the system.
+   * Clears stored results based on the specified {@link ClearRequest}.
+   * This method removes results that match the criteria provided in the
+   * request, such as results older than a specified duration.
    *
-   * @param olderThen the duration threshold; only results older than this duration will be cleared.
-   * @return a {@link ClearResponse} object containing the status of the clear operation.
+   * @param request an instance of {@link ClearRequest} containing the criteria
+   *                for clearing stored results, including the duration threshold
+   *                or other parameters.
+   * @return a {@link ClearResponse} object indicating the status of the clear
+   *         operation, such as success or failure.
    */
-  ClearResponse clearResults(@Nullable Duration olderThen);
-
-  /**
-   * Clears stored results that are older than the default duration threshold.
-   * This method uses the pre-defined {@code DEFAULT_OLDER_THAN} as the threshold
-   * to determine which results are considered stale and should be removed.
-   *
-   * @return a {@link ClearResponse} object containing the status of the clear operation.
-   */
-  default ClearResponse clearResults() {
-    return clearResults(DEFAULT_OLDER_THAN);
-  }
+  ClearResponse clearResults(ClearRequest request);
 }

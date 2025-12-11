@@ -1,13 +1,10 @@
 package ai.docling.serve.client;
 
-import java.time.Duration;
-import java.util.Optional;
-
-import org.jspecify.annotations.Nullable;
-
 import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.ValidationUtils;
 
@@ -25,61 +22,63 @@ final class TaskOperations implements DoclingServeTaskApi {
   /**
    * Polls the current status of a specified task.
    *
-   * This method sends a request to the server to retrieve the current status
-   * of the task identified by the given {@code taskId}. Optionally, a {@code waitTime}
-   * can be specified to indicate how long the server should wait for a status change
-   * before responding.
+   * This method sends a GET request to the task status API endpoint to retrieve
+   * the current status of a task. The request includes the task ID and an optional
+   * wait time between polling attempts. The response contains details about the
+   * task's status, position in the queue, and any relevant metadata.
    *
-   * @param taskId the unique identifier of the task whose status is being polled.
-   *               Must not be blank or null.
-   * @param waitTime an optional {@link Duration} specifying how long the server should
-   *                 wait for a status change before responding. If null, no wait is applied.
-   * @return a {@link TaskStatusPollResponse} containing the current status details of the task.
-   * @throws IllegalArgumentException if {@code taskId} is blank or null.
+   * @param request an instance of {@link TaskStatusPollRequest} containing the
+   *                unique task identifier and optional wait time for polling.
+   *                Must not be null.
+   * @return a {@link TaskStatusPollResponse} containing the current status of
+   *         the task, its position in the queue, and any associated metadata.
+   * @throws IllegalArgumentException if the {@code request} is null.
    */
-  public TaskStatusPollResponse pollTaskStatus(String taskId, @Nullable Duration waitTime) {
-    ValidationUtils.ensureNotBlank(taskId, "taskId");
+  public TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request) {
+    ValidationUtils.ensureNotNull(request, "request");
 
-    var waitTimeSeconds = Optional.ofNullable(waitTime)
-        .orElse(DEFAULT_STATUS_POLL_WAIT_TIME)
-        .toSeconds();
-
-    return this.httpOperations.executeGet("/v1/status/poll/%s?wait=%d".formatted(taskId, waitTimeSeconds), TaskStatusPollResponse.class);
+    return this.httpOperations.executeGet(
+        "/v1/status/poll/%s?wait=%d".formatted(
+            request.getTaskId(),
+            request.getWaitTime().toSeconds()
+        ),
+        TaskStatusPollResponse.class
+    );
   }
 
   /**
    * Retrieves the result of a completed task identified by the specified task ID.
    *
-   * This method sends a GET request to the server to fetch the result of the task.
-   * The returned response includes details about the converted document and any
-   * potential errors or processing metadata associated with the task.
+   * This method sends a GET request to fetch the result of a task that has been processed.
+   * The response includes details about the converted document, processing time, status,
+   * and any potential errors or additional metadata related to the task.
    *
-   * @param taskId the unique identifier of the task whose result is being fetched.
-   *               Must not be blank or null.
-   * @return a {@link ConvertDocumentResponse} containing the details of the converted document,
-   *         processing time, status, and any errors encountered during processing.
-   * @throws IllegalArgumentException if {@code taskId} is blank or null.
+   * @param request an instance of {@link TaskResultRequest} containing the unique task
+   *                identifier. Must not be null.
+   * @return a {@link ConvertDocumentResponse} containing details about the converted
+   *         document, processing time, status, and any associated errors or metadata.
+   * @throws IllegalArgumentException if {@code request} is null.
    */
-  public ConvertDocumentResponse convertTaskResult(String taskId) {
-    ValidationUtils.ensureNotBlank(taskId, "taskId");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(taskId), ConvertDocumentResponse.class);
+  public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
+    ValidationUtils.ensureNotNull(request, "request");
+    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), ConvertDocumentResponse.class);
   }
 
   /**
-   * Retrieves the result of a completed task in chunks, identified by the specified task ID.
+   * Retrieves the chunked result of a completed task identified by the specified task ID.
    *
-   * This method sends a GET request to fetch the result of the task, providing the output
-   * in a chunked format. The response includes details about the chunks, related documents,
-   * processing time, and other metadata related to task completion.
+   * This method sends a GET request to fetch the chunked result of a task that has been processed.
+   * The response includes details about the chunks, associated documents, processing time,
+   * and any relevant metadata.
    *
-   * @param taskId the unique identifier of the task whose chunked result is being fetched.
-   *               Must not be blank or null.
-   * @return a {@link ChunkDocumentResponse} containing information about the chunks,
-   *         related documents, processing time, and any additional task metadata.
-   * @throws IllegalArgumentException if {@code taskId} is blank or null.
+   * @param request an instance of {@link TaskResultRequest} containing the unique task
+   *                identifier. Must not be null.
+   * @return a {@link ChunkDocumentResponse} containing details about the chunks,
+   *         documents, processing time, and any associated metadata.
+   * @throws IllegalArgumentException if {@code request} is null.
    */
-  public ChunkDocumentResponse chunkTaskResult(String taskId) {
-    ValidationUtils.ensureNotBlank(taskId, "taskId");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(taskId), ChunkDocumentResponse.class);
+  public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
+    ValidationUtils.ensureNotNull(request, "request");
+    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), ChunkDocumentResponse.class);
   }
 }

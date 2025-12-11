@@ -43,6 +43,7 @@ import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.chunk.request.options.HybridChunkerOptions;
 import ai.docling.serve.api.chunk.response.Chunk;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
+import ai.docling.serve.api.clear.request.ClearRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
@@ -52,6 +53,8 @@ import ai.docling.serve.api.convert.request.source.FileSource;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
+import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatus;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
@@ -115,7 +118,7 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldClearResultsSuccessfully() {
-      var response = getDoclingClient().clearResults();
+      var response = getDoclingClient().clearResults(ClearRequest.builder().build());
 
       assertThat(response)
           .isNotNull()
@@ -128,15 +131,23 @@ abstract class AbstractDoclingServeClientTests {
   class TaskTests {
     @Test
     void pollInvalidTaskId() {
-      assertThatThrownBy(() -> getDoclingClient().pollTaskStatus("someInvalidTaskId"))
+      var request = TaskStatusPollRequest.builder()
+          .taskId("someInvalidTaskId")
+          .build();
+
+
+      assertThatThrownBy(() -> getDoclingClient().pollTaskStatus(request))
           .hasRootCauseInstanceOf(DoclingServeClientException.class)
           .hasRootCauseMessage("An error occurred: {\"detail\":\"Task not found.\"}");
     }
 
     @Test
     void convertUrlTaskResult() throws IOException, InterruptedException {
-      var pollResponse = doPollForTaskCompletion();
-      var result = getDoclingClient().convertTaskResult(pollResponse.getTaskId());
+      var request = TaskResultRequest.builder()
+          .taskId(doPollForTaskCompletion().getTaskId())
+          .build();
+
+      var result = getDoclingClient().convertTaskResult(request);
       ConvertTests.assertConvertHttpSource(result);
     }
 
@@ -147,8 +158,12 @@ abstract class AbstractDoclingServeClientTests {
 
     private TaskStatusPollResponse doPollForTaskCompletion() throws IOException, InterruptedException {
       var response = submitTask();
+      var pollRequest = TaskStatusPollRequest.builder()
+          .taskId(response.getTaskId())
+          .build();
+
       var doclingClient = getDoclingClient();
-      var taskPollResponse = new AtomicReference<>(doclingClient.pollTaskStatus(response.getTaskId()));
+      var taskPollResponse = new AtomicReference<>(doclingClient.pollTaskStatus(pollRequest));
 
       assertThat(taskPollResponse).isNotNull();
       assertThat(taskPollResponse.get())
@@ -177,7 +192,7 @@ abstract class AbstractDoclingServeClientTests {
             .pollInterval(Duration.ofSeconds(5))
             .logging(LoggerFactory.getLogger("org.awaitility")::info)
             .until(() -> {
-              taskPollResponse.set(doclingClient.pollTaskStatus(response.getTaskId()));
+              taskPollResponse.set(doclingClient.pollTaskStatus(pollRequest));
               return taskPollResponse.get().getTaskStatus() == TaskStatus.SUCCESS;
             });
       }

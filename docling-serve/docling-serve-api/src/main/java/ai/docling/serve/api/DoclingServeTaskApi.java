@@ -1,11 +1,9 @@
 package ai.docling.serve.api;
 
-import java.time.Duration;
-
-import org.jspecify.annotations.Nullable;
-
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 
 /**
@@ -18,59 +16,46 @@ import ai.docling.serve.api.task.response.TaskStatusPollResponse;
  */
 public interface DoclingServeTaskApi {
   /**
-   * The default wait time between status polling attempts for a task.
-   * <p>
-   * This value is used when no explicit wait time is specified in a
-   * {@code TaskStatusPollRequest} instance. It is set to {@link Duration#ZERO},
-   * meaning there is no delay by default between consecutive polling attempts.
-   * </p>
+   * Polls the status of an asynchronous task based on the provided request.
+   *
+   * This method retrieves the current status of a task using the task identifier specified
+   * in the request object. It allows monitoring of a task's progress, position in the queue,
+   * and detailed status metadata, if available. The polling behavior can be influenced by
+   * optional configurations such as the wait time between polling attempts provided in the request.
+   *
+   * @param request the {@link TaskStatusPollRequest} containing the task identifier and optional
+   *                wait time between polling attempts
+   * @return a {@link TaskStatusPollResponse} encapsulating the current status, position in the
+   *         queue, and optional metadata for the specified task
    */
-  Duration DEFAULT_STATUS_POLL_WAIT_TIME = Duration.ZERO;
+  TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request);
 
   /**
-   * Polls the status of a task asynchronously and retrieves its current state.
-   * Allows for configurable wait time between polling attempts.
-   * If the wait time is {@code }, the default wait time ({@link #DEFAULT_STATUS_POLL_WAIT_TIME}) is used.
+   * Converts the result of a completed task into a document format as specified in the request.
    *
-   * @param taskId the unique identifier of the task whose status is being polled
-   * @param waitTime the duration to wait before polling the status, or null to use the default polling interval
-   * @return a {@link TaskStatusPollResponse} containing the current status of the task and associated metadata
+   * This method processes the task result identified by the unique task ID provided in
+   * the request, performs any necessary transformation, and returns a response
+   * containing the converted document and related details.
+   *
+   * @param request the {@link TaskResultRequest} containing the unique task identifier
+   *                for which the result is to be converted
+   * @return a {@link ConvertDocumentResponse} encapsulating the converted document,
+   *         processing status, timings, and potential errors
    */
-  TaskStatusPollResponse pollTaskStatus(String taskId, @Nullable Duration waitTime);
+  ConvertDocumentResponse convertTaskResult(TaskResultRequest request);
 
   /**
-   * Polls the status of a task asynchronously using the default wait time.
-   * This convenience method delegates to {@link #pollTaskStatus(String, Duration)}
-   * with {@code DEFAULT_STATUS_POLL_WAIT_TIME} as the wait time.
+   * Processes the result of a completed task and splits it into smaller chunks as per
+   * the provided request specifications.
    *
-   * @param taskId the unique identifier of the task whose status is being polled
-   * @return a {@link TaskStatusPollResponse} containing the current status of the task
-   *         and associated metadata
-   */
-  default TaskStatusPollResponse pollTaskStatus(String taskId) {
-    return pollTaskStatus(taskId, DEFAULT_STATUS_POLL_WAIT_TIME);
-  }
-
-  /**
-   * Converts the completed task result identified by the provided task ID into a document response.
-   * This method processes the task data associated with the given ID and generates a response
-   * encapsulating the converted document details.
+   * The method uses the unique task identifier, provided in the request, to locate the
+   * task result. It then analyzes the result and breaks it into chunks, which are
+   * included in the response along with any relevant metadata.
    *
-   * @param taskId the unique identifier of the task whose result needs to be converted into a document response
-   * @return a {@link ConvertDocumentResponse} containing the details of the converted document, processing metadata,
-   *         errors (if any), and other relevant information
+   * @param request the {@link TaskResultRequest} containing the unique identifier of
+   *                the task whose result is to be processed and chunked
+   * @return a {@link ChunkDocumentResponse} containing the chunked result,
+   *         associated documents, processing time, and additional relevant metadata
    */
-  ConvertDocumentResponse convertTaskResult(String taskId);
-
-  /**
-   * Processes the results of a completed task identified by the given task ID and generates a
-   * response containing chunked document details. This method is used to break down the document
-   * associated with the task into manageable chunks, making it suitable for subsequent processing
-   * or analysis.
-   *
-   * @param taskId the unique identifier of the task whose result is to be processed and chunked into
-   *        a {@link ChunkDocumentResponse}
-   * @return a {@link ChunkDocumentResponse} containing the chunked document details and related metadata
-   */
-  ChunkDocumentResponse chunkTaskResult(String taskId);
+  ChunkDocumentResponse chunkTaskResult(TaskResultRequest request);
 }

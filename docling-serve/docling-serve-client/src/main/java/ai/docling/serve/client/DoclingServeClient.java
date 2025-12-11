@@ -12,12 +12,10 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Flow.Subscriber;
 
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +28,13 @@ import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
+import ai.docling.serve.api.clear.request.ClearRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
+import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 
 /**
@@ -221,18 +222,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  public TaskStatusPollResponse pollTaskStatus(String taskId, @Nullable Duration waitTime) {
-    return this.taskOps.pollTaskStatus(taskId, waitTime);
+  public TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request) {
+    return this.taskOps.pollTaskStatus(request);
   }
 
   @Override
-  public ConvertDocumentResponse convertTaskResult(String taskId) {
-    return this.taskOps.convertTaskResult(taskId);
+  public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
+    return this.taskOps.convertTaskResult(request);
   }
 
   @Override
-  public ChunkDocumentResponse chunkTaskResult(String taskId) {
-    return this.taskOps.chunkTaskResult(taskId);
+  public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
+    return this.taskOps.chunkTaskResult(request);
   }
 
   @Override
@@ -241,8 +242,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  public ClearResponse clearResults(Duration olderThen) {
-    return this.clearOps.clearResults(olderThen);
+  public ClearResponse clearResults(ClearRequest request) {
+    return this.clearOps.clearResults(request);
   }
 
   private class LoggingBodyPublisher<T> implements BodyPublisher {

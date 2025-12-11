@@ -12,10 +12,13 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Flow.Subscriber;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +28,13 @@ import ai.docling.serve.api.DoclingServeClearApi;
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeHealthApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
+import ai.docling.serve.api.auth.AuthenticatedRequest;
+import ai.docling.serve.api.auth.Authentication;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
-import ai.docling.serve.api.clear.request.ClearRequest;
+import ai.docling.serve.api.clear.request.ClearConvertersRequest;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
@@ -36,6 +42,12 @@ import ai.docling.serve.api.health.HealthCheckResponse;
 import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
+import ai.docling.serve.client.operations.ChunkOperations;
+import ai.docling.serve.client.operations.ClearOperations;
+import ai.docling.serve.client.operations.ConvertOperations;
+import ai.docling.serve.client.operations.HealthOperations;
+import ai.docling.serve.client.operations.HttpOperations;
+import ai.docling.serve.client.operations.TaskOperations;
 
 /**
  * Abstract class representing a client for interacting with the Docling API.
@@ -116,12 +128,30 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       stringBuilder.append("\n→ REQUEST: %s %s\n".formatted(request.method(), request.uri()));
       stringBuilder.append("  HEADERS:\n");
 
-      request.headers().map().forEach((key, values) ->
-          stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
+      // Need to mask sensitive headers
+      request.headers()
+          .map()
+          .entrySet()
+          .stream()
+          .map(this::maskSensitiveHeaderValues)
+          .forEach(entry -> stringBuilder.append("  %s: %s\n".formatted(entry.getKey(), String.join(", ", entry.getValue())))
       );
 
       LOG.info(stringBuilder.toString());
     }
+  }
+
+  private boolean isSensitiveHeader(String headerName) {
+    return API_KEY_HEADER_NAME.equalsIgnoreCase(headerName);
+  }
+
+  private Map.Entry<String, List<String>> maskSensitiveHeaderValues(Map.Entry<String, List<String>> entry) {
+    return Map.entry(
+        entry.getKey(),
+        entry.getValue().stream()
+            .map(value -> isSensitiveHeader(entry.getKey()) ? "*".repeat(value.length()) : value)
+            .toList()
+    );
   }
 
   protected void logResponse(HttpResponse<String> response, Optional<String> responseBody) {
@@ -159,8 +189,9 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     }
   }
 
+  @Override
   protected <I, O> O executePost(String uri, I request, Class<O> expectedReturnType) {
-    var httpRequest = createRequestBuilder(uri)
+    var httpRequest = createRequestBuilder(uri, request)
         .header("Content-Type", "application/json")
         .POST(new LoggingBodyPublisher<>(request))
         .build();
@@ -169,18 +200,29 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  protected  <O> O executeGet(String uri, Class<O> expectedReturnType) {
-    var httpRequest = createRequestBuilder(uri)
+  protected <I, O> O executeGet(String uri, I request, Class<O> expectedReturnType) {
+    var httpRequest = createRequestBuilder(uri, request)
         .GET()
         .build();
 
     return execute(httpRequest, expectedReturnType);
   }
 
-  protected HttpRequest.Builder createRequestBuilder(String uri) {
-    return HttpRequest.newBuilder()
+  protected <I> HttpRequest.Builder createRequestBuilder(String uri, @Nullable I request) {
+    var requestBuilder = HttpRequest.newBuilder()
            .uri(baseUrl.resolve(uri))
            .header("Accept", "application/json");
+
+    // Handle the authentication
+    Optional.ofNullable(request)
+        .filter(AuthenticatedRequest.class::isInstance)
+        .map(AuthenticatedRequest.class::cast)
+        .map(AuthenticatedRequest::getAuthentication)
+        .map(Authentication::getApiKey)
+        .map(String::trim)
+        .ifPresent(apiKey -> requestBuilder.header(API_KEY_HEADER_NAME, apiKey));
+
+    return requestBuilder;
   }
 
   protected <T> T getResponse(HttpResponse<String> response, Class<T> expectedReturnType) {
@@ -237,12 +279,12 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  public ClearResponse clearConverters() {
-    return this.clearOps.clearConverters();
+  public ClearResponse clearConverters(ClearConvertersRequest request) {
+    return this.clearOps.clearConverters(request);
   }
 
   @Override
-  public ClearResponse clearResults(ClearRequest request) {
+  public ClearResponse clearResults(ClearResultsRequest request) {
     return this.clearOps.clearResults(request);
   }
 

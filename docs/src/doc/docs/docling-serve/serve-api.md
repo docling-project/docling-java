@@ -85,11 +85,7 @@ System.out.println(response.getDocument().getMarkdownContent());
 
 ### The `DoclingServeApi` interface
 
-Defined in `ai.docling.serve.api.DoclingServeApi`, this interface exposes two primary operations:
-
-- `health()` → returns a `HealthCheckResponse` with service status.
-- `convertSource(request)` → submits one or more sources plus options and an optional target,
-  returning `ConvertDocumentResponse`.
+Defined in `ai.docling.serve.api.DoclingServeApi`, this interface exposes many operations:
 
 Any HTTP or non-HTTP implementation can implement this interface. The reference implementation is
 provided by the `docling-serve-client` module.

@@ -143,6 +143,8 @@ DoclingServeContainerConfig config = DoclingServeContainerConfig.builder()
     ))
     // Increase startup timeout if your CI is slow to pull images
     .startupTimeout(Duration.ofMinutes(2))
+    // Set an optional api key for that consumers must specify
+    .apiKey("my-secret-api-key")
     .build();
 
 DoclingServeContainer container = new DoclingServeContainer(config);

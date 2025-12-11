@@ -8,6 +8,8 @@ Docling Java {{ gradle.project_version }} provides a number of new features, enh
 
 * Implementation of the Docling Serve clear and task APIs in `docling-serve-api` and `docling-serve-client`.
 * Adding `pretty-print` configuration option to `DoclingServeClient` to enable pretty printing of JSON requests and responses.
+* Adding the ability to specify an api key for the Docling Serve Testcontainer.
+* Adding the ability to specify the api key for the Docling Serve requests.
 
 ### 0.3.0
 

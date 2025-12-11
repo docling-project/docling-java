@@ -21,4 +21,5 @@ dependencies {
   testImplementation(libs.jackson.databind)
   testImplementation(libs.testcontainers.junit.jupiter)
   testImplementation(libs.slf4j.simple)
+  testImplementation(project(":docling-serve-client"))
 }

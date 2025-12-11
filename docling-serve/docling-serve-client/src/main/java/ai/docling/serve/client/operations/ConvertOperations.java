@@ -1,4 +1,4 @@
-package ai.docling.serve.client;
+package ai.docling.serve.client.operations;
 
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
@@ -9,10 +9,10 @@ import ai.docling.serve.api.util.ValidationUtils;
  * Base class for document conversion API operations. Provides access to document
  * conversion functionality.
  */
-final class ConvertOperations implements DoclingServeConvertApi {
+public final class ConvertOperations implements DoclingServeConvertApi {
   private final HttpOperations httpOperations;
 
-  ConvertOperations(HttpOperations httpOperations) {
+  public ConvertOperations(HttpOperations httpOperations) {
     this.httpOperations = httpOperations;
   }
 

@@ -1,6 +1,7 @@
 package ai.docling.serve.api;
 
-import ai.docling.serve.api.clear.request.ClearRequest;
+import ai.docling.serve.api.clear.request.ClearConvertersRequest;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 
 /**
@@ -11,23 +12,27 @@ import ai.docling.serve.api.clear.response.ClearResponse;
  */
 public interface DoclingServeClearApi {
   /**
-   * Clears all registered converters associated with the API.
-   * This method removes any previously configured or cached converters,
-   * effectively resetting the converter state to an uninitialized state.
-   * After invoking this method, no converters will be available until new ones are added or configured.
+   * Clears all currently configured converters within the Docling Serve API.
+   * This operation removes any registered converters, effectively resetting
+   * the system to a state without active converter configurations.
+   *
+   * @param request an instance of {@link ClearConvertersRequest} containing
+   *                the authentication details required to authorize this operation.
+   * @return a {@link ClearResponse} object indicating the status of the clear
+   *         operation, such as success or failure.
    */
-  ClearResponse clearConverters();
+  ClearResponse clearConverters(ClearConvertersRequest request);
 
   /**
-   * Clears stored results based on the specified {@link ClearRequest}.
+   * Clears stored results based on the specified {@link ClearResultsRequest}.
    * This method removes results that match the criteria provided in the
    * request, such as results older than a specified duration.
    *
-   * @param request an instance of {@link ClearRequest} containing the criteria
+   * @param request an instance of {@link ClearResultsRequest} containing the criteria
    *                for clearing stored results, including the duration threshold
    *                or other parameters.
    * @return a {@link ClearResponse} object indicating the status of the clear
    *         operation, such as success or failure.
    */
-  ClearResponse clearResults(ClearRequest request);
+  ClearResponse clearResults(ClearResultsRequest request);
 }

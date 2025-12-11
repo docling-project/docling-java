@@ -14,6 +14,9 @@ open module ai.docling.serve.api {
   exports ai.docling.serve.api.health;
   exports ai.docling.serve.api.util;
 
+  // Auth
+  exports ai.docling.serve.api.auth;
+
   // Chunking API
   exports ai.docling.serve.api.chunk.request;
   exports ai.docling.serve.api.chunk.request.options;

@@ -1,4 +1,4 @@
-package ai.docling.serve.client;
+package ai.docling.serve.client.operations;
 
 import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
@@ -12,10 +12,10 @@ import ai.docling.serve.api.util.ValidationUtils;
  * Base class for task API operations. Provides operations for managing and querying
  * the status of asynchronous tasks.
  */
-final class TaskOperations implements DoclingServeTaskApi {
+public final class TaskOperations implements DoclingServeTaskApi {
   private final HttpOperations httpOperations;
 
-  TaskOperations(HttpOperations httpOperations) {
+  public TaskOperations(HttpOperations httpOperations) {
     this.httpOperations = httpOperations;
   }
 
@@ -61,7 +61,7 @@ final class TaskOperations implements DoclingServeTaskApi {
    */
   public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), ConvertDocumentResponse.class);
+    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), request, ConvertDocumentResponse.class);
   }
 
   /**
@@ -79,6 +79,6 @@ final class TaskOperations implements DoclingServeTaskApi {
    */
   public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), ChunkDocumentResponse.class);
+    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), request, ChunkDocumentResponse.class);
   }
 }

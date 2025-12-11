@@ -3,6 +3,8 @@ package ai.docling.testcontainers.serve.config;
 import java.time.Duration;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A configuration interface for defining properties and settings related
  * to the Docling container. This interface provides methods for retrieving
@@ -69,6 +71,14 @@ public interface DoclingServeContainerConfig {
   Duration startupTimeout();
 
   /**
+   * Retrieves the API key associated with the configuration.
+   *
+   * @return a {@code String} representing the API key.
+   */
+  @Nullable
+  String apiKey();
+
+  /**
    * Creates a new instance of {@link Builder} initialized with the current configuration values.
    *
    * @return a new {@link Builder} instance with the properties of the current configuration.
@@ -133,6 +143,16 @@ public interface DoclingServeContainerConfig {
     protected Duration startupTimeout;
 
     /**
+     * The API key used for authenticating with external services or systems.
+     * This key is typically required to enable secure communication and interaction
+     * with third-party APIs or services.
+     *
+     * This field is protected and may be configured through the {@link Builder} class.
+     */
+    @Nullable
+    protected String apiKey;
+
+    /**
      * Initializes a new instance of the {@link Builder} class.
      * This constructor is protected to restrict direct instantiation outside the package
      * and is primarily used for creating builder instances within the {@link DoclingServeContainerConfig} implementation.
@@ -151,6 +171,7 @@ public interface DoclingServeContainerConfig {
       this.enableUi = config.enableUi();
       this.containerEnv = config.containerEnv();
       this.startupTimeout = config.startupTimeout();
+      this.apiKey = config.apiKey();
     }
 
     /**
@@ -211,6 +232,18 @@ public interface DoclingServeContainerConfig {
      */
     public Builder startupTimeout(Duration startupTimeout) {
       this.startupTimeout = startupTimeout;
+      return this;
+    }
+
+    /**
+     * Sets the API key to be used for the container configuration.
+     *
+     * @param apiKey the API key as a string; this value is used to authenticate
+     *               or authorize the container's operations
+     * @return the builder instance for method chaining
+     */
+    public Builder apiKey(String apiKey) {
+      this.apiKey = apiKey;
       return this;
     }
 

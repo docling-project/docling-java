@@ -1,32 +1,31 @@
-package ai.docling.serve.api.task.request;
+package ai.docling.serve.api.clear.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import ai.docling.serve.api.auth.Authentication;
 
-class TaskResultRequestTests {
+class ClearResultsRequestTests {
   @Test
-  void nullTaskId() {
+  void nullOlderThen() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(() -> TaskResultRequest.builder().taskId(null).build())
-        .withMessage("taskId is marked non-null but is null");
+        .isThrownBy(() -> ClearResultsRequest.builder().olderThen(null).build())
+        .withMessage("olderThen is marked non-null but is null");
   }
 
   @Test
-  void noTaskId() {
-    assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(() -> TaskResultRequest.builder().build())
-        .withMessage("taskId is marked non-null but is null");
-  }
+  void defaultOlderThen() {
+    var request = ClearResultsRequest.builder().build();
 
-  @Test
-  void buildWithoutAuth() {
-    var request = TaskResultRequest.builder().taskId("1").build();
+    assertThat(request)
+        .isNotNull()
+        .extracting(ClearResultsRequest::getOlderThen)
+        .asInstanceOf(InstanceOfAssertFactories.DURATION)
+        .isEqualByComparingTo(ClearResultsRequest.DEFAULT_OLDER_THAN);
 
-    assertThat(request.getTaskId()).isEqualTo("1");
     assertThat(request.getAuthentication())
         .isNotNull()
         .extracting(Authentication::getApiKey)
@@ -35,8 +34,7 @@ class TaskResultRequestTests {
 
   @Test
   void buildWithAuth() {
-    var request = TaskResultRequest.builder()
-        .taskId("1")
+    var request = ClearResultsRequest.builder()
         .authentication(Authentication.builder().apiKey("key").build())
         .build();
 

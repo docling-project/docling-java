@@ -1,4 +1,4 @@
-package ai.docling.serve.client;
+package ai.docling.serve.client.operations;
 
 import ai.docling.serve.api.DoclingServeHealthApi;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -7,10 +7,10 @@ import ai.docling.serve.api.health.HealthCheckResponse;
  * Base class for health API operations. Provides access to health check functionality
  * of the Docling service.
  */
-final class HealthOperations implements DoclingServeHealthApi {
+public final class HealthOperations implements DoclingServeHealthApi {
   private final HttpOperations httpOperations;
 
-  HealthOperations(HttpOperations httpOperations) {
+  public HealthOperations(HttpOperations httpOperations) {
     this.httpOperations = httpOperations;
   }
 

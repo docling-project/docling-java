@@ -53,6 +53,10 @@ public class DoclingServeContainer extends GenericContainer<DoclingServeContaine
     }
 
     withStartupTimeout(config.startupTimeout());
+
+    Optional.ofNullable(config.apiKey())
+        .map(String::strip)
+        .ifPresent(apiKey -> withEnv("DOCLING_SERVE_API_KEY", apiKey));
   }
 
   /**

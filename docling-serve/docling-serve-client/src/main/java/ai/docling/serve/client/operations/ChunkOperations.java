@@ -1,4 +1,4 @@
-package ai.docling.serve.client;
+package ai.docling.serve.client.operations;
 
 import ai.docling.serve.api.DoclingServeChunkApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
@@ -10,10 +10,10 @@ import ai.docling.serve.api.util.ValidationUtils;
  * Base class for document chunking API operations. Provides access to document chunking
  * functionality with both hierarchical and hybrid strategies.
  */
-final class ChunkOperations implements DoclingServeChunkApi {
+public final class ChunkOperations implements DoclingServeChunkApi {
   private final HttpOperations httpOperations;
 
-  ChunkOperations(HttpOperations httpOperations) {
+  public ChunkOperations(HttpOperations httpOperations) {
     this.httpOperations = httpOperations;
   }
 

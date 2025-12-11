@@ -1,18 +1,21 @@
 package ai.docling.testcontainers.serve;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import ai.docling.serve.api.auth.Authentication;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
+import ai.docling.serve.api.clear.response.ClearResponse;
+import ai.docling.serve.api.health.HealthCheckResponse;
+import ai.docling.serve.client.DoclingServeClientBuilderFactory;
+import ai.docling.serve.client.DoclingServeClientException;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
 import tools.jackson.databind.json.JsonMapper;
@@ -20,7 +23,7 @@ import tools.jackson.databind.json.JsonMapper;
 @Testcontainers
 class DoclingServeContainerAvailableTests {
   private static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
-  private record HealthResponse(String status) {}
+  private static final String DEFAULT_API_KEY = "default-api-key";
 
   @Container
   private final DoclingServeContainer doclingContainer = new DoclingServeContainer(
@@ -38,22 +41,25 @@ class DoclingServeContainerAvailableTests {
         .build()
   );
 
+  @Container
+  private final DoclingServeContainer withApiKeyDoclingContainer = new DoclingServeContainer(
+      DoclingServeContainerConfig.builder()
+          .image(DoclingServeContainerConfig.DOCLING_IMAGE)
+          .enableUi(true)
+          .apiKey(DEFAULT_API_KEY)
+          .build()
+  );
+
   @Test
-  void containerNoUI() throws IOException, InterruptedException {
-    var healthRequest = HttpRequest.newBuilder(URI.create("%s/health".formatted(this.noUiDoclingContainer.getApiUrl())))
-        .header("Accept", "application/json")
-        .timeout(Duration.ofSeconds(10))
-        .GET()
+  void containerNoUI() {
+    var client = DoclingServeClientBuilderFactory.newBuilder()
+        .baseUrl(this.noUiDoclingContainer.getApiUrl())
         .build();
 
-    var response = HttpClient.newHttpClient()
-        .send(healthRequest, jsonBodyHandler(HealthResponse.class))
-        .body();
-
-    assertThat(response)
+    assertThat(client.health())
         .isNotNull()
-        .usingRecursiveComparison()
-        .isEqualTo(new HealthResponse("ok"));
+        .extracting(HealthCheckResponse::getStatus)
+        .isEqualTo("ok");
 
     assertThat(this.noUiDoclingContainer.getUiUrl())
         .isNotNull()
@@ -62,24 +68,69 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerAvailable() throws IOException, InterruptedException {
-    var healthRequest = HttpRequest.newBuilder(URI.create("%s/health".formatted(this.doclingContainer.getApiUrl())))
-        .header("Accept", "application/json")
-        .timeout(Duration.ofSeconds(10))
-        .GET()
+    var client = DoclingServeClientBuilderFactory.newBuilder()
+        .baseUrl(this.noUiDoclingContainer.getApiUrl())
         .build();
 
-    var response = HttpClient.newHttpClient()
-        .send(healthRequest, jsonBodyHandler(DoclingServeContainerAvailableTests.HealthResponse.class))
-        .body();
-
-    assertThat(response)
+    assertThat(client.health())
         .isNotNull()
-        .usingRecursiveComparison()
-        .isEqualTo(new HealthResponse("ok"));
+        .extracting(HealthCheckResponse::getStatus)
+        .isEqualTo("ok");
 
     assertThat(this.doclingContainer.getUiUrl())
         .get()
         .isEqualTo("%s/ui".formatted(this.doclingContainer.getApiUrl()));
+  }
+
+  @Test
+  void containerWithApiKeyClientWithout() {
+    var client = DoclingServeClientBuilderFactory.newBuilder()
+        .baseUrl(this.withApiKeyDoclingContainer.getApiUrl())
+        .logRequests()
+        .logResponses()
+        .prettyPrint()
+        .build();
+
+    assertThatThrownBy(() -> client.clearResults(ClearResultsRequest.builder().build()))
+        .hasRootCauseInstanceOf(DoclingServeClientException.class)
+        .rootCause()
+        .hasMessageContaining("Unauthorized")
+        .extracting(t -> ((DoclingServeClientException) t).getStatusCode())
+        .isEqualTo(401);
+  }
+
+  @Test
+  void containerWithoutApiKeyClientWith() {
+    var client = DoclingServeClientBuilderFactory.newBuilder()
+        .baseUrl(this.doclingContainer.getApiUrl())
+        .logRequests()
+        .logResponses()
+        .prettyPrint()
+        .build();
+
+    var auth = Authentication.builder().apiKey(DEFAULT_API_KEY).build();
+
+    assertThat(client.clearResults(ClearResultsRequest.builder().authentication(auth).build()))
+        .isNotNull()
+        .extracting(ClearResponse::getStatus)
+        .isEqualTo("ok");
+  }
+
+  @Test
+  void containerWithApiKeyClientWith() {
+    var client = DoclingServeClientBuilderFactory.newBuilder()
+        .baseUrl(this.withApiKeyDoclingContainer.getApiUrl())
+        .logRequests()
+        .logResponses()
+        .prettyPrint()
+        .build();
+
+    var auth = Authentication.builder().apiKey(DEFAULT_API_KEY).build();
+
+    assertThat(client.clearResults(ClearResultsRequest.builder().authentication(auth).build()))
+        .isNotNull()
+        .extracting(ClearResponse::getStatus)
+        .isEqualTo("ok");
   }
 
   private static <T> HttpResponse.BodyHandler<T> jsonBodyHandler(Class<T> type) {

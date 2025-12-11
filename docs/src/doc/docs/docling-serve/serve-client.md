@@ -134,6 +134,7 @@ DoclingServeApi noisy = DoclingServeClientBuilderFactory.newBuilder()
     .baseUrl("http://localhost:8000")
     .logRequests()
     .logResponses()
+    .prettyPrint()
     .build();
 ```
 

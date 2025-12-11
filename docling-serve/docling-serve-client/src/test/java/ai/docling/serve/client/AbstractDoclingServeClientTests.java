@@ -43,7 +43,8 @@ import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.chunk.request.options.HybridChunkerOptions;
 import ai.docling.serve.api.chunk.response.Chunk;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
-import ai.docling.serve.api.clear.request.ClearRequest;
+import ai.docling.serve.api.clear.request.ClearConvertersRequest;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
@@ -108,7 +109,7 @@ abstract class AbstractDoclingServeClientTests {
   class ClearTests {
     @Test
     void shouldClearConvertersSuccessfully() {
-      var response = getDoclingClient().clearConverters();
+      var response = getDoclingClient().clearConverters(ClearConvertersRequest.builder().build());
 
       assertThat(response)
           .isNotNull()
@@ -118,7 +119,7 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldClearResultsSuccessfully() {
-      var response = getDoclingClient().clearResults(ClearRequest.builder().build());
+      var response = getDoclingClient().clearResults(ClearResultsRequest.builder().build());
 
       assertThat(response)
           .isNotNull()

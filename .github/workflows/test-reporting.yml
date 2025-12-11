@@ -51,7 +51,7 @@ jobs:
 
       - name: Publish JaCoCo report as PR comment
         id: jacoco
-        uses: madrapps/jacoco-report@1.7.2
+        uses: madrapps/jacoco-report@v1.7.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           paths: build-reports-artifacts/**/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml

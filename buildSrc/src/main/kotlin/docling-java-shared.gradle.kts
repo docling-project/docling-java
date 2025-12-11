@@ -1,6 +1,7 @@
 plugins {
   id("docling-shared")
   `java-library`
+  `jacoco`
 }
 
 repositories {
@@ -36,12 +37,18 @@ testing {
   }
 }
 
+jacoco {
+  toolVersion = libs.findVersion("jacoco").get().toString()
+}
+
 tasks.withType<Test>().configureEach {
   // Use JUnit Platform for unit tests.
   useJUnitPlatform()
 
   maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
   forkEvery = 100
+  
+  finalizedBy(tasks.named("jacocoTestReport"))
 
   testLogging {
     events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR")

@@ -49,6 +49,21 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish JaCoCo report as PR comment
+        id: jacoco
+        uses: madrapps/jacoco-report@50d3aff4548aa991e6753342d9ba291084e63848 # 1.7.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          paths: build-reports-artifacts/**/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          update-comment: true
+          title: "# :java_duke: JaCoCo coverage report"
+          min-coverage-overall: 50
+          min-coverage-changed-files: 60
+          comment-type: both
+          pr-number: ${{ needs.get-pr-info.outputs.pr_number}}
+          pass-emoji: ':green_circle:'
+          fail-emoji: ':red_circle:'
+
       - name: Publish JUnit test report (PR comment with collapsed failures)
         uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6 # v6.0.1
         env:

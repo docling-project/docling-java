@@ -1049,6 +1049,8 @@
 <span class="w">    </span><span class="p">))</span>
 <span class="w">    </span><span class="c1">// Increase startup timeout if your CI is slow to pull images</span>
 <span class="w">    </span><span class="p">.</span><span class="na">startupTimeout</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="w">    </span><span class="c1">// Set an optional api key for that consumers must specify</span>
+<span class="w">    </span><span class="p">.</span><span class="na">apiKey</span><span class="p">(</span><span class="s">&quot;my-secret-api-key&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">DoclingServeContainer</span><span class="w"> </span><span class="n">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DoclingServeContainer</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>

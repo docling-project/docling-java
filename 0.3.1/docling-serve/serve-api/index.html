@@ -1445,12 +1445,7 @@ build a conversion request, and retrieve Markdown output. The request/response t
 </code></pre></div>
 <h2 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">#</a></h2>
 <h3 id="the-doclingserveapi-interface">The <code>DoclingServeApi</code> interface<a class="headerlink" href="#the-doclingserveapi-interface" title="Permanent link">#</a></h3>
-<p>Defined in <code>ai.docling.serve.api.DoclingServeApi</code>, this interface exposes two primary operations:</p>
-<ul>
-<li><code>health()</code> → returns a <code>HealthCheckResponse</code> with service status.</li>
-<li><code>convertSource(request)</code> → submits one or more sources plus options and an optional target,
-  returning <code>ConvertDocumentResponse</code>.</li>
-</ul>
+<p>Defined in <code>ai.docling.serve.api.DoclingServeApi</code>, this interface exposes many operations:</p>
 <p>Any HTTP or non-HTTP implementation can implement this interface. The reference implementation is
 provided by the <code>docling-serve-client</code> module.</p>
 <h3 id="requests-convertdocumentrequest">Requests: <code>ConvertDocumentRequest</code><a class="headerlink" href="#requests-convertdocumentrequest" title="Permanent link">#</a></h3>

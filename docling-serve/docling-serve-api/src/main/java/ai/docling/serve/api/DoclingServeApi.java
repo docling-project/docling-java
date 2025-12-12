@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
  */
 public interface DoclingServeApi
     extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
+
   /**
    * Creates and returns a builder instance capable of constructing a duplicate or modified
    * version of the current API instance. The builder provides a customizable way to adjust

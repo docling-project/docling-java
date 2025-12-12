@@ -10,6 +10,7 @@ Docling Java {{ gradle.project_version }} provides a number of new features, enh
 * Adding `pretty-print` configuration option to `DoclingServeClient` to enable pretty printing of JSON requests and responses.
 * Adding the ability to specify an api key for the Docling Serve Testcontainer.
 * Adding the ability to specify the api key for the Docling Serve requests.
+* Adding async conversion support via `convertSourceAsync(ConvertDocumentRequest)` which returns a `CompletableFuture<ConvertDocumentResponse>`. The method handles all polling internally and completes the future when the conversion is done. Configurable via `asyncPollInterval(Duration)` and `asyncTimeout(Duration)` builder methods.
 
 ### 0.3.0
 

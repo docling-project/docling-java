@@ -5,6 +5,7 @@ import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.time.Duration;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Subscriber;
 
 import org.jspecify.annotations.Nullable;
@@ -75,12 +77,14 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final boolean logResponses;
   private final boolean prettyPrintJson;
   private final @Nullable String apiKey;
+  private final Duration asyncPollInterval;
+  private final Duration asyncTimeout;
 
-  private final HealthOperations healthOps = new HealthOperations(this);
-  private final ConvertOperations convertOps = new ConvertOperations(this);
-  private final ChunkOperations chunkOps = new ChunkOperations(this);
-  private final ClearOperations clearOps = new ClearOperations(this);
-  private final TaskOperations taskOps = new TaskOperations(this);
+  private final HealthOperations healthOps;
+  private final ConvertOperations convertOps;
+  private final ChunkOperations chunkOps;
+  private final ClearOperations clearOps;
+  private final TaskOperations taskOps;
 
   protected DoclingServeClient(DoclingServeClientBuilder builder) {
     this.baseUrl = ensureNotNull(builder.baseUrl, "baseUrl");
@@ -97,6 +101,15 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     this.logResponses = builder.logResponses;
     this.prettyPrintJson = builder.prettyPrintJson;
     this.apiKey = builder.apiKey;
+    this.asyncPollInterval = builder.asyncPollInterval;
+    this.asyncTimeout = builder.asyncTimeout;
+
+    // Initialize operations handlers
+    this.healthOps = new HealthOperations(this);
+    this.taskOps = new TaskOperations(this);
+    this.convertOps = new ConvertOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout);
+    this.chunkOps = new ChunkOperations(this);
+    this.clearOps = new ClearOperations(this);
   }
 
   /**
@@ -285,6 +298,11 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     return this.clearOps.clearResults(request);
   }
 
+  @Override
+  public CompletableFuture<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
+    return this.convertOps.convertSourceAsync(request);
+  }
+
   private class LoggingBodyPublisher<T> implements BodyPublisher {
     private final BodyPublisher delegate;
     private final String stringContent;
@@ -333,6 +351,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     private boolean logResponses = false;
     private boolean prettyPrintJson = false;
     private @Nullable String apiKey;
+    private Duration asyncPollInterval = Duration.ofSeconds(2);
+    private Duration asyncTimeout = Duration.ofMinutes(5);
 
     /**
      * Protected constructor for use by subclasses of {@link DoclingServeClientBuilder}.
@@ -422,6 +442,42 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     @Override
     public B prettyPrint(boolean prettyPrint) {
       this.prettyPrintJson = prettyPrint;
+      return (B) this;
+    }
+
+    /**
+     * Sets the polling interval for async operations.
+     *
+     * <p>This configures how frequently the client will check the status of async
+     * conversion tasks when using {@link DoclingServeApi#convertSourceAsyncAndWait(ConvertDocumentRequest)}.
+     *
+     * @param asyncPollInterval the polling interval (must not be null or negative)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if asyncPollInterval is null or negative
+     */
+    public B asyncPollInterval(Duration asyncPollInterval) {
+      if (asyncPollInterval == null || asyncPollInterval.isNegative() || asyncPollInterval.isZero()) {
+        throw new IllegalArgumentException("asyncPollInterval must be a positive duration");
+      }
+      this.asyncPollInterval = asyncPollInterval;
+      return (B) this;
+    }
+
+    /**
+     * Sets the timeout for async operations.
+     *
+     * <p>This configures the maximum time to wait for an async conversion task to complete
+     * when using {@link DoclingServeApi#convertSourceAsyncAndWait(ConvertDocumentRequest)}.
+     *
+     * @param asyncTimeout the timeout duration (must not be null or negative)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if asyncTimeout is null or negative
+     */
+    public B asyncTimeout(Duration asyncTimeout) {
+      if (asyncTimeout == null || asyncTimeout.isNegative() || asyncTimeout.isZero()) {
+        throw new IllegalArgumentException("asyncTimeout must be a positive duration");
+      }
+      this.asyncTimeout = asyncTimeout;
       return (B) this;
     }
   }

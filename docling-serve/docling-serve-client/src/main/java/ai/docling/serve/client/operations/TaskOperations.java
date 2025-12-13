@@ -37,12 +37,11 @@ public final class TaskOperations implements DoclingServeTaskApi {
   public TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
 
-    return this.httpOperations.executeGet(
+    return this.httpOperations.executeGet(createRequestContext(
         "/v1/status/poll/%s?wait=%d".formatted(
             request.getTaskId(),
-            request.getWaitTime().toSeconds()
-        ),
-        TaskStatusPollResponse.class
+            request.getWaitTime().toSeconds()),
+        TaskStatusPollResponse.class)
     );
   }
 
@@ -61,7 +60,7 @@ public final class TaskOperations implements DoclingServeTaskApi {
    */
   public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), request, ConvertDocumentResponse.class);
+    return this.httpOperations.executeGet(createRequestContext("/v1/result/%s".formatted(request.getTaskId()), ConvertDocumentResponse.class));
   }
 
   /**
@@ -79,6 +78,13 @@ public final class TaskOperations implements DoclingServeTaskApi {
    */
   public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executeGet("/v1/result/%s".formatted(request.getTaskId()), request, ChunkDocumentResponse.class);
+    return this.httpOperations.executeGet(createRequestContext("/v1/result/%s".formatted(request.getTaskId()), ChunkDocumentResponse.class));
+  }
+
+  private <O> RequestContext<Object, O> createRequestContext(String uri, Class<O> responseType) {
+    return RequestContext.<Object, O>builder()
+        .responseType(responseType)
+        .uri(uri)
+        .build();
   }
 }

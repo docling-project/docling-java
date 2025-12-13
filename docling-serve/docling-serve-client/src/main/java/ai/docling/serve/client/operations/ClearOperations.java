@@ -30,7 +30,7 @@ public final class ClearOperations implements DoclingServeClearApi {
    *         including details such as the status of the operation.
    */
   public ClearResponse clearConverters(ClearConvertersRequest request) {
-    return this.httpOperations.executeGet("/v1/clear/converters", request, ClearResponse.class);
+    return this.httpOperations.executeGet(createRequestContext("/v1/clear/converters", request));
   }
 
   /**
@@ -44,7 +44,14 @@ public final class ClearOperations implements DoclingServeClearApi {
    */
   public ClearResponse clearResults(ClearResultsRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
+    return this.httpOperations.executeGet(createRequestContext("/v1/clear/results?older_then=%d".formatted(request.getOlderThen().toSeconds()), request));
+  }
 
-    return this.httpOperations.executeGet("/v1/clear/results?older_then=%d".formatted(request.getOlderThen().toSeconds()), request, ClearResponse.class);
+  private <I> RequestContext<I, ClearResponse> createRequestContext(String uri, I request) {
+    return RequestContext.<I, ClearResponse>builder()
+        .request(request)
+        .responseType(ClearResponse.class)
+        .uri(uri)
+        .build();
   }
 }

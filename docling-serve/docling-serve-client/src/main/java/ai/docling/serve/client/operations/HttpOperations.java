@@ -14,42 +14,26 @@ public abstract class HttpOperations {
   public static final String API_KEY_HEADER_NAME = "X-Api-Key";
 
   /**
-   * Executes an HTTP GET request to the specified URI and deserializes the response into the given type.
+   * Executes an HTTP GET request using the details specified in the provided {@code RequestContext}.
    *
-   * @param <I> Parameter type for the request
-   * @param <O> the expected return type for the deserialized response.
-   * @param uri the URI to send the GET request to.
-   * @param request parameters for the request
-   * @param expectedReturnType the class representing the type to which the response should be deserialized.
-   * @return an instance of the specified type containing the deserialized response data.
+   * @param <I> the type of the request payload
+   * @param <O> the type of the response object
+   * @param requestContext the context containing details such as the URI, request payload,
+   *        and expected response type of the GET operation
+   * @return an instance of the response type {@code O}, which represents the deserialized response data
    */
-  protected abstract <I, O> O executeGet(String uri, I request, Class<O> expectedReturnType);
+  protected abstract <I, O> O executeGet(RequestContext<I, O> requestContext);
 
   /**
-   * Executes an HTTP GET request to the specified URI and deserializes
-   * the response into the given type.
+   * Executes an HTTP POST request using the details provided in the {@code RequestContext}.
+   * This method is designed to be implemented by subclasses and facilitates sending POST requests
+   * with a specified request payload and receiving a deserialized response.
    *
-   * @param <O> the expected return type for the deserialized response.
-   * @param uri the URI to send the GET request to. Must not be null.
-   * @param expectedReturnType the class representing the type to which
-   *        the response should be deserialized. Must not be null.
-   * @return an instance of the specified type containing the deserialized
-   *         response data.
+   * @param <I> the type of the request payload
+   * @param <O> the type of the response object
+   * @param requestContext the context containing details such as the URI, request payload, and
+   *        expected response type of the POST operation
+   * @return an instance of the response type {@code O}, which represents the deserialized response data
    */
-  protected <O> O executeGet(String uri, Class<O> expectedReturnType) {
-    return executeGet(uri, null, expectedReturnType);
-  }
-
-  /**
-   * Executes an HTTP POST request to the specified URI with the given request payload and deserializes
-   * the response into the specified return type.
-   *
-   * @param <I> Parameter type for the request
-   * @param <O> the expected return type for the deserialized response.
-   * @param uri the URI to send the POST request to.
-   * @param request parameters for the request
-   * @param expectedReturnType the class representing the type to which the response should be deserialized.
-   * @return an instance of the specified type containing the deserialized response data.
-   */
-  protected abstract <I, O> O executePost(String uri, I request, Class<O> expectedReturnType);
+  protected abstract <I, O> O executePost(RequestContext<I, O> requestContext);
 }

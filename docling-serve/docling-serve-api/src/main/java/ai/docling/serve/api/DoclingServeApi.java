@@ -1,5 +1,7 @@
 package ai.docling.serve.api;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Docling Serve API interface.
  */
@@ -23,6 +25,19 @@ public interface DoclingServeApi
    * @param <B> the type of the concrete builder implementation.
    */
   interface DoclingApiBuilder<T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> {
+    /**
+     * Sets the API key for authenticating requests made by the client being built.
+     *
+     * The provided API key will be used as a credential to authorize and authenticate
+     * API requests. This method updates the configuration of the builder with the specified
+     * API key and ensures that the API client includes it in its requests as required for
+     * secure access to the API.
+     *
+     * @param apiKey the API key to be used for authenticating API requests
+     * @return {@code this} builder instance for fluent API usage
+     */
+    B apiKey(@Nullable String apiKey);
+
     /**
      * Enables logging of requests for the API client being built. This can be useful for
      * debugging or monitoring the behavior of requests made to the API.

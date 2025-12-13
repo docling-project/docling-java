@@ -3,14 +3,10 @@ package ai.docling.testcontainers.serve;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.io.IOException;
-import java.net.http.HttpResponse;
-
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import ai.docling.serve.api.auth.Authentication;
 import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -67,7 +63,7 @@ class DoclingServeContainerAvailableTests {
   }
 
   @Test
-  void containerAvailable() throws IOException, InterruptedException {
+  void containerAvailable() {
     var client = DoclingServeClientBuilderFactory.newBuilder()
         .baseUrl(this.noUiDoclingContainer.getApiUrl())
         .build();
@@ -106,11 +102,10 @@ class DoclingServeContainerAvailableTests {
         .logRequests()
         .logResponses()
         .prettyPrint()
+        .apiKey(DEFAULT_API_KEY)
         .build();
 
-    var auth = Authentication.builder().apiKey(DEFAULT_API_KEY).build();
-
-    assertThat(client.clearResults(ClearResultsRequest.builder().authentication(auth).build()))
+    assertThat(client.clearResults(ClearResultsRequest.builder().build()))
         .isNotNull()
         .extracting(ClearResponse::getStatus)
         .isEqualTo("ok");
@@ -123,26 +118,12 @@ class DoclingServeContainerAvailableTests {
         .logRequests()
         .logResponses()
         .prettyPrint()
+        .apiKey(DEFAULT_API_KEY)
         .build();
 
-    var auth = Authentication.builder().apiKey(DEFAULT_API_KEY).build();
-
-    assertThat(client.clearResults(ClearResultsRequest.builder().authentication(auth).build()))
+    assertThat(client.clearResults(ClearResultsRequest.builder().build()))
         .isNotNull()
         .extracting(ClearResponse::getStatus)
         .isEqualTo("ok");
-  }
-
-  private static <T> HttpResponse.BodyHandler<T> jsonBodyHandler(Class<T> type) {
-    return responseInfo -> HttpResponse.BodySubscribers.mapping(
-        HttpResponse.BodySubscribers.ofByteArray(),
-        bytes -> {
-          try {
-            return JSON_MAPPER.readValue(bytes, type);
-          } catch (Exception e) {
-            throw new RuntimeException(e);
-          }
-        }
-    );
   }
 }

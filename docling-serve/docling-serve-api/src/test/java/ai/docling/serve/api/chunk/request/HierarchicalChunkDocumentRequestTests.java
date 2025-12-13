@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import ai.docling.serve.api.auth.Authentication;
 import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.source.FileSource;
@@ -41,10 +40,6 @@ class HierarchicalChunkDocumentRequestTests {
         .build();
     assertThat(request.getSources()).hasSize(1);
     assertThat(request.getSources().get(0)).isInstanceOf(HttpSource.class);
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -59,11 +54,6 @@ class HierarchicalChunkDocumentRequestTests {
     assertThat(request.getSources())
         .hasSize(2)
         .allSatisfy(source -> assertThat(source).isInstanceOf(HttpSource.class));
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -75,11 +65,6 @@ class HierarchicalChunkDocumentRequestTests {
     assertThat(request.getSources())
         .hasSize(1)
         .allSatisfy(source -> assertThat(source).isInstanceOf(FileSource.class));
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -95,11 +80,6 @@ class HierarchicalChunkDocumentRequestTests {
     assertThat(request.getSources())
         .hasSize(2)
         .allSatisfy(source -> assertThat(source).isInstanceOf(FileSource.class));
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -125,11 +105,6 @@ class HierarchicalChunkDocumentRequestTests {
         .asInstanceOf(type(FileSource.class))
         .extracting(FileSource::getFilename, FileSource::getBase64String)
         .containsExactly("test.txt", "dGVzdCBjb250ZW50");
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -140,10 +115,6 @@ class HierarchicalChunkDocumentRequestTests {
         .build();
 
     assertThat(request.isIncludeConvertedDoc()).isTrue();
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -164,11 +135,6 @@ class HierarchicalChunkDocumentRequestTests {
           assertThat(options.isUseMarkdownTables()).isTrue();
           assertThat(options.isIncludeRawText()).isFalse();
         });
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -191,10 +157,6 @@ class HierarchicalChunkDocumentRequestTests {
     assertThat(request.getTarget()).isNotNull();
     assertThat(request.isIncludeConvertedDoc()).isTrue();
     assertThat(request.getChunkingOptions()).isNotNull();
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
   }
 
   @Test
@@ -207,21 +169,5 @@ class HierarchicalChunkDocumentRequestTests {
     assertThat(request.isIncludeConvertedDoc()).isFalse();
     assertThat(request.getChunkingOptions()).isNotNull();
     assertThat(request.getTarget()).isNull();
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
-  }
-
-  @Test
-  void buildWithAuth() {
-    var request = HierarchicalChunkDocumentRequest.builder()
-        .authentication(Authentication.builder().apiKey("key").build())
-        .build();
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isEqualTo("key");
   }
 }

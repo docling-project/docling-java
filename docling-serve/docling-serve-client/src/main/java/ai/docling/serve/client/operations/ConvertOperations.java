@@ -24,6 +24,14 @@ public final class ConvertOperations implements DoclingServeConvertApi {
    */
   public ConvertDocumentResponse convertSource(ConvertDocumentRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executePost("/v1/convert/source", request, ConvertDocumentResponse.class);
+    return this.httpOperations.executePost(createRequestContext("/v1/convert/source", request));
+  }
+
+  private <I> RequestContext<I, ConvertDocumentResponse> createRequestContext(String uri, I request) {
+    return RequestContext.<I, ConvertDocumentResponse>builder()
+        .request(request)
+        .responseType(ConvertDocumentResponse.class)
+        .uri(uri)
+        .build();
   }
 }

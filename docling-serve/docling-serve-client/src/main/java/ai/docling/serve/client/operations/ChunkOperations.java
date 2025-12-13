@@ -23,7 +23,7 @@ public final class ChunkOperations implements DoclingServeChunkApi {
    */
   public ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executePost("/v1/chunk/hierarchical/source", request, ChunkDocumentResponse.class);
+    return this.httpOperations.executePost(createRequestContext("/v1/chunk/hierarchical/source", request));
   }
 
   /**
@@ -32,6 +32,14 @@ public final class ChunkOperations implements DoclingServeChunkApi {
    */
   public ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
-    return this.httpOperations.executePost("/v1/chunk/hybrid/source", request, ChunkDocumentResponse.class);
+    return this.httpOperations.executePost(createRequestContext("/v1/chunk/hybrid/source", request));
+  }
+
+  private <I> RequestContext<I, ChunkDocumentResponse> createRequestContext(String uri, I request) {
+    return RequestContext.<I, ChunkDocumentResponse>builder()
+        .request(request)
+        .responseType(ChunkDocumentResponse.class)
+        .uri(uri)
+        .build();
   }
 }

@@ -2,11 +2,6 @@ package ai.docling.serve.api.clear.request;
 
 import java.time.Duration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import ai.docling.serve.api.auth.AuthenticatedRequest;
-import ai.docling.serve.api.auth.Authentication;
-
 /**
  * Represents a request to clear stale data via the Docling Serve Clear API.
  * This class provides a mechanism to specify a threshold duration, after which data
@@ -22,7 +17,7 @@ import ai.docling.serve.api.auth.Authentication;
 @lombok.Builder(toBuilder = true)
 @lombok.Getter
 @lombok.ToString
-public class ClearResultsRequest implements AuthenticatedRequest {
+public class ClearResultsRequest {
   /**
    * Represents the default duration used as a threshold for clearing stale results
    * or data in the Docling Serve Clear API. Results older than this duration
@@ -35,9 +30,4 @@ public class ClearResultsRequest implements AuthenticatedRequest {
   @lombok.NonNull
   @lombok.Builder.Default
   private Duration olderThen = DEFAULT_OLDER_THAN;
-
-  @JsonIgnore
-  @lombok.NonNull
-  @lombok.Builder.Default
-  private Authentication authentication = Authentication.builder().build();
 }

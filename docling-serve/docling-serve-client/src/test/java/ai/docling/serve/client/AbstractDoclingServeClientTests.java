@@ -95,7 +95,11 @@ abstract class AbstractDoclingServeClientTests {
     doclingContainer.start();
   }
 
-  protected abstract DoclingServeApi getDoclingClient();
+  protected abstract DoclingServeApi getDoclingClient(boolean requiresAuth);
+
+  protected DoclingServeApi getDoclingClient() {
+    return getDoclingClient(true);
+  }
 
   private <T> T readValue(String json, Class<T> valueType) {
     return ((DoclingServeClient) getDoclingClient()).readValue(json, valueType);
@@ -308,7 +312,7 @@ abstract class AbstractDoclingServeClientTests {
   class HealthTests {
     @Test
     void shouldSuccessfullyCallHealthEndpoint() {
-      HealthCheckResponse response = getDoclingClient().health();
+      HealthCheckResponse response = getDoclingClient(false).health();
 
       assertThat(response)
           .isNotNull()

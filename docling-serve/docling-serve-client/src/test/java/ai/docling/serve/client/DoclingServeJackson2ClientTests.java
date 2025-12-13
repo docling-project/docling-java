@@ -9,19 +9,22 @@ import ai.docling.serve.api.DoclingServeApi;
  */
 class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
   private static DoclingServeApi doclingClient;
+  private static DoclingServeApi authDoclingClient;
 
   @BeforeAll
   static void setUp() {
-    doclingClient = DoclingServeJackson2Client.builder()
-        .baseUrl(doclingContainer.getApiUrl())
+    var builder = DoclingServeJackson2Client.builder()
         .logRequests()
         .logResponses()
         .prettyPrint()
-        .build();
+        .baseUrl(doclingContainer.getApiUrl());
+
+    doclingClient = builder.build();
+    authDoclingClient = builder.apiKey("key").build();
   }
 
   @Override
-  protected DoclingServeApi getDoclingClient() {
-    return doclingClient;
+  protected DoclingServeApi getDoclingClient(boolean requiresAuth) {
+    return requiresAuth ? authDoclingClient : doclingClient;
   }
 }

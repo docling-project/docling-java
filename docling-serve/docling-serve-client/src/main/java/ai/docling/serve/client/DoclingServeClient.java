@@ -28,8 +28,6 @@ import ai.docling.serve.api.DoclingServeClearApi;
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeHealthApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
-import ai.docling.serve.api.auth.AuthenticatedRequest;
-import ai.docling.serve.api.auth.Authentication;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
@@ -42,11 +40,13 @@ import ai.docling.serve.api.health.HealthCheckResponse;
 import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
+import ai.docling.serve.api.util.Utils;
 import ai.docling.serve.client.operations.ChunkOperations;
 import ai.docling.serve.client.operations.ClearOperations;
 import ai.docling.serve.client.operations.ConvertOperations;
 import ai.docling.serve.client.operations.HealthOperations;
 import ai.docling.serve.client.operations.HttpOperations;
+import ai.docling.serve.client.operations.RequestContext;
 import ai.docling.serve.client.operations.TaskOperations;
 
 /**
@@ -74,7 +74,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final boolean logRequests;
   private final boolean logResponses;
   private final boolean prettyPrintJson;
-  
+  private final @Nullable String apiKey;
+
   private final HealthOperations healthOps = new HealthOperations(this);
   private final ConvertOperations convertOps = new ConvertOperations(this);
   private final ChunkOperations chunkOps = new ChunkOperations(this);
@@ -95,6 +96,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     this.logRequests = builder.logRequests;
     this.logResponses = builder.logResponses;
     this.prettyPrintJson = builder.prettyPrintJson;
+    this.apiKey = builder.apiKey;
   }
 
   /**
@@ -190,37 +192,32 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  protected <I, O> O executePost(String uri, I request, Class<O> expectedReturnType) {
-    var httpRequest = createRequestBuilder(uri, request)
+  protected <I, O> O executePost(RequestContext<I, O> requestContext) {
+    var httpRequest = createRequestBuilder(requestContext)
         .header("Content-Type", "application/json")
-        .POST(new LoggingBodyPublisher<>(request))
+        .POST(new LoggingBodyPublisher<>(requestContext.getRequest()))
         .build();
 
-    return execute(httpRequest, expectedReturnType);
+    return execute(httpRequest, requestContext.getResponseType());
   }
 
   @Override
-  protected <I, O> O executeGet(String uri, I request, Class<O> expectedReturnType) {
-    var httpRequest = createRequestBuilder(uri, request)
+  protected <I, O> O executeGet(RequestContext<I, O> requestContext) {
+    var httpRequest = createRequestBuilder(requestContext)
         .GET()
         .build();
 
-    return execute(httpRequest, expectedReturnType);
+    return execute(httpRequest, requestContext.getResponseType());
   }
 
-  protected <I> HttpRequest.Builder createRequestBuilder(String uri, @Nullable I request) {
+  protected <I, O> HttpRequest.Builder createRequestBuilder(RequestContext<I, O> requestContext) {
     var requestBuilder = HttpRequest.newBuilder()
-           .uri(baseUrl.resolve(uri))
-           .header("Accept", "application/json");
+        .uri(this.baseUrl.resolve(requestContext.getUri()))
+        .header("Accept", "application/json");
 
-    // Handle the authentication
-    Optional.ofNullable(request)
-        .filter(AuthenticatedRequest.class::isInstance)
-        .map(AuthenticatedRequest.class::cast)
-        .map(AuthenticatedRequest::getAuthentication)
-        .map(Authentication::getApiKey)
-        .map(String::trim)
-        .ifPresent(apiKey -> requestBuilder.header(API_KEY_HEADER_NAME, apiKey));
+      if (Utils.isNotNullOrBlank(this.apiKey)) {
+        requestBuilder.header(API_KEY_HEADER_NAME, this.apiKey);
+      }
 
     return requestBuilder;
   }
@@ -292,9 +289,15 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     private final BodyPublisher delegate;
     private final String stringContent;
 
-    private LoggingBodyPublisher(T content) {
-      this.stringContent = writeValueAsString(content);
-      this.delegate = BodyPublishers.ofString(this.stringContent);
+    private LoggingBodyPublisher(@Nullable T content) {
+      if (content == null) {
+        this.stringContent = "";
+        this.delegate = BodyPublishers.noBody();
+      }
+      else {
+        this.stringContent = writeValueAsString(content);
+        this.delegate = BodyPublishers.ofString(this.stringContent);
+      }
     }
 
     @Override
@@ -329,6 +332,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     private boolean logRequests = false;
     private boolean logResponses = false;
     private boolean prettyPrintJson = false;
+    private @Nullable String apiKey;
 
     /**
      * Protected constructor for use by subclasses of {@link DoclingServeClientBuilder}.
@@ -350,6 +354,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     protected DoclingServeClientBuilder(DoclingServeClient doclingClient) {
       this.baseUrl = doclingClient.baseUrl;
       this.httpClientBuilder = HttpClient.newBuilder();
+      this.apiKey = doclingClient.apiKey;
     }
 
     /**
@@ -393,6 +398,12 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      */
     public B httpClientBuilder(HttpClient.Builder httpClientBuilder) {
       this.httpClientBuilder = httpClientBuilder;
+      return (B) this;
+    }
+
+    @Override
+    public B apiKey(@Nullable String apiKey) {
+      this.apiKey = apiKey;
       return (B) this;
     }
 

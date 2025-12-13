@@ -20,6 +20,13 @@ public final class HealthOperations implements DoclingServeHealthApi {
    * @return a {@link HealthCheckResponse} object containing the health status of the API.
    */
   public HealthCheckResponse health() {
-    return this.httpOperations.executeGet("/health", HealthCheckResponse.class);
+    return this.httpOperations.executeGet(createRequestContext("/health"));
+  }
+
+  private RequestContext<Object, HealthCheckResponse> createRequestContext(String uri) {
+    return RequestContext.<Object, HealthCheckResponse>builder()
+        .responseType(HealthCheckResponse.class)
+        .uri(uri)
+        .build();
   }
 }

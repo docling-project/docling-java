@@ -1,10 +1,5 @@
 package ai.docling.serve.api.task.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import ai.docling.serve.api.auth.AuthenticatedRequest;
-import ai.docling.serve.api.auth.Authentication;
-
 /**
  * Represents a request to retrieve the result of a task.
  *
@@ -20,12 +15,7 @@ import ai.docling.serve.api.auth.Authentication;
 @lombok.Builder(toBuilder = true)
 @lombok.Getter
 @lombok.ToString
-public class TaskResultRequest implements AuthenticatedRequest {
+public class TaskResultRequest {
   @lombok.NonNull
   private String taskId;
-
-  @JsonIgnore
-  @lombok.NonNull
-  @lombok.Builder.Default
-  private Authentication authentication = Authentication.builder().build();
 }

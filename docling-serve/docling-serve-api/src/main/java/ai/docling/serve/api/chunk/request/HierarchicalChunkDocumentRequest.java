@@ -4,14 +4,11 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
-import ai.docling.serve.api.auth.AuthenticatedRequest;
-import ai.docling.serve.api.auth.Authentication;
 import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.source.Source;
@@ -27,7 +24,7 @@ import ai.docling.serve.api.convert.request.target.Target;
 @lombok.Builder(toBuilder = true)
 @lombok.Getter
 @lombok.ToString
-public class HierarchicalChunkDocumentRequest implements AuthenticatedRequest {
+public class HierarchicalChunkDocumentRequest {
 
   @JsonProperty("sources")
   @JsonSetter(nulls = Nulls.AS_EMPTY)
@@ -50,11 +47,6 @@ public class HierarchicalChunkDocumentRequest implements AuthenticatedRequest {
   @lombok.NonNull
   @lombok.Builder.Default
   private HierarchicalChunkerOptions chunkingOptions = HierarchicalChunkerOptions.builder().build();
-
-  @JsonIgnore
-  @lombok.NonNull
-  @lombok.Builder.Default
-  private Authentication authentication = Authentication.builder().build();
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
   public static class Builder { }

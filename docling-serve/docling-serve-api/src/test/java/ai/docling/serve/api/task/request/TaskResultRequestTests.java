@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
 
-import ai.docling.serve.api.auth.Authentication;
-
 class TaskResultRequestTests {
   @Test
   void nullTaskId() {
@@ -23,26 +21,9 @@ class TaskResultRequestTests {
   }
 
   @Test
-  void buildWithoutAuth() {
+  void build() {
     var request = TaskResultRequest.builder().taskId("1").build();
 
     assertThat(request.getTaskId()).isEqualTo("1");
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isNull();
-  }
-
-  @Test
-  void buildWithAuth() {
-    var request = TaskResultRequest.builder()
-        .taskId("1")
-        .authentication(Authentication.builder().apiKey("key").build())
-        .build();
-
-    assertThat(request.getAuthentication())
-        .isNotNull()
-        .extracting(Authentication::getApiKey)
-        .isEqualTo("key");
   }
 }

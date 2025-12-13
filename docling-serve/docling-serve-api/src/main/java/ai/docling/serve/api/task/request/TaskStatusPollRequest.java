@@ -2,11 +2,6 @@ package ai.docling.serve.api.task.request;
 
 import java.time.Duration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import ai.docling.serve.api.auth.AuthenticatedRequest;
-import ai.docling.serve.api.auth.Authentication;
-
 /**
  * Represents a request for polling the status of a task.
  *
@@ -27,7 +22,7 @@ import ai.docling.serve.api.auth.Authentication;
 @lombok.Builder(toBuilder = true)
 @lombok.Getter
 @lombok.ToString
-public class TaskStatusPollRequest implements AuthenticatedRequest {
+public class TaskStatusPollRequest {
   /**
    * The default wait time between status polling attempts for a task.
    * <p>
@@ -44,9 +39,4 @@ public class TaskStatusPollRequest implements AuthenticatedRequest {
   @lombok.NonNull
   @lombok.Builder.Default
   private Duration waitTime = DEFAULT_STATUS_POLL_WAIT_TIME;
-
-  @JsonIgnore
-  @lombok.NonNull
-  @lombok.Builder.Default
-  private Authentication authentication = Authentication.builder().build();
 }

@@ -24,9 +24,7 @@ public interface DoclingServeConvertApi {
    * {@link CompletableFuture} that completes when the conversion is done.
    *
    * <p>This method starts the conversion, polls the status in the background, and completes
-   * the future with the result when the conversion finishes. The polling happens on a separate
-   * thread, avoiding potential thread deadlock issues and allowing downstream frameworks
-   * (like Quarkus/Mutiny or Spring/WebFlux) to integrate with their own async APIs.
+   * the future with the result when the conversion finishes.
    *
    * <p>Example usage:
    * <pre>{@code

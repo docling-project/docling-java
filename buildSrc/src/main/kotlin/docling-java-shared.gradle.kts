@@ -50,6 +50,15 @@ tasks.withType<Test>().configureEach {
   
   finalizedBy(tasks.named("jacocoTestReport"))
 
+  systemProperties(
+    mapOf(
+      "org.slf4j.simpleLogger.showDateTime" to "true",
+      "org.slf4j.simpleLogger.levelInBrackets" to "true",
+      "org.slf4j.simpleLogger.log.ai.docling" to "debug",
+      "org.slf4j.simpleLogger.dateTimeFormat" to "[MM/dd/yyyy hh:mm:ss.SSS a z]"
+    )
+  )
+
   testLogging {
     events("PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR")
     showStandardStreams = true

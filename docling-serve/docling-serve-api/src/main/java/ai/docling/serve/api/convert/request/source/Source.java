@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 @lombok.Getter
 @lombok.ToString
-public sealed abstract class Source permits FileSource, HttpSource {
+public abstract sealed class Source permits FileSource, HttpSource {
   /**
    * Enum representing the type of {@link Source}.
    * <ul>

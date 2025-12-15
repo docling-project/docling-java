@@ -1,14 +1,10 @@
 plugins {
   id("docling-java-shared")
   id("docling-release")
-  alias(libs.plugins.lombok)
+  id("docling-lombok")
 }
 
 description = "Docling Core"
-
-lombok {
-  version = libs.versions.lombok.asProvider().get()
-}
 
 dependencies {
   compileOnly(platform(libs.jackson.bom))
@@ -20,8 +16,4 @@ dependencies {
   testImplementation(libs.jackson.annotations)
   testImplementation(libs.jackson.databind)
   testImplementation(libs.jackson2.databind)
-}
-
-tasks.withType<Javadoc> {
-  exclude("**/lombok.config")
 }

@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
   implementation("org.yaml:snakeyaml:2.5")
+  implementation(libs.lombok.gradle)
 }
 
 // Read root gradle.properties

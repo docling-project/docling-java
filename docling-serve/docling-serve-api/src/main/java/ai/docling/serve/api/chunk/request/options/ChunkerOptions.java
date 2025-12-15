@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 @lombok.Getter
 @lombok.ToString
-public sealed abstract class ChunkerOptions permits HierarchicalChunkerOptions, HybridChunkerOptions {
+public abstract sealed class ChunkerOptions permits HierarchicalChunkerOptions, HybridChunkerOptions {
 
   enum Chunker {
     @JsonProperty("hierarchical") HIERARCHICAL,

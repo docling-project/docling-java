@@ -109,6 +109,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://oscerd.github.io"><img src="https://avatars.githubusercontent.com/u/5106647?v=4?s=100" width="100px;" alt="Andrea Cosentino"/><br /><sub><b>Andrea Cosentino</b></sub></a><br /><a href="#design-oscerd" title="Design">🎨</a> <a href="#promotion-oscerd" title="Promotion">📣</a> <a href="#ideas-oscerd" title="Ideas, Planning, & Feedback">🤔</a> <a href="#code-oscerd" title="Code">💻</a> <a href="#doc-oscerd" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jmb-streamsets"><img src="https://avatars.githubusercontent.com/u/91207515?v=4?s=100" width="100px;" alt="jmb-streamsets"/><br /><sub><b>jmb-streamsets</b></sub></a><br /><a href="#ideas-jmb-streamsets" title="Ideas, Planning, & Feedback">🤔</a> <a href="#design-jmb-streamsets" title="Design">🎨</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/insectengine"><img src="https://avatars.githubusercontent.com/u/928656?v=4?s=100" width="100px;" alt="insectengine"/><br /><sub><b>insectengine</b></sub></a><br /><a href="#content-insectengine" title="Content">🖋</a> <a href="#design-insectengine" title="Design">🎨</a></td>
+    </tr>
   </tbody>
 </table>
 

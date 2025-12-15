@@ -104,6 +104,16 @@
         "content",
         "design"
       ]
+    },
+    {
+      "login": "maxmnemonic",
+      "name": "Maxim Lysak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101627549?v=4",
+      "profile": "https://github.com/maxmnemonic",
+      "contributions": [
+        "content",
+        "design"
+      ]
     }
   ]
 }

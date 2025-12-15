@@ -1,6 +1,10 @@
 package ai.docling.serve.api;
 
+import java.time.Duration;
+
 import org.jspecify.annotations.Nullable;
+
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 
 /**
  * Docling Serve API interface.
@@ -103,6 +107,30 @@ public interface DoclingServeApi
     default B prettyPrint() {
       return prettyPrint(true);
     }
+
+    /**
+     * Sets the polling interval for async operations.
+     *
+     * <p>This configures how frequently the client will check the status of async
+     * conversion tasks when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
+     *
+     * @param asyncPollInterval the polling interval (must not be null or negative)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if asyncPollInterval is null or negative
+     */
+    B asyncPollInterval(Duration asyncPollInterval);
+
+    /**
+     * Sets the timeout for async operations.
+     *
+     * <p>This configures the maximum time to wait for an async conversion task to complete
+     * when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
+     *
+     * @param asyncTimeout the timeout duration (must not be null or negative)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if asyncTimeout is null or negative
+     */
+    B asyncTimeout(Duration asyncTimeout);
 
     /**
      * Builds and returns an instance of the specified type, representing the completed configuration

@@ -82,10 +82,10 @@ abstract class AbstractDoclingServeClientTests {
           Container logs:
           %s
           """.formatted(
-                getClass().getName(),
-                context.getTestMethod().map(Method::getName).orElse(""),
-                Optional.ofNullable(cause).map(Throwable::getMessage).orElse(""),
-                doclingContainer.getLogs());
+          getClass().getName(),
+          context.getTestMethod().map(Method::getName).orElse(""),
+          Optional.ofNullable(cause).map(Throwable::getMessage).orElse(""),
+          doclingContainer.getLogs());
 
       LOG.error(message);
     }
@@ -415,6 +415,75 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(doclingDocument.getName()).isNotEmpty();
       assertThat(doclingDocument.getTexts().get(0).getLabel()).isEqualTo(DocItemLabel.TITLE);
     }
+
+    @Test
+    void shouldConvertSourceAsync() {
+      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .build();
+
+      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+      assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
+    }
+
+    @Test
+    void shouldConvertFileSourceAsync() throws IOException {
+      var fileResource = readFileFromClasspath("story.pdf");
+      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+          .source(FileSource.builder()
+              .filename("story.pdf")
+              .base64String(Base64.getEncoder().encodeToString(fileResource))
+              .build()
+          )
+          .build();
+
+      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+      assertThat(response.getDocument().getFilename()).isEqualTo("story.pdf");
+      assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
+    }
+
+    @Test
+    void shouldHandleAsyncConversionWithDifferentDocumentOptions() {
+      ConvertDocumentOptions options = ConvertDocumentOptions.builder()
+          .doOcr(true)
+          .includeImages(true)
+          .tableMode(TableFormerMode.FAST)
+          .documentTimeout(Duration.ofMinutes(1))
+          .build();
+
+      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldChainAsyncOperations() {
+      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .build();
+
+      // Test chaining with thenApply
+      String markdownContent = getDoclingClient().convertSourceAsync(request)
+          .thenApply(response -> response.getDocument().getMarkdownContent())
+          .join();
+
+      assertThat(markdownContent).isNotEmpty();
+    }
   }
 
   @Nested
@@ -474,75 +543,6 @@ abstract class AbstractDoclingServeClientTests {
       List<Chunk> chunks = response.getChunks();
       assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
     }
-  }
-
-  @Test
-  void shouldConvertSourceAsync() {
-    ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-        .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
-        .build();
-
-    ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isNotEmpty();
-    assertThat(response.getDocument()).isNotNull();
-    assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
-  }
-
-  @Test
-  void shouldConvertFileSourceAsync() throws IOException {
-    var fileResource = readFileFromClasspath("story.pdf");
-    ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-        .source(FileSource.builder()
-            .filename("story.pdf")
-            .base64String(Base64.getEncoder().encodeToString(fileResource))
-            .build()
-        )
-        .build();
-
-    ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isNotEmpty();
-    assertThat(response.getDocument()).isNotNull();
-    assertThat(response.getDocument().getFilename()).isEqualTo("story.pdf");
-    assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
-  }
-
-  @Test
-  void shouldHandleAsyncConversionWithDifferentDocumentOptions() {
-    ConvertDocumentOptions options = ConvertDocumentOptions.builder()
-        .doOcr(true)
-        .includeImages(true)
-        .tableMode(TableFormerMode.FAST)
-        .documentTimeout(Duration.ofMinutes(1))
-        .build();
-
-    ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-        .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
-        .options(options)
-        .build();
-
-    ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isNotEmpty();
-    assertThat(response.getDocument()).isNotNull();
-  }
-
-  @Test
-  void shouldChainAsyncOperations() {
-    ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-        .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
-        .build();
-
-    // Test chaining with thenApply
-    String markdownContent = getDoclingClient().convertSourceAsync(request)
-        .thenApply(response -> response.getDocument().getMarkdownContent())
-        .join();
-
-    assertThat(markdownContent).isNotEmpty();
   }
 
   private static byte[] readFileFromClasspath(String filePath) throws IOException {

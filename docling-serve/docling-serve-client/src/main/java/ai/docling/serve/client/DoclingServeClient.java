@@ -5,7 +5,6 @@ import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.time.Duration;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
@@ -13,6 +12,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -449,16 +449,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      * Sets the polling interval for async operations.
      *
      * <p>This configures how frequently the client will check the status of async
-     * conversion tasks when using {@link DoclingServeApi#convertSourceAsyncAndWait(ConvertDocumentRequest)}.
+     * conversion tasks when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
      *
      * @param asyncPollInterval the polling interval (must not be null or negative)
      * @return this builder instance for method chaining
      * @throws IllegalArgumentException if asyncPollInterval is null or negative
      */
+    @Override
     public B asyncPollInterval(Duration asyncPollInterval) {
       if (asyncPollInterval == null || asyncPollInterval.isNegative() || asyncPollInterval.isZero()) {
         throw new IllegalArgumentException("asyncPollInterval must be a positive duration");
       }
+
       this.asyncPollInterval = asyncPollInterval;
       return (B) this;
     }
@@ -467,12 +469,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      * Sets the timeout for async operations.
      *
      * <p>This configures the maximum time to wait for an async conversion task to complete
-     * when using {@link DoclingServeApi#convertSourceAsyncAndWait(ConvertDocumentRequest)}.
+     * when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
      *
      * @param asyncTimeout the timeout duration (must not be null or negative)
      * @return this builder instance for method chaining
      * @throws IllegalArgumentException if asyncTimeout is null or negative
      */
+    @Override
     public B asyncTimeout(Duration asyncTimeout) {
       if (asyncTimeout == null || asyncTimeout.isNegative() || asyncTimeout.isZero()) {
         throw new IllegalArgumentException("asyncTimeout must be a positive duration");

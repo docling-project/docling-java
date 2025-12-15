@@ -1,5 +1,7 @@
 # Docling Java
 
+![Docling Java](assets/img/docling-java.png){ width="500" }
+
 Docling Java is the official Java client and tooling for [Docling](https://docling.ai) — a suite that simplifies document processing and parsing across diverse formats (with advanced PDF understanding) and integrates seamlessly with GenAI frameworks.
 
 ## What is Docling?

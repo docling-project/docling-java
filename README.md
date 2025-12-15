@@ -1,5 +1,7 @@
 # Welcome to the Docling Java Project!
 
+![Docling Java](docs/src/doc/docs/assets/img/docling-java.png)
+
 This is the repository for Docling Java, a Java API for using [Docling](https://github.com/docling-project).
 
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://docling-project.github.io/docling-java/)

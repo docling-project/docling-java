@@ -21,7 +21,8 @@
         "infra",
         "maintenance",
         "projectManagement",
-        "test"
+        "test",
+        "review"
       ]
     },
     {

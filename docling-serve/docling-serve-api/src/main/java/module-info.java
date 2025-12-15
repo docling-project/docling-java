@@ -2,9 +2,9 @@ open module ai.docling.serve.api {
   requires transitive ai.docling.core;
   requires static org.jspecify;
   requires static lombok;
-  requires static com.fasterxml.jackson.annotation;
 
   // Optional JSON libraries (compileOnly)
+  requires static com.fasterxml.jackson.annotation;
   requires static com.fasterxml.jackson.core;
   requires static com.fasterxml.jackson.databind;
   requires static tools.jackson.core;

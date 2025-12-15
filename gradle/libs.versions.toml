@@ -9,6 +9,7 @@ jspecify = "1.0.0"
 junit = "6.0.1"
 lombok = "1.18.42"
 lombok-gradle = "9.1.0"
+module-info = "1.13.1"
 semver4j = "6.0.0"
 slf4j = "2.0.17"
 testcontainers = "2.0.2"
@@ -22,6 +23,9 @@ assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "as
 
 # awaitility
 awaitility = { group = "org.awaitility", name = "awaitility", version.ref = "awaitility" }
+
+# lombok-gradle
+lombok-gradle = { group = "io.freefair.lombok", name = "io.freefair.lombok.gradle.plugin", version.ref = "lombok-gradle" }
 
 # Jackson
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations" }
@@ -60,3 +64,4 @@ quarkus-wiremock-test = { group = "io.quarkiverse.wiremock", name = "quarkus-wir
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-gradle" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
+module-info = { id = "org.gradlex.extra-java-module-info", version.ref = "module-info" }

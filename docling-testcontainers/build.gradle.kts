@@ -1,7 +1,7 @@
 plugins {
   id("docling-java-shared")
   id("docling-release")
-  id("org.gradlex.extra-java-module-info") version "1.13.1"
+  alias(libs.plugins.module.info)
 }
 
 description = "Testcontainers for Docling services"

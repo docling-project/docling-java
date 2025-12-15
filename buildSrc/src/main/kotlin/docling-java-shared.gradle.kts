@@ -97,4 +97,7 @@ tasks.withType<Javadoc> {
   if (JavaVersion.current().isJava9Compatible) {
     opts.addBooleanOption("html5", true)
   }
+
+  exclude("**/lombok.config")
+  exclude("**/*.bak")
 }

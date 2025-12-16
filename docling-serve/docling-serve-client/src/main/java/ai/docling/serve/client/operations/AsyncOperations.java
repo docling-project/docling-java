@@ -59,9 +59,9 @@ public abstract class AsyncOperations {
    * @param <O> the type of the response object returned upon completion
    * @param request the request object containing the data necessary to initialize the task
    * @param uri the endpoint URI to which the request will be sent
-   * @return a {@link CompletableFuture} that will be completed with the result of the asynchronous operation
+   * @return a {@link CompletionStage} that will be completed with the result of the asynchronous operation
    */
-  protected <I, O> CompletableFuture<O> executeAsync(I request, String uri) {
+  protected <I, O> CompletionStage<O> executeAsync(I request, String uri) {
     ValidationUtils.ensureNotNull(request, "request");
 
     // Start the async conversion and chain the polling logic

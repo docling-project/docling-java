@@ -1,11 +1,11 @@
 package ai.docling.serve.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,8 +17,8 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,7 +50,6 @@ import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
 import ai.docling.serve.api.convert.request.options.TableFormerMode;
-import ai.docling.serve.api.convert.request.source.FileSource;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -338,27 +337,17 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldConvertHttpSourceSuccessfully() {
-      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+      var request = ConvertDocumentRequest.builder()
           .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
           .build();
 
-      ConvertDocumentResponse response = getDoclingClient().convertSource(request);
+      var response = getDoclingClient().convertSource(request);
       assertConvertHttpSource(response);
     }
 
     @Test
-    void shouldConvertFileSourceSuccessfully() throws IOException {
-      var fileResource = readFileFromClasspath("story.pdf");
-      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-          .source(FileSource.builder()
-              .filename("story.pdf")
-              .base64String(Base64.getEncoder().encodeToString(fileResource))
-              .build()
-          )
-
-          .build();
-
-      ConvertDocumentResponse response = getDoclingClient().convertSource(request);
+    void shouldConvertFileSuccessfully() {
+      var response = getDoclingClient().convertFiles(Path.of("src", "test", "resources", "story.pdf"));
 
       assertThat(response).isNotNull();
       assertThat(response.getStatus()).isNotEmpty();
@@ -374,19 +363,19 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldHandleConversionWithDifferentDocumentOptions() {
-      ConvertDocumentOptions options = ConvertDocumentOptions.builder()
+      var options = ConvertDocumentOptions.builder()
           .doOcr(true)
           .includeImages(true)
           .tableMode(TableFormerMode.FAST)
           .documentTimeout(Duration.ofMinutes(1))
           .build();
 
-      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+      var request = ConvertDocumentRequest.builder()
           .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
           .options(options)
           .build();
 
-      ConvertDocumentResponse response = getDoclingClient().convertSource(request);
+      var response = getDoclingClient().convertSource(request);
 
       assertThat(response).isNotNull();
       assertThat(response.getStatus()).isNotEmpty();
@@ -422,7 +411,7 @@ abstract class AbstractDoclingServeClientTests {
           .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
           .build();
 
-      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).toCompletableFuture().join();
 
       assertThat(response).isNotNull();
       assertThat(response.getStatus()).isNotEmpty();
@@ -431,17 +420,8 @@ abstract class AbstractDoclingServeClientTests {
     }
 
     @Test
-    void shouldConvertFileSourceAsync() throws IOException {
-      var fileResource = readFileFromClasspath("story.pdf");
-      ConvertDocumentRequest request = ConvertDocumentRequest.builder()
-          .source(FileSource.builder()
-              .filename("story.pdf")
-              .base64String(Base64.getEncoder().encodeToString(fileResource))
-              .build()
-          )
-          .build();
-
-      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+    void shouldConvertFileAsync() {
+      ConvertDocumentResponse response = getDoclingClient().convertFilesAsync(Path.of("src", "test", "resources", "story.pdf")).toCompletableFuture().join();
 
       assertThat(response).isNotNull();
       assertThat(response.getStatus()).isNotEmpty();
@@ -464,7 +444,7 @@ abstract class AbstractDoclingServeClientTests {
           .options(options)
           .build();
 
-      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).join();
+      ConvertDocumentResponse response = getDoclingClient().convertSourceAsync(request).toCompletableFuture().join();
 
       assertThat(response).isNotNull();
       assertThat(response.getStatus()).isNotEmpty();
@@ -480,14 +460,182 @@ abstract class AbstractDoclingServeClientTests {
       // Test chaining with thenApply
       String markdownContent = getDoclingClient().convertSourceAsync(request)
           .thenApply(response -> response.getDocument().getMarkdownContent())
-          .join();
+          .toCompletableFuture().join();
 
       assertThat(markdownContent).isNotEmpty();
+    }
+
+    @Test
+    void convertFilesNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFiles())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void convertFilesEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFiles(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void convertNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFiles(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void convertFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFiles(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void convertFilesAsyncNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFilesAsync())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void convertFilesAsyncEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFilesAsync(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void convertAsyncNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFilesAsync(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void convertAsyncFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertFilesAsync(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
     }
   }
 
   @Nested
   class ChunkTests {
+    @Test
+    void chunkHierarchicalNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void chunkHierarchicalFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void chunkFilesHierarchicalNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkFilesHierarchicalEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkHierarchicalAsyncNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void chunkHierarchicalAsyncFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void chunkFilesHierarchicalAsyncNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkFilesHierarchicalAsyncEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkHybridNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void chunkHybridFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void chunkHybridAsyncNonExistentFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync(Path.of("src", "test", "resources", "file1234.pdf")))
+          .withMessage("File (src/test/resources/file1234.pdf) does not exist");
+    }
+
+    @Test
+    void chunkHybridAsyncFilesNotRegularFile() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync(Path.of("src", "test", "resources")))
+          .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void chunkFilesHybridNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkFilesHybridEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkFilesHybridAsyncNullFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync())
+          .withMessage("files cannot be null or empty");
+    }
+
+    @Test
+    void chunkFilesHybridAsyncEmptyFiles() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync(new Path[] {}))
+          .withMessage("files cannot be null or empty");
+    }
+
     @Test
     void shouldChainHybridAsyncOperations() {
       var options = ConvertDocumentOptions.builder()
@@ -509,7 +657,7 @@ abstract class AbstractDoclingServeClientTests {
       // Test chaining with thenApply
       var chunks = getDoclingClient().chunkSourceWithHybridChunkerAsync(request)
           .thenApply(ChunkDocumentResponse::getChunks)
-          .join();
+          .toCompletableFuture().join();
 
       assertThat(chunks)
           .isNotEmpty()
@@ -535,7 +683,7 @@ abstract class AbstractDoclingServeClientTests {
       // Test chaining with thenApply
       var chunks = getDoclingClient().chunkSourceWithHierarchicalChunkerAsync(request)
           .thenApply(ChunkDocumentResponse::getChunks)
-          .join();
+          .toCompletableFuture().join();
 
       assertThat(chunks)
           .isNotEmpty()
@@ -558,7 +706,59 @@ abstract class AbstractDoclingServeClientTests {
               .build())
           .build();
 
-      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHierarchicalChunkerAsync(request).join();
+      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHierarchicalChunkerAsync(request).toCompletableFuture().join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChunkFilesWithHierarchicalChunker() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HierarchicalChunkDocumentRequest.builder()
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HierarchicalChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .build())
+          .build();
+
+      var response = getDoclingClient().chunkFilesWithHierarchicalChunker(request, Path.of("src", "test", "resources", "story.pdf"));
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChunkFilesWithHierarchicalChunkerAsync() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HierarchicalChunkDocumentRequest.builder()
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HierarchicalChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .build())
+          .build();
+
+      var response = getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(request, Path.of("src", "test", "resources", "story.pdf")).toCompletableFuture().join();
 
       assertThat(response).isNotNull();
       assertThat(response.getChunks()).isNotEmpty();
@@ -587,7 +787,7 @@ abstract class AbstractDoclingServeClientTests {
               .build())
           .build();
 
-      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHybridChunkerAsync(request).join();
+      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHybridChunkerAsync(request).toCompletableFuture().join();
 
       assertThat(response).isNotNull();
       assertThat(response.getChunks()).isNotEmpty();
@@ -653,14 +853,64 @@ abstract class AbstractDoclingServeClientTests {
       List<Chunk> chunks = response.getChunks();
       assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
     }
-  }
 
-  private static byte[] readFileFromClasspath(String filePath) throws IOException {
-    try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath)) {
-      if (inputStream == null) {
-        throw new IOException("File not found in classpath: " + filePath);
-      }
-      return inputStream.readAllBytes();
+    @Test
+    void shouldChunkFileWithHybridChunker() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HybridChunkDocumentRequest.builder()
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HybridChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .maxTokens(10000)
+              .tokenizer("sentence-transformers/all-MiniLM-L6-v2")
+              .build())
+          .build();
+
+      var response = getDoclingClient().chunkFilesWithHybridChunker(request, Path.of("src", "test", "resources", "story.pdf"));
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChunkFileWithHybridChunkerAsync() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HybridChunkDocumentRequest.builder()
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HybridChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .maxTokens(10000)
+              .tokenizer("sentence-transformers/all-MiniLM-L6-v2")
+              .build())
+          .build();
+
+      var response = getDoclingClient()
+          .chunkFilesWithHybridChunkerAsync(request, Path.of("src", "test", "resources", "story.pdf"))
+          .toCompletableFuture()
+          .join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
     }
   }
 }

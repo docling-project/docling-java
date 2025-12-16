@@ -1,7 +1,7 @@
 package ai.docling.serve.client.operations;
 
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import ai.docling.serve.api.DoclingServeChunkApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -44,12 +44,12 @@ public final class ChunkOperations extends AsyncOperations implements DoclingSer
   }
 
   @Override
-  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request) {
+  public CompletionStage<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request) {
     return executeAsync(request, "/v1/chunk/hierarchical/source/async");
   }
 
   @Override
-  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request) {
+  public CompletionStage<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request) {
     return executeAsync(request, "/v1/chunk/hybrid/source/async");
   }
 

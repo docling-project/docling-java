@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow.Subscriber;
 
 import org.jspecify.annotations.Nullable;
@@ -274,12 +274,12 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request) {
+  public CompletionStage<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request) {
     return this.chunkOps.chunkSourceWithHierarchicalChunkerAsync(request);
   }
 
   @Override
-  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request) {
+  public CompletionStage<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request) {
     return this.chunkOps.chunkSourceWithHybridChunkerAsync(request);
   }
 
@@ -309,7 +309,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   @Override
-  public CompletableFuture<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
+  public CompletionStage<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
     return this.convertOps.convertSourceAsync(request);
   }
 

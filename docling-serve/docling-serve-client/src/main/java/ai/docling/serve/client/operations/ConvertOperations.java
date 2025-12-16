@@ -1,7 +1,7 @@
 package ai.docling.serve.client.operations;
 
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -53,7 +53,7 @@ public final class ConvertOperations extends AsyncOperations implements DoclingS
   }
 
   @Override
-  public CompletableFuture<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
+  public CompletionStage<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
     return executeAsync(request, "/v1/convert/source/async");
   }
 }

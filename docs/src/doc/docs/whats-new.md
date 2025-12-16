@@ -12,6 +12,7 @@ Docling Java {{ gradle.project_version }} provides a number of new features, enh
 * Adding the ability to specify the api key for the Docling Serve requests.
 * Adding async conversion support via `convertSourceAsync(ConvertDocumentRequest)` which returns a `CompletableFuture<ConvertDocumentResponse>`. The method handles all polling internally and completes the future when the conversion is done. Configurable via `asyncPollInterval(Duration)` and `asyncTimeout(Duration)` builder methods.
 * Adding async chunking support.
+* Adding convenience methods for chunking/converting local files.
 * Added Javadoc comments for classes in the `ai.docling.serve.api` package.
 
 ### 0.3.0

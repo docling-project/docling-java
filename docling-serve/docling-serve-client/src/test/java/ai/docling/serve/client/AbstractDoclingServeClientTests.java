@@ -489,6 +489,116 @@ abstract class AbstractDoclingServeClientTests {
   @Nested
   class ChunkTests {
     @Test
+    void shouldChainHybridAsyncOperations() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HybridChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HybridChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .maxTokens(10000)
+              .tokenizer("sentence-transformers/all-MiniLM-L6-v2")
+              .build())
+          .build();
+
+      // Test chaining with thenApply
+      var chunks = getDoclingClient().chunkSourceWithHybridChunkerAsync(request)
+          .thenApply(ChunkDocumentResponse::getChunks)
+          .join();
+
+      assertThat(chunks)
+          .isNotEmpty()
+          .allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChainHierarchicalAsyncOperations() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      var request = HierarchicalChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HierarchicalChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .build())
+          .build();
+
+      // Test chaining with thenApply
+      var chunks = getDoclingClient().chunkSourceWithHierarchicalChunkerAsync(request)
+          .thenApply(ChunkDocumentResponse::getChunks)
+          .join();
+
+      assertThat(chunks)
+          .isNotEmpty()
+          .allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChunkDocumentWithHierarchicalChunkerAsync() {
+      ConvertDocumentOptions options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      HierarchicalChunkDocumentRequest request = HierarchicalChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HierarchicalChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .build())
+          .build();
+
+      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHierarchicalChunkerAsync(request).join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldChunkDocumentWithHybridChunkerAsync() {
+      ConvertDocumentOptions options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .build();
+
+      HybridChunkDocumentRequest request = HybridChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .includeConvertedDoc(true)
+          .chunkingOptions(HybridChunkerOptions.builder()
+              .includeRawText(true)
+              .useMarkdownTables(true)
+              .maxTokens(10000)
+              .tokenizer("sentence-transformers/all-MiniLM-L6-v2")
+              .build())
+          .build();
+
+      ChunkDocumentResponse response = getDoclingClient().chunkSourceWithHybridChunkerAsync(request).join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getChunks()).isNotEmpty();
+      assertThat(response.getDocuments()).isNotEmpty();
+      assertThat(response.getProcessingTime()).isNotNull();
+
+      List<Chunk> chunks = response.getChunks();
+      assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
     void shouldChunkDocumentWithHierarchicalChunker() {
       ConvertDocumentOptions options = ConvertDocumentOptions.builder()
           .toFormat(OutputFormat.JSON)

@@ -108,7 +108,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     this.healthOps = new HealthOperations(this);
     this.taskOps = new TaskOperations(this);
     this.convertOps = new ConvertOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout);
-    this.chunkOps = new ChunkOperations(this);
+    this.chunkOps = new ChunkOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout);
     this.clearOps = new ClearOperations(this);
   }
 
@@ -271,6 +271,16 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   @Override
   public ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request) {
     return this.chunkOps.chunkSourceWithHybridChunker(request);
+  }
+
+  @Override
+  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request) {
+    return this.chunkOps.chunkSourceWithHierarchicalChunkerAsync(request);
+  }
+
+  @Override
+  public CompletableFuture<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request) {
+    return this.chunkOps.chunkSourceWithHybridChunkerAsync(request);
   }
 
   @Override

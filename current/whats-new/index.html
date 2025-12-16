@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.3.0/whats-new/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.4.0/whats-new/">
       
       
         <link rel="prev" href="../getting-started/">
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#whats-new-in-docling-java-030" class="md-skip">
+        <a href="#whats-new-in-docling-java" class="md-skip">
           Skip to content
         </a>
       
@@ -475,6 +475,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Docling Serve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#030" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -758,6 +782,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Docling Serve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#030" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -779,9 +827,21 @@
   
 
 
-<h1 id="whats-new-in-docling-java-030">What's New in Docling Java 0.3.0<a class="headerlink" href="#whats-new-in-docling-java-030" title="Permanent link">#</a></h1>
-<p>Docling Java 0.3.0 provides a number of new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each new feature and bug fix.</p>
+<h1 id="whats-new-in-docling-java">What's New in Docling Java<a class="headerlink" href="#whats-new-in-docling-java" title="Permanent link">#</a></h1>
+<p>Docling Java 0.4.0 provides a number of new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each new feature and bug fix.</p>
 <h2 id="docling-serve">Docling Serve<a class="headerlink" href="#docling-serve" title="Permanent link">#</a></h2>
+<h3 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link">#</a></h3>
+<ul>
+<li>Implementation of the Docling Serve clear and task APIs in <code>docling-serve-api</code> and <code>docling-serve-client</code>.</li>
+<li>Adding <code>pretty-print</code> configuration option to <code>DoclingServeClient</code> to enable pretty printing of JSON requests and responses.</li>
+<li>Adding the ability to specify an api key for the Docling Serve Testcontainer.</li>
+<li>Adding the ability to specify the api key for the Docling Serve requests.</li>
+<li>Adding async conversion support via <code>convertSourceAsync(ConvertDocumentRequest)</code> which returns a <code>CompletableFuture&lt;ConvertDocumentResponse&gt;</code>. The method handles all polling internally and completes the future when the conversion is done. Configurable via <code>asyncPollInterval(Duration)</code> and <code>asyncTimeout(Duration)</code> builder methods.</li>
+<li>Adding async chunking support.</li>
+<li>Adding convenience methods for chunking/converting local files.</li>
+<li>Added Javadoc comments for classes in the <code>ai.docling.serve.api</code> package.</li>
+</ul>
+<h3 id="030">0.3.0<a class="headerlink" href="#030" title="Permanent link">#</a></h3>
 <ul>
 <li>The classes in the <code>docling-serve-api</code> module have been moved from the <code>ai.docling.api.serve</code> package to the <code>ai.docling.serve.api</code> package.</li>
 <li>The classes in the <code>docling-serve-client</code> module have been moved from the <code>ai.docling.client.serve</code> package to the <code>ai.docling.serve.client</code> package.</li>

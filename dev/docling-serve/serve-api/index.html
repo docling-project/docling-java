@@ -713,6 +713,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Error handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validation-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1135,6 +1150,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Error handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validation-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1506,6 +1536,8 @@ provided by the <code>docling-serve-client</code> module.</p>
 </code></pre></div>
 <p>The exact transport-level exceptions (e.g., timeouts, connectivity) depend on the client implementation
 you use. The reference client throws standard Java exceptions for HTTP and I/O failures.</p>
+<h3 id="validation-errors">Validation errors<a class="headerlink" href="#validation-errors" title="Permanent link">#</a></h3>
+<p>In the case of a request validation error (i.e. <code>docling-serve</code> throws a <code>422</code> error), the docling-java API will throw an <code>ai.docling.serve.api.validation.ValidationException</code> which can be caught and inspected.</p>
 <h2 id="logging-and-builders">Logging and builders<a class="headerlink" href="#logging-and-builders" title="Permanent link">#</a></h2>
 <p><code>DoclingServeApi</code> exposes a <code>toBuilder()</code> method so implementations can be duplicated and tweaked. Most
 client builders, including the reference client, also expose <code>logRequests()</code> and <code>logResponses()</code> for

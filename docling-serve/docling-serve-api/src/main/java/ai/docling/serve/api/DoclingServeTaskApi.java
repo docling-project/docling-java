@@ -27,6 +27,7 @@ public interface DoclingServeTaskApi {
    *                wait time between polling attempts
    * @return a {@link TaskStatusPollResponse} encapsulating the current status, position in the
    *         queue, and optional metadata for the specified task
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request);
 
@@ -41,6 +42,7 @@ public interface DoclingServeTaskApi {
    *                for which the result is to be converted
    * @return a {@link ConvertDocumentResponse} encapsulating the converted document,
    *         processing status, timings, and potential errors
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ConvertDocumentResponse convertTaskResult(TaskResultRequest request);
 
@@ -56,6 +58,7 @@ public interface DoclingServeTaskApi {
    *                the task whose result is to be processed and chunked
    * @return a {@link ChunkDocumentResponse} containing the chunked result,
    *         associated documents, processing time, and additional relevant metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ChunkDocumentResponse chunkTaskResult(TaskResultRequest request);
 }

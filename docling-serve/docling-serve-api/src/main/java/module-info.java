@@ -36,4 +36,7 @@ open module ai.docling.serve.api {
 
   // Serialization helpers
   exports ai.docling.serve.api.serialization;
+
+  // Validation API
+  exports ai.docling.serve.api.validation;
 }

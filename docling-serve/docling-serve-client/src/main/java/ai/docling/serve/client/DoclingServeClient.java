@@ -3,6 +3,7 @@ package ai.docling.serve.client;
 import static ai.docling.serve.api.util.ValidationUtils.ensureNotBlank;
 import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -43,6 +44,8 @@ import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.Utils;
+import ai.docling.serve.api.validation.ValidationError;
+import ai.docling.serve.api.validation.ValidationException;
 import ai.docling.serve.client.operations.ChunkOperations;
 import ai.docling.serve.client.operations.ClearOperations;
 import ai.docling.serve.client.operations.ConvertOperations;
@@ -194,9 +197,11 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     long startTime = System.currentTimeMillis();
 
     try {
-      return httpClient.sendAsync(request, BodyHandlers.ofString())
-          .thenApply(response -> getResponse(response, expectedValueType))
-          .join();
+      var response = this.httpClient.send(request, BodyHandlers.ofString());
+      return getResponse(request, response, expectedValueType);
+    }
+    catch (IOException | InterruptedException e) {
+      throw new DoclingServeClientException(e);
     }
     finally {
       long duration = System.currentTimeMillis() - startTime;
@@ -235,7 +240,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     return requestBuilder;
   }
 
-  protected <T> T getResponse(HttpResponse<String> response, Class<T> expectedReturnType) {
+  protected <T> T getResponse(HttpRequest request, HttpResponse<String> response, Class<T> expectedReturnType) {
     var body = response.body();
 
     if (this.logResponses) {
@@ -244,7 +249,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
     var statusCode = response.statusCode();
 
-    if (statusCode >= 400) {
+    if (statusCode == 422) {
+      throw new ValidationException(
+          readValue(body, ValidationError.class),
+          "An error occurred while making %s request to %s".formatted(request.method(), request.uri())
+      );
+    }
+    else if (statusCode >= 400) {
       // Handle errors
       // The Java HTTPClient doesn't throw exceptions on error codes
       throw new DoclingServeClientException("An error occurred: %s".formatted(body), statusCode, body);

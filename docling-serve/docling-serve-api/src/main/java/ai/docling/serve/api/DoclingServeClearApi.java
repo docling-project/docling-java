@@ -33,6 +33,7 @@ public interface DoclingServeClearApi {
    *                or other parameters.
    * @return a {@link ClearResponse} object indicating the status of the clear
    *         operation, such as success or failure.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ClearResponse clearResults(ClearResultsRequest request);
 }

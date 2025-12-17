@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,10 @@ import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatus;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
+import ai.docling.serve.api.validation.ValidationError;
+import ai.docling.serve.api.validation.ValidationErrorContext;
+import ai.docling.serve.api.validation.ValidationErrorDetail;
+import ai.docling.serve.api.validation.ValidationException;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -139,10 +144,9 @@ abstract class AbstractDoclingServeClientTests {
           .taskId("someInvalidTaskId")
           .build();
 
-
       assertThatThrownBy(() -> getDoclingClient().pollTaskStatus(request))
-          .hasRootCauseInstanceOf(DoclingServeClientException.class)
-          .hasRootCauseMessage("An error occurred: {\"detail\":\"Task not found.\"}");
+          .isInstanceOf(DoclingServeClientException.class)
+          .hasMessage("An error occurred: {\"detail\":\"Task not found.\"}");
     }
 
     @Test
@@ -333,6 +337,51 @@ abstract class AbstractDoclingServeClientTests {
       }
 
       assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
+    }
+
+    @Test
+    void shouldThrowValidationError() {
+        var file = Path.of("src", "test", "resources", "story.pdf");
+
+        assertThat(file)
+                .exists()
+                .isRegularFile();
+
+        var source = HttpSource.builder()
+                .url(file.toUri())
+                .build();
+
+        var options = ConvertDocumentOptions.builder()
+                .toFormat(OutputFormat.MARKDOWN)
+                .build();
+
+        var request = ConvertDocumentRequest.builder()
+            .source(source)
+            .options(options)
+            .build();
+
+        assertThatThrownBy(() -> getDoclingClient().convertSource(request))
+            .isInstanceOf(ValidationException.class)
+            .hasMessageStartingWith("An error occurred while making POST request to ")
+            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+            .extracting(ValidationException::getValidationError)
+            .isNotNull()
+            .extracting(ValidationError::getErrorDetails)
+            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+            .singleElement()
+            .usingRecursiveComparison()
+            .isEqualTo(
+              ValidationErrorDetail.builder()
+                  .type("url_scheme")
+                  .message("URL scheme should be 'http' or 'https'")
+                  .locations(List.of("body", "sources", 0, "http", "url"))
+                  .input(file.toUri().toString())
+                  .context(
+                      ValidationErrorContext.builder()
+                          .expectedSchemes("'http' or 'https'")
+                          .build()
+                  ).build()
+            );
     }
 
     @Test
@@ -799,6 +848,51 @@ abstract class AbstractDoclingServeClientTests {
     }
 
     @Test
+    void shouldThrowValidationErrorHierarchicalChunker() {
+        var file = Path.of("src", "test", "resources", "story.pdf");
+
+        assertThat(file)
+                .exists()
+                .isRegularFile();
+
+        var source = HttpSource.builder()
+                .url(file.toUri())
+                .build();
+
+        var options = ConvertDocumentOptions.builder()
+                .toFormat(OutputFormat.MARKDOWN)
+                .build();
+
+        var request = HierarchicalChunkDocumentRequest.builder()
+            .source(source)
+            .options(options)
+            .build();
+
+        assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHierarchicalChunker(request))
+            .isInstanceOf(ValidationException.class)
+            .hasMessageStartingWith("An error occurred while making POST request to ")
+            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+            .extracting(ValidationException::getValidationError)
+            .isNotNull()
+            .extracting(ValidationError::getErrorDetails)
+            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+            .singleElement()
+            .usingRecursiveComparison()
+            .isEqualTo(
+              ValidationErrorDetail.builder()
+                  .type("url_scheme")
+                  .message("URL scheme should be 'http' or 'https'")
+                  .locations(List.of("body", "sources", 0, "http", "url"))
+                  .input(file.toUri().toString())
+                  .context(
+                      ValidationErrorContext.builder()
+                          .expectedSchemes("'http' or 'https'")
+                          .build()
+                  ).build()
+            );
+    }
+
+    @Test
     void shouldChunkDocumentWithHierarchicalChunker() {
       ConvertDocumentOptions options = ConvertDocumentOptions.builder()
           .toFormat(OutputFormat.JSON)
@@ -823,6 +917,51 @@ abstract class AbstractDoclingServeClientTests {
 
       List<Chunk> chunks = response.getChunks();
       assertThat(chunks).allMatch(chunk -> !chunk.getText().isEmpty());
+    }
+
+    @Test
+    void shouldThrowValidationErrorHybridChunker() {
+        var file = Path.of("src", "test", "resources", "story.pdf");
+
+        assertThat(file)
+                .exists()
+                .isRegularFile();
+
+        var source = HttpSource.builder()
+                .url(file.toUri())
+                .build();
+
+        var options = ConvertDocumentOptions.builder()
+                .toFormat(OutputFormat.MARKDOWN)
+                .build();
+
+        var request = HybridChunkDocumentRequest.builder()
+            .source(source)
+            .options(options)
+            .build();
+
+        assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHybridChunker(request))
+            .isInstanceOf(ValidationException.class)
+            .hasMessageStartingWith("An error occurred while making POST request to ")
+            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+            .extracting(ValidationException::getValidationError)
+            .isNotNull()
+            .extracting(ValidationError::getErrorDetails)
+            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+            .singleElement()
+            .usingRecursiveComparison()
+            .isEqualTo(
+              ValidationErrorDetail.builder()
+                  .type("url_scheme")
+                  .message("URL scheme should be 'http' or 'https'")
+                  .locations(List.of("body", "sources", 0, "http", "url"))
+                  .input(file.toUri().toString())
+                  .context(
+                      ValidationErrorContext.builder()
+                          .expectedSchemes("'http' or 'https'")
+                          .build()
+                  ).build()
+            );
     }
 
     @Test

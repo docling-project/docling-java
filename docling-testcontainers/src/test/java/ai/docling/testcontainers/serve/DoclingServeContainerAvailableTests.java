@@ -14,11 +14,8 @@ import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 import ai.docling.serve.client.DoclingServeClientException;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
-import tools.jackson.databind.json.JsonMapper;
-
 @Testcontainers
 class DoclingServeContainerAvailableTests {
-  private static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
   private static final String DEFAULT_API_KEY = "default-api-key";
 
   @Container
@@ -88,8 +85,7 @@ class DoclingServeContainerAvailableTests {
         .build();
 
     assertThatThrownBy(() -> client.clearResults(ClearResultsRequest.builder().build()))
-        .hasRootCauseInstanceOf(DoclingServeClientException.class)
-        .rootCause()
+        .isInstanceOf(DoclingServeClientException.class)
         .hasMessageContaining("Unauthorized")
         .extracting(t -> ((DoclingServeClientException) t).getStatusCode())
         .isEqualTo(401);

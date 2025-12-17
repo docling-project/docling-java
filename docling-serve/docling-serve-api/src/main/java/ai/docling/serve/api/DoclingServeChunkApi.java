@@ -21,6 +21,9 @@ public interface DoclingServeChunkApi {
   /**
    * Converts and chunks the provided document source(s) into a processed document based on the specified options
    * and using a hierarchical chunker for splitting the document into smaller chunks.
+   * @param request the request containing the document source(s) and options for hierarchical chunking
+   * @return a {@link ChunkDocumentResponse} containing the processed chunks, optionally the converted document,
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ChunkDocumentResponse chunkSourceWithHierarchicalChunker(HierarchicalChunkDocumentRequest request);
 
@@ -32,6 +35,7 @@ public interface DoclingServeChunkApi {
    * @param files the files to be processed and chunked using the hierarchical chunker
    * @return a {@link ChunkDocumentResponse} containing the processed chunks, optionally the
    *         converted documents, and associated metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ChunkDocumentResponse chunkFilesWithHierarchicalChunker(Path... files) {
     return chunkFilesWithHierarchicalChunker(null, files);
@@ -49,6 +53,7 @@ public interface DoclingServeChunkApi {
    * @param files   the files to be processed and chunked using the hierarchical chunker.
    * @return a {@link ChunkDocumentResponse} containing the processed chunks, optionally the
    *         converted documents, and associated metadata.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ChunkDocumentResponse chunkFilesWithHierarchicalChunker(@Nullable HierarchicalChunkDocumentRequest request, Path... files) {
     return chunkSourceWithHierarchicalChunker(createHierarchicalChunkRequest(request, files));
@@ -63,6 +68,7 @@ public interface DoclingServeChunkApi {
    *                chunker configurations, and optional specifications for output targets
    * @return a {@link ChunkDocumentResponse} containing the processed chunks, optionally the
    *         converted document, and other relevant metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ChunkDocumentResponse chunkSourceWithHybridChunker(HybridChunkDocumentRequest request);
 
@@ -74,6 +80,7 @@ public interface DoclingServeChunkApi {
    * @param files the files to be processed and chunked using the hybrid chunker
    * @return a {@link ChunkDocumentResponse} containing the processed chunks,
    *         optionally the converted documents, and associated metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ChunkDocumentResponse chunkFilesWithHybridChunker(Path... files) {
     return chunkFilesWithHybridChunker(null, files);
@@ -91,6 +98,7 @@ public interface DoclingServeChunkApi {
    * @param files   the files to be processed and chunked using the hybrid chunking strategy.
    * @return a {@code ChunkDocumentResponse} containing the processed chunks, optionally the
    *         converted documents, and associated metadata.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ChunkDocumentResponse chunkFilesWithHybridChunker(@Nullable HybridChunkDocumentRequest request, Path... files) {
     return chunkSourceWithHybridChunker(createHybridChunkRequest(request, files));
@@ -104,6 +112,7 @@ public interface DoclingServeChunkApi {
    * @param request the request containing the document source(s) and options for hierarchical chunking
    * @return a {@link CompletionStage} that resolves to a {@link ChunkDocumentResponse}, which contains
    *         the processed chunks, optionally the converted document, and processing metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   CompletionStage<ChunkDocumentResponse> chunkSourceWithHierarchicalChunkerAsync(HierarchicalChunkDocumentRequest request);
 
@@ -117,6 +126,7 @@ public interface DoclingServeChunkApi {
    * @return a {@link CompletionStage} resolving to a {@link ChunkDocumentResponse}, which
    *         includes the processed chunks, optionally the converted documents, and associated
    *         metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ChunkDocumentResponse> chunkFilesWithHierarchicalChunkerAsync(Path... files) {
     return chunkFilesWithHierarchicalChunkerAsync(null, files);
@@ -135,6 +145,7 @@ public interface DoclingServeChunkApi {
    * @return a {@link CompletionStage} that resolves to a {@link ChunkDocumentResponse},
    *         which includes the processed chunks, optionally the converted documents,
    *         and associated metadata.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ChunkDocumentResponse> chunkFilesWithHierarchicalChunkerAsync(@Nullable HierarchicalChunkDocumentRequest request, Path... files) {
     return chunkSourceWithHierarchicalChunkerAsync(createHierarchicalChunkRequest(request, files));
@@ -149,6 +160,7 @@ public interface DoclingServeChunkApi {
    *                hybrid chunking parameters, and optional specifications for output targets
    * @return a {@link CompletionStage} that resolves to a {@link ChunkDocumentResponse}, which includes
    *         the processed chunks, optionally the converted document, and relevant processing metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   CompletionStage<ChunkDocumentResponse> chunkSourceWithHybridChunkerAsync(HybridChunkDocumentRequest request);
 
@@ -159,6 +171,7 @@ public interface DoclingServeChunkApi {
    *              a valid file location.
    * @return A CompletionStage that, when completed, holds a ChunkDocumentResponse containing
    *         the results of the chunking operation.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ChunkDocumentResponse> chunkFilesWithHybridChunkerAsync(Path... files) {
     return chunkFilesWithHybridChunkerAsync(null, files);
@@ -173,6 +186,7 @@ public interface DoclingServeChunkApi {
    *                Must not be null or empty.
    * @return A {@code CompletionStage<ChunkDocumentResponse>} that completes with the resulting
    *         {@code ChunkDocumentResponse} once the chunking operation is finished.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ChunkDocumentResponse> chunkFilesWithHybridChunkerAsync(@Nullable HybridChunkDocumentRequest request, Path... files) {
     return chunkSourceWithHybridChunkerAsync(createHybridChunkRequest(request, files));

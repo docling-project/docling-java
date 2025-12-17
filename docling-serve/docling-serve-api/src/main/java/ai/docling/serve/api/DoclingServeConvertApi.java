@@ -22,6 +22,7 @@ public interface DoclingServeConvertApi {
    *
    * @param request the {@link ConvertDocumentRequest} containing the source(s), conversion options, and optional target.
    * @return a {@link ConvertDocumentResponse} containing the processed document data, processing details, and any errors.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   ConvertDocumentResponse convertSource(ConvertDocumentRequest request);
 
@@ -32,6 +33,7 @@ public interface DoclingServeConvertApi {
    *
    * @param files an array of {@link Path} objects representing the file paths to be converted
    * @return a {@link ConvertDocumentResponse} containing the processed document data, metadata, and any errors
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ConvertDocumentResponse convertFiles(Path... files) {
     return convertFiles(null, files);
@@ -45,6 +47,7 @@ public interface DoclingServeConvertApi {
    * @param files an array of {@link Path} objects representing the file paths to be converted
    * @return a {@link ConvertDocumentResponse} containing the processed document data, any errors encountered,
    *         and additional processing metadata
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default ConvertDocumentResponse convertFiles(@Nullable ConvertDocumentRequest request, Path... files) {
     return convertSource(createRequest(request, files));
@@ -69,6 +72,7 @@ public interface DoclingServeConvertApi {
    * @return a {@link CompletionStage} that completes with the {@link ConvertDocumentResponse}
    *         when the conversion is finished, or completes exceptionally if the conversion fails
    *         or times out.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   CompletionStage<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request);
 
@@ -80,6 +84,7 @@ public interface DoclingServeConvertApi {
    * @return a {@link CompletionStage} that completes with the {@link ConvertDocumentResponse}
    *         when the conversion finishes, or completes exceptionally if the conversion fails
    *         or times out
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ConvertDocumentResponse> convertFilesAsync(Path... files) {
     return convertFilesAsync(null, files);
@@ -96,6 +101,7 @@ public interface DoclingServeConvertApi {
    * @return a {@link CompletionStage} that completes with the {@link ConvertDocumentResponse}
    *         when the conversion finishes, or completes exceptionally if the conversion fails
    *         or times out
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
    */
   default CompletionStage<ConvertDocumentResponse> convertFilesAsync(@Nullable ConvertDocumentRequest request, Path... files) {
     return convertSourceAsync(createRequest(request, files));

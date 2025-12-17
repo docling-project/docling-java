@@ -5,6 +5,9 @@ Docling Java {{ gradle.project_version }} provides a number of new features, enh
 ## Docling Serve
 
 ### {{ gradle.project_version }}
+* Handle validation errors returned by Docling Serve (i.e. `422` responses).
+
+### 0.4.0
 
 * Implementation of the Docling Serve clear and task APIs in `docling-serve-api` and `docling-serve-client`.
 * Adding `pretty-print` configuration option to `DoclingServeClient` to enable pretty printing of JSON requests and responses.

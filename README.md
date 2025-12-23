@@ -45,16 +45,17 @@ This project provides the following artifacts:
 
 ## Getting started
 
-Use `DoclingServeApi.convertSource()` to convert individual documents. For example:
+Use `DoclingServeApi.convertSource()` to convert individual documents (make sure both `docling-serve-api` and `docling-serve-client` are on your classpath).
+
+For example:
 
 ```java
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
-import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 
-DoclingServeApi doclingServeApi = DoclingServeClientBuilderFactory.newBuilder()
+DoclingServeApi doclingServeApi = DoclingServeApi.builder()
     .baseUrl("<location of docling serve instance>")
     .build();
 
@@ -124,5 +125,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
-
-### IBM ❤️ Open Source AI

@@ -9,4 +9,5 @@ module ai.docling.serve.client {
   requires java.net.http;
 
   exports ai.docling.serve.client;
+  provides ai.docling.serve.api.spi.DoclingServeApiBuilderFactory with ai.docling.serve.client.DoclingServeClientBuilderFactory;
 }

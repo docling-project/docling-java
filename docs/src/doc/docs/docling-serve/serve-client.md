@@ -49,7 +49,7 @@ This artifact brings in the API types transitively, so you can use `DoclingServe
 
 ## Quick start
 
-Create a client with `DoclingServeClientBuilderFactory`, build a request, and call `convertSource()`:
+Create a client with `DoclingServeApi.builder()`, build a request, and call `convertSource()`:
 
 ```java
 import java.net.URI;
@@ -60,11 +60,12 @@ import ai.docling.serve.api.convert.request.options.OutputFormat;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.request.target.InBodyTarget;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
-import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 
-DoclingServeApi api = DoclingServeClientBuilderFactory
-    .newBuilder()
+DoclingServeApi api = DoclingServeApi.builder()
     .baseUrl("http://localhost:8000") // your Docling Serve URL
+    .logRequests() // log HTTP requests
+    .logResponses() // log HTTP responses
+    .prettyPrint() // pretty-print JSON requests/responses
     .build();
 
 ConvertDocumentRequest request = ConvertDocumentRequest.builder()
@@ -84,8 +85,7 @@ System.out.println(response.getDocument().getMarkdownContent());
 
 ### Builder factory and Jackson auto‑detection
 
-`DoclingServeClientBuilderFactory.newBuilder()` chooses an implementation based on what's on
-your classpath:
+`DoclingServeApi.builder()` chooses an implementation based on what's on your classpath:
 
 - Jackson 3 present → `DoclingServeJackson3Client`
 - Else if Jackson 2 present → `DoclingServeJackson2Client`
@@ -99,7 +99,7 @@ client type if you need special Jackson modules or settings.
 Set the Docling Serve base URL with either a `String` or `URI`:
 
 ```java
-DoclingServeApi api = DoclingServeClientBuilderFactory.newBuilder()
+DoclingServeApi api = DoclingServeApi.builder()
     .baseUrl("http://localhost:8000")
     .build();
 ```
@@ -115,7 +115,7 @@ You can supply and tune a `java.net.http.HttpClient.Builder`:
 import java.net.http.HttpClient;
 import java.time.Duration;
 
-DoclingServeApi api = DoclingServeClientBuilderFactory.newBuilder()
+DoclingServeApi api = DoclingServeApi.builder()
     .baseUrl("https://serve.example.com")
     .httpClientBuilder(HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(20))

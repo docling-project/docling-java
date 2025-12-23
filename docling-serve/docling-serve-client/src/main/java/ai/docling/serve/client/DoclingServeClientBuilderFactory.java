@@ -1,5 +1,8 @@
 package ai.docling.serve.client;
 
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.DoclingServeApi.DoclingApiBuilder;
+import ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
 import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
 
 /**
@@ -15,10 +18,7 @@ import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
  * <p>The factory uses a type-safe generic method to support custom subclasses of
  * {@link DoclingServeClient} and {@link DoclingServeClientBuilder}.
  */
-public final class DoclingServeClientBuilderFactory {
-  private DoclingServeClientBuilderFactory() {
-  }
-
+public final class DoclingServeClientBuilderFactory implements DoclingServeApiBuilderFactory {
   /**
    * Creates and returns a new instance of a {@link DoclingServeClientBuilder} compatible
    * with the Jackson version present on the provided classloader's classpath.
@@ -68,6 +68,11 @@ public final class DoclingServeClientBuilderFactory {
    */
   public static <C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> B newBuilder() {
     return newBuilder(Thread.currentThread().getContextClassLoader());
+  }
+
+  @Override
+  public <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> B getBuilder() {
+    return (B) newBuilder();
   }
 
   private enum JacksonVersion {

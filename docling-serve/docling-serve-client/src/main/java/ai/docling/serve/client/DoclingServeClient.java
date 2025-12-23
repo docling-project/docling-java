@@ -1,6 +1,5 @@
 package ai.docling.serve.client;
 
-import static ai.docling.serve.api.util.ValidationUtils.ensureNotBlank;
 import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
 import java.io.IOException;
@@ -402,27 +401,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      * Sets the base URL for the client.
      *
      * <p>This method configures the base URL that will be used for all API requests
-     * executed by the client. The provided URL must be non-null and not blank.
-     *
-     * @param baseUrl the base URL to use, as a {@code String}
-     * @return this builder instance for method chaining
-     * @throws IllegalArgumentException if {@code baseUrl} is null, blank, or invalid
-     */
-    public B baseUrl(String baseUrl) {
-      this.baseUrl = URI.create(ensureNotBlank(baseUrl, "baseUrl"));
-      return (B) this;
-    }
-
-    /**
-     * Sets the base URL for the client.
-     *
-     * <p>This method configures the base URL that will be used for all API requests
      * executed by the client. The provided URL must be non-null.
      *
      * @param baseUrl the base URL to use, as a {@link URI}
      * @return this builder instance for method chaining
      * @throws IllegalArgumentException if {@code baseUrl} is null
      */
+    @Override
     public B baseUrl(URI baseUrl) {
       this.baseUrl = baseUrl;
       return (B) this;

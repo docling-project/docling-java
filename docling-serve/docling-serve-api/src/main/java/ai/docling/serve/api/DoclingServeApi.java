@@ -1,16 +1,51 @@
 package ai.docling.serve.api;
 
+import static ai.docling.serve.api.util.ValidationUtils.ensureNotBlank;
+
+import java.net.URI;
 import java.time.Duration;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
+import ai.docling.serve.api.spi.ServiceLoaderHelper;
 
 /**
  * Docling Serve API interface.
  */
 public interface DoclingServeApi
     extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
+
+  /**
+   * Creates and returns a builder instance capable of constructing implementations of {@link DoclingServeApi}.
+   * The method ensures that exactly one factory capable of building a builder instance is available
+   * via the {@link DoclingServeApiBuilderFactory} interface.
+   *
+   * If no factories are found, or if multiple factories are found, an {@link IllegalStateException} is thrown.
+   *
+   * @param <T> the type of the {@link DoclingServeApi} implementation being built
+   * @param <B> the type of the builder implementation for the {@link DoclingServeApi}
+   * @return a builder instance of type {@code B} constructed using the available factory
+   * @throws IllegalStateException if no factories or more than one factory are found
+   */
+  static <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> B builder() {
+    var factories = ServiceLoaderHelper.loadFactories(DoclingServeApiBuilderFactory.class);
+
+    if (factories.isEmpty()) {
+      // No factory found
+      throw new IllegalStateException("No instance of %s found to build a %s instance. You are probably missing a library on your classpath.".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName()));
+    }
+
+    if (factories.size() > 1) {
+      // Multiple factories found
+      throw new IllegalStateException("Multiple instances of %s found to build a %s instance: [%s]".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName(), factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(", "))));
+    }
+
+    // Only 1 factory (what we want)
+    return factories.iterator().next().getBuilder();
+  }
 
   /**
    * Creates and returns a builder instance capable of constructing a duplicate or modified
@@ -30,6 +65,31 @@ public interface DoclingServeApi
    * @param <B> the type of the concrete builder implementation.
    */
   interface DoclingApiBuilder<T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> {
+    /**
+     * Sets the base URL for the client.
+     *
+     * <p>This method configures the base URL that will be used for all API requests
+     * executed by the client. The provided URL must be non-null and not blank.
+     *
+     * @param baseUrl the base URL to use, as a {@code String}
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code baseUrl} is null, blank, or invalid
+     */
+    default B baseUrl(String baseUrl) {
+      return baseUrl(URI.create(ensureNotBlank(baseUrl, "baseUrl")));
+    }
+
+    /**
+     * Sets the base URL for the client.
+     *
+     * <p>This method configures the base URL that will be used for all API requests
+     * executed by the client. The provided URL must be non-null.
+     *
+     * @param baseUrl the base URL to use, as a {@link URI}
+     * @return this builder instance for method chaining
+     */
+    B baseUrl(URI baseUrl);
+
     /**
      * Sets the API key for authenticating requests made by the client being built.
      *

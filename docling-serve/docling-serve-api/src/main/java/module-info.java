@@ -39,4 +39,8 @@ open module ai.docling.serve.api {
 
   // Validation API
   exports ai.docling.serve.api.validation;
+
+  // SPI
+  exports ai.docling.serve.api.spi;
+  uses ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
 }

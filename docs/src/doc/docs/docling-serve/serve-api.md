@@ -60,11 +60,12 @@ import ai.docling.serve.api.convert.request.options.OutputFormat;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.request.target.InBodyTarget;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
-import ai.docling.serve.client.DoclingServeClientBuilderFactory; // from docling-serve-client
 
-DoclingServeApi api = DoclingServeClientBuilderFactory
-    .newBuilder()
+DoclingServeApi api = DoclingServeApi.builder()
     .baseUrl("http://localhost:8000") // your Docling Serve URL
+    .logRequests() // log HTTP requests
+    .logResponses() // log HTTP responses
+    .prettyPrint() // pretty-print JSON requests/responses
     .build();
 
 ConvertDocumentRequest request = ConvertDocumentRequest.builder()
@@ -89,6 +90,12 @@ Defined in `ai.docling.serve.api.DoclingServeApi`, this interface exposes many o
 
 Any HTTP or non-HTTP implementation can implement this interface. The reference implementation is
 provided by the `docling-serve-client` module.
+
+### Extension Points
+
+The `docling-serve-api` module uses the [Java Service Provider Interface](https://www.baeldung.com/java-spi) to define an extension point for building/customizing instances of `DoclingServeApi`. An application (or downstream framework) can create an implementation of `ai.docling.serve.api.spi.DoclingServeApiBuilderFactory` and register it via the `META-INF/services/ai.docling.serve.api.spi.DoclingServeApiBuilderFactory` file, or providing an implementation using Java modules.
+
+This is exactly what the `docling-serve-client` module does to provide its implementation. See [`module-info.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/module-info.java) and [`DoclingServeClientBuilderFactory.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/ai/docling/serve/client/DoclingServeClientBuilderFactory.java).
 
 ### Requests: `ConvertDocumentRequest`
 

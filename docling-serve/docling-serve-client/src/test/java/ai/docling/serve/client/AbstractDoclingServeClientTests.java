@@ -62,6 +62,7 @@ import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationErrorContext;
 import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
+import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -111,6 +112,23 @@ abstract class AbstractDoclingServeClientTests {
 
   private <T> String writeValueAsString(T value) {
     return ((DoclingServeClient) getDoclingClient()).writeValueAsString(value);
+  }
+
+  @Test
+  void builderWorks() {
+    var clientBuilder = DoclingServeApi.builder()
+        .logRequests()
+        .logResponses()
+        .prettyPrint()
+        .baseUrl(doclingContainer.getApiUrl());
+
+    assertThat(clientBuilder)
+        .isNotNull()
+        .isInstanceOf(DoclingServeClientBuilder.class);
+
+    assertThat(clientBuilder.build())
+        .isNotNull()
+        .isInstanceOf(DoclingServeClient.class);
   }
 
   @Nested

@@ -15,7 +15,7 @@ slf4j = "2.0.17"
 testcontainers = "2.0.3"
 quarkus = "3.30.4"
 quarkus-github-api = "1.330.0"
-quarkus-wiremock = "1.5.2"
+quarkus-wiremock = "1.5.3"
 
 [libraries]
 # assertj

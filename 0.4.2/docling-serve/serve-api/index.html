@@ -675,6 +675,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension Points
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#requests-convertdocumentrequest" class="md-nav__link">
     <span class="md-ellipsis">
       Requests: ConvertDocumentRequest
@@ -1112,6 +1121,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension Points
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#requests-convertdocumentrequest" class="md-nav__link">
     <span class="md-ellipsis">
       Requests: ConvertDocumentRequest
@@ -1453,11 +1471,12 @@ build a conversion request, and retrieve Markdown output. The request/response t
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.target.InBodyTarget</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span><span class="w"> </span><span class="c1">// from docling-serve-client</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span>
-<span class="w">    </span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// your Docling Serve URL</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logRequests</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP requests</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logResponses</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP responses</span>
+<span class="w">    </span><span class="p">.</span><span class="na">prettyPrint</span><span class="p">()</span><span class="w"> </span><span class="c1">// pretty-print JSON requests/responses</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -1478,6 +1497,9 @@ build a conversion request, and retrieve Markdown output. The request/response t
 <p>Defined in <code>ai.docling.serve.api.DoclingServeApi</code>, this interface exposes many operations:</p>
 <p>Any HTTP or non-HTTP implementation can implement this interface. The reference implementation is
 provided by the <code>docling-serve-client</code> module.</p>
+<h3 id="extension-points">Extension Points<a class="headerlink" href="#extension-points" title="Permanent link">#</a></h3>
+<p>The <code>docling-serve-api</code> module uses the <a href="https://www.baeldung.com/java-spi">Java Service Provider Interface</a> to define an extension point for building/customizing instances of <code>DoclingServeApi</code>. An application (or downstream framework) can create an implementation of <code>ai.docling.serve.api.spi.DoclingServeApiBuilderFactory</code> and register it via the <code>META-INF/services/ai.docling.serve.api.spi.DoclingServeApiBuilderFactory</code> file, or providing an implementation using Java modules.</p>
+<p>This is exactly what the <code>docling-serve-client</code> module does to provide its implementation. See <a href="https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/module-info.java"><code>module-info.java</code></a> and <a href="https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/ai/docling/serve/client/DoclingServeClientBuilderFactory.java"><code>DoclingServeClientBuilderFactory.java</code></a>.</p>
 <h3 id="requests-convertdocumentrequest">Requests: <code>ConvertDocumentRequest</code><a class="headerlink" href="#requests-convertdocumentrequest" title="Permanent link">#</a></h3>
 <p>Create a request via the builder:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>

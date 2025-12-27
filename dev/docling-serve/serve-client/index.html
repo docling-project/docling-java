@@ -1432,7 +1432,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <p>Make sure you also include either a Jackson 2 or Jackson 3 dependency.</p>
 </details>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">#</a></h2>
-<p>Create a client with <code>DoclingServeClientBuilderFactory</code>, build a request, and call <code>convertSource()</code>:</p>
+<p>Create a client with <code>DoclingServeApi.builder()</code>, build a request, and call <code>convertSource()</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.URI</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
@@ -1441,11 +1441,12 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.target.InBodyTarget</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span>
-<span class="w">    </span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// your Docling Serve URL</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logRequests</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP requests</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logResponses</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP responses</span>
+<span class="w">    </span><span class="p">.</span><span class="na">prettyPrint</span><span class="p">()</span><span class="w"> </span><span class="c1">// pretty-print JSON requests/responses</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -1462,8 +1463,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 </code></pre></div>
 <h2 id="core-concepts-and-configuration">Core concepts and configuration<a class="headerlink" href="#core-concepts-and-configuration" title="Permanent link">#</a></h2>
 <h3 id="builder-factory-and-jackson-autodetection">Builder factory and Jackson auto‑detection<a class="headerlink" href="#builder-factory-and-jackson-autodetection" title="Permanent link">#</a></h3>
-<p><code>DoclingServeClientBuilderFactory.newBuilder()</code> chooses an implementation based on what's on
-your classpath:</p>
+<p><code>DoclingServeApi.builder()</code> chooses an implementation based on what's on your classpath:</p>
 <ul>
 <li>Jackson 3 present → <code>DoclingServeJackson3Client</code></li>
 <li>Else if Jackson 2 present → <code>DoclingServeJackson2Client</code></li>
@@ -1473,7 +1473,7 @@ your classpath:</p>
 client type if you need special Jackson modules or settings.</p>
 <h3 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Permanent link">#</a></h3>
 <p>Set the Docling Serve base URL with either a <code>String</code> or <code>URI</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
@@ -1484,7 +1484,7 @@ which avoids HTTP/2 downgrade mishaps in some environments.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.http.HttpClient</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Duration</span><span class="p">;</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;https://serve.example.com&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">httpClientBuilder</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">connectTimeout</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>

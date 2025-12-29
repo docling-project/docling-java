@@ -964,7 +964,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.health.HealthCheckResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.testcontainers.serve.DoclingServeContainer</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.testcontainers.serve.config.DoclingServeContainerConfig</span><span class="p">;</span>
 
@@ -982,8 +981,7 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">health_is_ok</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getHost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getPort</span><span class="p">();</span>
 
-<span class="w">    </span><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span>
-<span class="w">        </span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="w">    </span><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 

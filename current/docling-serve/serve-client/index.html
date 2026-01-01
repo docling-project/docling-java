@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.4.1/docling-serve/serve-client/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.4.2/docling-serve/serve-client/">
       
       
         <link rel="prev" href="../serve-api/">
@@ -767,13 +767,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-15t044332130123940z" class="md-nav__link">
+  <a href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-29t043733543934569z" class="md-nav__link">
     <span class="md-ellipsis">
-      Results for ghcr.io/docling-project/docling-serve as of 2025-12-15T04:43:32.130123940Z
+      Results for ghcr.io/docling-project/docling-serve as of 2025-12-29T04:37:33.543934569Z
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Results for ghcr.io/docling-project/docling-serve as of 2025-12-15T04:43:32.130123940Z">
+    <nav class="md-nav" aria-label="Results for ghcr.io/docling-project/docling-serve as of 2025-12-29T04:37:33.543934569Z">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1175,13 +1175,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-15t044332130123940z" class="md-nav__link">
+  <a href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-29t043733543934569z" class="md-nav__link">
     <span class="md-ellipsis">
-      Results for ghcr.io/docling-project/docling-serve as of 2025-12-15T04:43:32.130123940Z
+      Results for ghcr.io/docling-project/docling-serve as of 2025-12-29T04:37:33.543934569Z
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Results for ghcr.io/docling-project/docling-serve as of 2025-12-15T04:43:32.130123940Z">
+    <nav class="md-nav" aria-label="Results for ghcr.io/docling-project/docling-serve as of 2025-12-29T04:37:33.543934569Z">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1391,7 +1391,7 @@
 
 
 <h1 id="docling-serve-client">Docling Serve Client<a class="headerlink" href="#docling-serve-client" title="Permanent link">#</a></h1>
-<p><a href="https://docling-project.github.io/docling-java/0.4.1/docling-serve/serve-client"><img alt="docling-serve-client version" src="https://img.shields.io/badge/docling--serve--client_v0.4.1-orange" /></a></p>
+<p><a href="https://docling-project.github.io/docling-java/0.4.2/docling-serve/serve-client"><img alt="docling-serve-client version" src="https://img.shields.io/badge/docling--serve--client_v0.4.2-orange" /></a></p>
 <p>The <code>docling-serve-client</code> module is the reference HTTP client for talking to a
 <a href="https://github.com/docling-project/docling-serve">Docling Serve</a> backend.</p>
 <p>It implements the framework‑agnostic <code>DoclingServeApi</code> interface from
@@ -1411,7 +1411,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;ai.docling:docling-serve-client:0.4.1&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;ai.docling:docling-serve-client:0.4.2&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 </div>
@@ -1419,7 +1419,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">  </span><span class="nt">&lt;groupId&gt;</span>ai.docling<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>docling-serve-client<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">  </span><span class="nt">&lt;version&gt;</span>0.4.1<span class="nt">&lt;/version&gt;</span>
+<span class="w">  </span><span class="nt">&lt;version&gt;</span>0.4.2<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 </div>
@@ -1432,7 +1432,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <p>Make sure you also include either a Jackson 2 or Jackson 3 dependency.</p>
 </details>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">#</a></h2>
-<p>Create a client with <code>DoclingServeClientBuilderFactory</code>, build a request, and call <code>convertSource()</code>:</p>
+<p>Create a client with <code>DoclingServeApi.builder()</code>, build a request, and call <code>convertSource()</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.URI</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
@@ -1441,11 +1441,12 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.target.InBodyTarget</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span>
-<span class="w">    </span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// your Docling Serve URL</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logRequests</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP requests</span>
+<span class="w">    </span><span class="p">.</span><span class="na">logResponses</span><span class="p">()</span><span class="w"> </span><span class="c1">// log HTTP responses</span>
+<span class="w">    </span><span class="p">.</span><span class="na">prettyPrint</span><span class="p">()</span><span class="w"> </span><span class="c1">// pretty-print JSON requests/responses</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -1462,8 +1463,7 @@ Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 </code></pre></div>
 <h2 id="core-concepts-and-configuration">Core concepts and configuration<a class="headerlink" href="#core-concepts-and-configuration" title="Permanent link">#</a></h2>
 <h3 id="builder-factory-and-jackson-autodetection">Builder factory and Jackson auto‑detection<a class="headerlink" href="#builder-factory-and-jackson-autodetection" title="Permanent link">#</a></h3>
-<p><code>DoclingServeClientBuilderFactory.newBuilder()</code> chooses an implementation based on what's on
-your classpath:</p>
+<p><code>DoclingServeApi.builder()</code> chooses an implementation based on what's on your classpath:</p>
 <ul>
 <li>Jackson 3 present → <code>DoclingServeJackson3Client</code></li>
 <li>Else if Jackson 2 present → <code>DoclingServeJackson2Client</code></li>
@@ -1473,7 +1473,7 @@ your classpath:</p>
 client type if you need special Jackson modules or settings.</p>
 <h3 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Permanent link">#</a></h3>
 <p>Set the Docling Serve base URL with either a <code>String</code> or <code>URI</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
@@ -1484,7 +1484,7 @@ which avoids HTTP/2 downgrade mishaps in some environments.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.http.HttpClient</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Duration</span><span class="p">;</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;https://serve.example.com&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">httpClientBuilder</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">connectTimeout</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
@@ -1559,7 +1559,7 @@ from <code>HttpClient</code>. Conversion may also return structured errors in th
 </code></pre></div>
 <h2 id="version-compatibility">Version compatibility<a class="headerlink" href="#version-compatibility" title="Permanent link">#</a></h2>
 <p>The client is tested against all published versions of Docling Serve each week. Below are the latest run results:</p>
-<h3 id="results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-15t044332130123940z">Results for ghcr.io/docling-project/docling-serve as of 2025-12-15T04:43:32.130123940Z<a class="headerlink" href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-15t044332130123940z" title="Permanent link">#</a></h3>
+<h3 id="results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-29t043733543934569z">Results for ghcr.io/docling-project/docling-serve as of 2025-12-29T04:37:33.543934569Z<a class="headerlink" href="#results-for-ghcriodocling-projectdocling-serve-as-of-2025-12-29t043733543934569z" title="Permanent link">#</a></h3>
 <p>Here are the results:</p>
 <table>
 <thead>
@@ -1692,18 +1692,18 @@ Scalar docs at http://0.0.0.0:5001/scalar
 Logs:
 INFO:     Started server process [1]
 INFO:     Waiting for application startup.
-[INFO] 2025-12-15 04:43:22,239 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:43:22,241 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
-[INFO] 2025-12-15 04:43:22,309 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:43:22,309 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
-[INFO] 2025-12-15 04:43:22,345 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:43:22,345 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
+[INFO] 2025-12-29 04:37:22,755 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:37:22,757 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
+[INFO] 2025-12-29 04:37:22,826 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:37:22,826 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
+[INFO] 2025-12-29 04:37:22,862 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:37:22,862 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:34400 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:34408 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44884 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44890 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:34408 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44890 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1739,18 +1739,18 @@ Scalar docs at http://0.0.0.0:5001/scalar
 Logs:
 INFO:     Started server process [1]
 INFO:     Waiting for application startup.
-[INFO] 2025-12-15 04:41:18,395 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:41:18,396 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
-[INFO] 2025-12-15 04:41:18,464 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:41:18,464 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
-[INFO] 2025-12-15 04:41:18,499 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:41:18,499 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
+[INFO] 2025-12-29 04:36:11,621 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:36:11,624 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
+[INFO] 2025-12-29 04:36:11,750 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:36:11,750 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
+[INFO] 2025-12-29 04:36:11,811 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:36:11,811 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:57232 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:57242 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54478 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54480 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:57242 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54480 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1786,18 +1786,18 @@ Scalar docs at http://0.0.0.0:5001/scalar
 Logs:
 INFO:     Started server process [1]
 INFO:     Waiting for application startup.
-[INFO] 2025-12-15 04:38:29,197 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:38:29,198 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
-[INFO] 2025-12-15 04:38:29,275 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:38:29,275 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
-[INFO] 2025-12-15 04:38:29,311 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:38:29,311 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
+[INFO] 2025-12-29 04:34:13,115 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:34:13,118 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
+[INFO] 2025-12-29 04:34:13,214 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:34:13,214 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
+[INFO] 2025-12-29 04:34:13,275 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:34:13,275 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:40780 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:40792 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37880 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37892 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:40792 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37892 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1833,18 +1833,18 @@ Scalar docs at http://0.0.0.0:5001/scalar
 Logs:
 INFO:     Started server process [1]
 INFO:     Waiting for application startup.
-[INFO] 2025-12-15 04:36:04,680 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:36:04,681 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
-[INFO] 2025-12-15 04:36:04,749 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:36:04,749 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
-[INFO] 2025-12-15 04:36:04,787 [RapidOCR] base.py:22: Using engine_name: onnxruntime
-[INFO] 2025-12-15 04:36:04,787 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
+[INFO] 2025-12-29 04:32:36,526 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:32:36,531 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/det/ch_PP-OCRv4_det_infer.onnx
+[INFO] 2025-12-29 04:32:36,661 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:32:36,661 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_infer.onnx
+[INFO] 2025-12-29 04:32:36,723 [RapidOCR] base.py:22: Using engine_name: onnxruntime
+[INFO] 2025-12-29 04:32:36,723 [RapidOCR] main.py:53: Using /opt/app-root/src/.cache/docling/models/RapidOcr/onnx/PP-OCRv4/rec/ch_PP-OCRv4_rec_infer.onnx
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:42092 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:42096 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59182 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59184 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:42096 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59184 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1882,10 +1882,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:36778 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:36788 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:45172 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:45182 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:36788 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:45182 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1923,10 +1923,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:48552 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:48564 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:55500 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:55502 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:48564 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:55502 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -1964,10 +1964,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:41792 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:41806 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54714 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54716 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:41806 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:54716 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2005,10 +2005,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:35980 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:35982 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:40416 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:40420 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:35982 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:40420 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2046,10 +2046,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:55792 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:55802 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:51754 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:51764 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:55802 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:51764 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2087,10 +2087,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:52120 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:52122 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:47300 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:47308 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:52122 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:47308 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2128,10 +2128,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:60492 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:60508 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59856 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59870 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:60508 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:59870 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2169,10 +2169,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:60608 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:60624 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:43758 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:43766 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:60624 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:43766 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2210,10 +2210,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:46060 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:46072 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44474 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44484 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:46072 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44484 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2251,10 +2251,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:59812 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:59816 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44932 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44934 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:59816 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:44934 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2292,10 +2292,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:39178 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:39186 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:56908 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:56912 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:39186 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:56912 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2333,10 +2333,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:54986 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:55002 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37986 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37988 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:55002 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:37988 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2374,10 +2374,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:57408 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:57410 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:42290 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:42302 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:57410 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:42302 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>
@@ -2415,10 +2415,10 @@ INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
-INFO:     172.17.0.1:57430 - &quot;GET /health HTTP/1.1&quot; 200 OK
-INFO:     172.17.0.1:57434 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:39954 - &quot;GET /health HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:39960 - &quot;GET /health HTTP/1.1&quot; 200 OK
 WARNING:docling_core.types.doc.document:Parameter `strict_text` has been deprecated and will be ignored.
-INFO:     172.17.0.1:57434 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
+INFO:     172.17.0.1:39960 - &quot;POST /v1/convert/source HTTP/1.1&quot; 200 OK
 </code></pre></div>
 
 </details>

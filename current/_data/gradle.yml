@@ -1,4 +1,4 @@
-project_version: 0.4.1
+project_version: 0.4.2
 project_groupId: ai.docling
 project_artifactId: docling-java
 serve_api_artifactId: docling-serve-api

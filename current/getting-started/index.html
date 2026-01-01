@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.4.1/getting-started/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.4.2/getting-started/">
       
       
         <link rel="prev" href="..">
@@ -785,9 +785,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.client.DoclingServeClientBuilderFactory</span><span class="p">;</span>
 
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;&lt;location of docling serve instance&gt;&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 

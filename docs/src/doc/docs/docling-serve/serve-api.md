@@ -112,11 +112,13 @@ ConvertDocumentRequest request = ConvertDocumentRequest.builder()
 Supported sources (`ai.docling.serve.api.convert.request.source`):
 - `HttpSource` — fetch content from a URL (optional custom headers)
 - `FileSource` — embed content as Base64 with a filename
+- `S3Source` — fetch content from an S3 bucket
 
 Targets (`ai.docling.serve.api.convert.request.target`):
 - `InBodyTarget` — receive results directly in the API response body (default use case)
 - `PutTarget` — the service uploads converted content via HTTP PUT to a specified URI
 - `ZipTarget` — receive a zipped result
+- `S3Target` — upload converted content to an S3 bucket
 
 Options (`ai.docling.serve.api.convert.request.options.ConvertDocumentOptions`) let you control:
 - Input/output formats (e.g., `fromFormats`, `toFormats`)

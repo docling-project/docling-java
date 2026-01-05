@@ -6,8 +6,8 @@ The `docling-serve-client` module is the reference HTTP client for talking to a
 [Docling Serve](https://github.com/docling-project/docling-serve) backend.
 
 It implements the framework‑agnostic `DoclingServeApi` interface from
-[`docling-serve-api`](serve-api.md) using Java's built‑in `HttpClient` for transport and
-Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).
+[`docling-serve-api`](serve-api.md) using [Java's built‑in `HttpClient`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html) for transport and
+[Jackson](https://github.com/FasterXML/jackson) for JSON (auto‑detecting Jackson 2 or 3 at runtime).
 
 If you only need the request/response model (without HTTP), use the API module:
 - [`docling-serve-api`](serve-api.md)
@@ -130,7 +130,7 @@ DoclingServeApi api = DoclingServeApi.builder()
 Enable lightweight logging for diagnostics:
 
 ```java
-DoclingServeApi noisy = DoclingServeClientBuilderFactory.newBuilder()
+DoclingServeApi noisy = DoclingServeApi.builder()
     .baseUrl("http://localhost:8000")
     .logRequests()
     .logResponses()
@@ -155,6 +155,7 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
 
   ```java
   import ai.docling.serve.api.convert.request.source.HttpSource;
+  
   var httpSource = HttpSource.builder()
       .url(URI.create("https://example.com/file.pdf"))
       // .header("Authorization", "Bearer ...")

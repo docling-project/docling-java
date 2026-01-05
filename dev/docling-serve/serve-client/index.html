@@ -1395,8 +1395,8 @@
 <p>The <code>docling-serve-client</code> module is the reference HTTP client for talking to a
 <a href="https://github.com/docling-project/docling-serve">Docling Serve</a> backend.</p>
 <p>It implements the framework‑agnostic <code>DoclingServeApi</code> interface from
-<a href="../serve-api/"><code>docling-serve-api</code></a> using Java's built‑in <code>HttpClient</code> for transport and
-Jackson for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
+<a href="../serve-api/"><code>docling-serve-api</code></a> using <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html">Java's built‑in <code>HttpClient</code></a> for transport and
+<a href="https://github.com/FasterXML/jackson">Jackson</a> for JSON (auto‑detecting Jackson 2 or 3 at runtime).</p>
 <p>If you only need the request/response model (without HTTP), use the API module:
 - <a href="../serve-api/"><code>docling-serve-api</code></a></p>
 <h2 id="when-to-use-this-module">When to use this module<a class="headerlink" href="#when-to-use-this-module" title="Permanent link">#</a></h2>
@@ -1495,7 +1495,7 @@ which avoids HTTP/2 downgrade mishaps in some environments.</p>
 </code></pre></div>
 <h3 id="requestresponse-logging">Request/response logging<a class="headerlink" href="#requestresponse-logging" title="Permanent link">#</a></h3>
 <p>Enable lightweight logging for diagnostics:</p>
-<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">noisy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">noisy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">logRequests</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">logResponses</span><span class="p">()</span>
@@ -1514,6 +1514,7 @@ which avoids HTTP/2 downgrade mishaps in some environments.</p>
 <li>HTTP source</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
+
 <span class="kd">var</span><span class="w"> </span><span class="n">httpSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HttpSource</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="n">URI</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;https://example.com/file.pdf&quot;</span><span class="p">))</span>
 <span class="w">    </span><span class="c1">// .header(&quot;Authorization&quot;, &quot;Bearer ...&quot;)</span>

@@ -1510,11 +1510,13 @@ provided by the <code>docling-serve-client</code> module.</p>
 </code></pre></div>
 <p>Supported sources (<code>ai.docling.serve.api.convert.request.source</code>):
 - <code>HttpSource</code> — fetch content from a URL (optional custom headers)
-- <code>FileSource</code> — embed content as Base64 with a filename</p>
+- <code>FileSource</code> — embed content as Base64 with a filename
+- <code>S3Source</code> — fetch content from an S3 bucket</p>
 <p>Targets (<code>ai.docling.serve.api.convert.request.target</code>):
 - <code>InBodyTarget</code> — receive results directly in the API response body (default use case)
 - <code>PutTarget</code> — the service uploads converted content via HTTP PUT to a specified URI
-- <code>ZipTarget</code> — receive a zipped result</p>
+- <code>ZipTarget</code> — receive a zipped result
+- <code>S3Target</code> — upload converted content to an S3 bucket</p>
 <p>Options (<code>ai.docling.serve.api.convert.request.options.ConvertDocumentOptions</code>) let you control:
 - Input/output formats (e.g., <code>fromFormats</code>, <code>toFormats</code>)
 - OCR (e.g., <code>doOcr</code>, <code>forceOcr</code>, <code>ocrEngine</code>, <code>ocrLang</code>)

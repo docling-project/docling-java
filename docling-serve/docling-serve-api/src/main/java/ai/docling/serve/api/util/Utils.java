@@ -93,7 +93,7 @@ public final class Utils {
      * @return true if the string is {@code null} or blank.
      */
     public static boolean isNullOrBlank(String string) {
-        return string == null || string.trim().isBlank();
+        return string == null || string.isBlank();
     }
 
     /**

@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.27.6"
 awaitility = "4.3.0"
-jackson2 = "2.20.1"
+jackson2 = "2.21.0"
 jackson3 = "3.0.3"
 jacoco = "0.8.14"
 jreleaser = "1.22.0"

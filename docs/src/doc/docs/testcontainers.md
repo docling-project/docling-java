@@ -4,6 +4,8 @@
 
 The `docling-testcontainers` module provides a ready-to-use [Testcontainers](https://testcontainers.com/) integration for running a [Docling Serve](https://github.com/docling-project/docling-serve) instance in your tests. It wraps the official container image and exposes a simple Java API so you can spin up Docling as part of your JUnit test lifecycle and exercise client code against a real server.
 
+Additionally, the `docling-testcontainers` module is now an [official Testcontainers module](https://testcontainers.com/modules/docling)!
+
 If you need to talk to a running server from your application code, pair this module with the reference HTTP client:
 - [`docling-serve-client`](docling-serve/serve-client.md)
 

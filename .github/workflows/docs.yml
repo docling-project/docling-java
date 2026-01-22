@@ -33,14 +33,14 @@ jobs:
     steps:
       - name: Checkout sources
         if: github.event_name != 'release'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           path: app
 
       - name: Get release sources
         if: github.event_name == 'release'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name }}
@@ -61,7 +61,7 @@ jobs:
           echo "DOCS_VERSION=$(yq '.release.current-version' .github/project.yml)" >> $GITHUB_ENV
 
       - name: Get docs
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: gh-pages
           path: docs

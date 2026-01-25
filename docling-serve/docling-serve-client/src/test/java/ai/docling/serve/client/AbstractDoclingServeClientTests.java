@@ -2,11 +2,15 @@ package ai.docling.serve.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import ai.docling.core.DoclingDocument;
 import ai.docling.core.DoclingDocument.DocItemLabel;
@@ -107,13 +112,13 @@ abstract class AbstractDoclingServeClientTests {
     }
   };
 
-//  @RegisterExtension
-//  static WireMockExtension wireMockExtension = WireMockExtension.newInstance()
-//      .options(wireMockConfig().dynamicPort())
-//      .configureStaticDsl(true)
-//      .failOnUnmatchedRequests(true)
-//      .resetOnEachTest(true)
-//      .build();
+  @RegisterExtension
+  static WireMockExtension wireMockExtension = WireMockExtension.newInstance()
+      .options(wireMockConfig().dynamicPort())
+      .configureStaticDsl(true)
+      .failOnUnmatchedRequests(true)
+      .resetOnEachTest(true)
+      .build();
 
   static {
     doclingContainer.start();
@@ -153,6 +158,37 @@ abstract class AbstractDoclingServeClientTests {
     assertThat(clientBuilder.build())
         .isNotNull()
         .isInstanceOf(DoclingServeClient.class);
+  }
+
+  @Test
+  void pathPartFromBaseUrl() {
+    // From https://github.com/docling-project/docling-java/issues/294
+    var wiremockRuntimeInfo = wireMockExtension.getRuntimeInfo();
+    wireMockExtension.stubFor(
+        get(urlPathEqualTo("/path/health"))
+            .withHeader("Accept", equalTo("application/json"))
+            .willReturn(okJson("{\"status\": \"ok\"}"))
+    );
+
+    var baseUrl = "http://localhost:%d/path".formatted(wiremockRuntimeInfo.getHttpPort());
+
+    var client = DoclingServeApi.builder()
+        .logRequests()
+        .logResponses()
+        .prettyPrint()
+        .baseUrl(baseUrl)
+        .build();
+
+    assertThat(client.health())
+        .isNotNull()
+        .extracting(HealthCheckResponse::getStatus)
+        .isEqualTo("ok");
+
+    verify(
+        1,
+        getRequestedFor(urlPathEqualTo("/path/health"))
+            .withHeader("Accept", equalTo("application/json"))
+    );
   }
 
   @Nested

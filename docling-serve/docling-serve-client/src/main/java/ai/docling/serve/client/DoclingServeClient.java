@@ -89,14 +89,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final TaskOperations taskOps;
 
   protected DoclingServeClient(DoclingServeClientBuilder builder) {
-    this.baseUrl = ensureNotNull(builder.baseUrl, "baseUrl");
+    var base = ensureNotNull(builder.baseUrl, "baseUrl");
 
-    if (Objects.equals(this.baseUrl.getScheme(), "http")) {
+    if (Objects.equals(base.getScheme(), "http")) {
       // Docling Serve uses Python FastAPI which causes errors when called from JDK HttpClient.
       // The HttpClient uses HTTP 2 by default and then falls back to HTTP 1.1 if not supported.
       // However, the way FastAPI works results in the fallback not happening, making the call fail.
       builder.httpClientBuilder.version(HttpClient.Version.HTTP_1_1);
     }
+
+    this.baseUrl = !base.getPath().endsWith("/") ?
+        URI.create(base + "/") :
+        base;
 
     this.httpClient = ensureNotNull(builder.httpClientBuilder, "httpClientBuilder").build();
     this.logRequests = builder.logRequests;
@@ -229,7 +233,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
   protected <I, O> HttpRequest.Builder createRequestBuilder(RequestContext<I, O> requestContext) {
     var requestBuilder = HttpRequest.newBuilder()
-        .uri(this.baseUrl.resolve(requestContext.getUri()))
+        .uri(this.baseUrl.resolve(resolvePath(requestContext.getUri())))
         .header("Accept", "application/json");
 
       if (Utils.isNotNullOrBlank(this.apiKey)) {
@@ -237,6 +241,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       }
 
     return requestBuilder;
+  }
+
+  private String resolvePath(String path) {
+    return Optional.ofNullable(path)
+        .filter(p -> p.startsWith("/") && (p.length() > 1))
+        .map(p -> p.substring(1))
+        .orElse(path);
   }
 
   protected <T> T getResponse(HttpRequest request, HttpResponse<String> response, Class<T> expectedReturnType) {

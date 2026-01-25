@@ -115,6 +115,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/insectengine"><img src="https://avatars.githubusercontent.com/u/928656?v=4?s=100" width="100px;" alt="insectengine"/><br /><sub><b>insectengine</b></sub></a><br /><a href="#content-insectengine" title="Content">🖋</a> <a href="#design-insectengine" title="Design">🎨</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/maxmnemonic"><img src="https://avatars.githubusercontent.com/u/101627549?v=4?s=100" width="100px;" alt="Maxim Lysak"/><br /><sub><b>Maxim Lysak</b></sub></a><br /><a href="#content-maxmnemonic" title="Content">🖋</a> <a href="#design-maxmnemonic" title="Design">🎨</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/warnulf"><img src="https://avatars.githubusercontent.com/u/4599260?v=4?s=100" width="100px;" alt="warnulf"/><br /><sub><b>warnulf</b></sub></a><br /><a href="#bug-warnulf" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

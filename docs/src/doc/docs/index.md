@@ -30,6 +30,10 @@ This repository provides a set of artifacts you can mix and match depending on y
 - [`docling-testing`](testing.md): Utilities for testing Docling integrations in your codebase.
 - [`docling-testcontainers`](testcontainers.md): A [Testcontainers](https://testcontainers.com/) module for running Docling Serve in containers.
 
+## Presentations
+- January 26, 2026 - [Quarkus Insights](https://www.youtube.com/live/BWMAGStgkAE): Docling Integration
+    - [Presentation](assets/presentations/Docling%20Integration.pdf)
+
 ## Links
 
 - Source repository: https://github.com/docling-project/docling-java

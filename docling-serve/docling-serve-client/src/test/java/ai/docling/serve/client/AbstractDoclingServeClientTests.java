@@ -177,6 +177,8 @@ abstract class AbstractDoclingServeClientTests {
         .logResponses()
         .prettyPrint()
         .baseUrl(baseUrl)
+        .connectTimeout(Duration.ofSeconds(10))
+        .readTimeout(Duration.ofSeconds(45))
         .build();
 
     assertThat(client.health())

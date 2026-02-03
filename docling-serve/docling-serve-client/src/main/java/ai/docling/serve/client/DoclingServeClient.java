@@ -43,6 +43,7 @@ import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.Utils;
+import ai.docling.serve.api.util.ValidationUtils;
 import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationException;
 import ai.docling.serve.client.operations.ChunkOperations;
@@ -79,6 +80,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final boolean logResponses;
   private final boolean prettyPrintJson;
   private final @Nullable String apiKey;
+  private final Duration connectTimeout;
+  private final Duration readTimeout;
   private final Duration asyncPollInterval;
   private final Duration asyncTimeout;
 
@@ -89,6 +92,11 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final TaskOperations taskOps;
 
   protected DoclingServeClient(DoclingServeClientBuilder builder) {
+    ValidationUtils.ensurePositiveDuration(builder.connectTimeout, "connectTimeout");
+    ValidationUtils.ensurePositiveDuration(builder.readTimeout, "readTimeout");
+    ValidationUtils.ensurePositiveDuration(builder.asyncPollInterval, "asyncPollInterval");
+    ValidationUtils.ensurePositiveDuration(builder.asyncTimeout, "asyncTimeout");
+
     var base = ensureNotNull(builder.baseUrl, "baseUrl");
 
     if (Objects.equals(base.getScheme(), "http")) {
@@ -102,7 +110,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         URI.create(base + "/") :
         base;
 
-    this.httpClient = ensureNotNull(builder.httpClientBuilder, "httpClientBuilder").build();
+    this.connectTimeout = builder.connectTimeout;
+    this.readTimeout = builder.readTimeout;
+
+    this.httpClient = ensureNotNull(builder.httpClientBuilder, "httpClientBuilder")
+        .connectTimeout(connectTimeout)
+        .build();
+
     this.logRequests = builder.logRequests;
     this.logResponses = builder.logResponses;
     this.prettyPrintJson = builder.prettyPrintJson;
@@ -234,7 +248,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   protected <I, O> HttpRequest.Builder createRequestBuilder(RequestContext<I, O> requestContext) {
     var requestBuilder = HttpRequest.newBuilder()
         .uri(this.baseUrl.resolve(resolvePath(requestContext.getUri())))
-        .header("Accept", "application/json");
+        .header("Accept", "application/json")
+        .timeout(this.readTimeout);
 
       if (Utils.isNotNullOrBlank(this.apiKey)) {
         requestBuilder.header(API_KEY_HEADER_NAME, this.apiKey);
@@ -382,6 +397,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     private boolean logResponses = false;
     private boolean prettyPrintJson = false;
     private @Nullable String apiKey;
+    private Duration connectTimeout = Duration.ofSeconds(5);
+    private Duration readTimeout = Duration.ofSeconds(30);
     private Duration asyncPollInterval = Duration.ofSeconds(2);
     private Duration asyncTimeout = Duration.ofMinutes(5);
 
@@ -467,6 +484,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       return (B) this;
     }
 
+    @Override
+    public B connectTimeout(Duration connectTimeout) {
+      this.connectTimeout = connectTimeout;
+      return (B) this;
+    }
+
+    @Override
+    public B readTimeout(Duration readTimeout) {
+      this.readTimeout = readTimeout;
+      return (B) this;
+    }
+
     /**
      * Sets the polling interval for async operations.
      *
@@ -475,14 +504,9 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      *
      * @param asyncPollInterval the polling interval (must not be null or negative)
      * @return this builder instance for method chaining
-     * @throws IllegalArgumentException if asyncPollInterval is null or negative
      */
     @Override
     public B asyncPollInterval(Duration asyncPollInterval) {
-      if (asyncPollInterval == null || asyncPollInterval.isNegative() || asyncPollInterval.isZero()) {
-        throw new IllegalArgumentException("asyncPollInterval must be a positive duration");
-      }
-
       this.asyncPollInterval = asyncPollInterval;
       return (B) this;
     }
@@ -495,13 +519,9 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      *
      * @param asyncTimeout the timeout duration (must not be null or negative)
      * @return this builder instance for method chaining
-     * @throws IllegalArgumentException if asyncTimeout is null or negative
      */
     @Override
     public B asyncTimeout(Duration asyncTimeout) {
-      if (asyncTimeout == null || asyncTimeout.isNegative() || asyncTimeout.isZero()) {
-        throw new IllegalArgumentException("asyncTimeout must be a positive duration");
-      }
       this.asyncTimeout = asyncTimeout;
       return (B) this;
     }

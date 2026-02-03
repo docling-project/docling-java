@@ -3,9 +3,12 @@ package ai.docling.serve.api.util;
 import static ai.docling.serve.api.util.Utils.isNullOrBlank;
 import static ai.docling.serve.api.util.Utils.isNullOrEmpty;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for validating method arguments.
@@ -271,4 +274,16 @@ public final class ValidationUtils {
         }
         return i;
     }
+
+  /**
+   * Ensures that the given duration is positive.
+   * @param duration The duration to check.
+   * @throws IllegalArgumentException if the duration is negative or zero.
+   */
+  public static void ensurePositiveDuration(@Nullable Duration duration, String name) {
+      if (duration == null || duration.isNegative() || duration.isZero()) {
+        throw new IllegalArgumentException("%s must be a positive duration".formatted(name));
+      }
+    }
+
 }

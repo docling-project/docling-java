@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -261,4 +262,16 @@ class ValidationUtilsTests {
                     .withMessageContaining("test must be between 0 and 1, but is: -1");
         }
     }
+
+    @Test
+    void ensurePositiveDuration() {
+      ValidationUtils.ensurePositiveDuration(Duration.ofSeconds(1), "test");
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> ValidationUtils.ensurePositiveDuration(Duration.ofSeconds(-1), "test"))
+          .withMessageContaining("test must be a positive duration");
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> ValidationUtils.ensurePositiveDuration(Duration.ofSeconds(0), "test"))
+          .withMessageContaining("test must be a positive duration");
+    }
+
 }

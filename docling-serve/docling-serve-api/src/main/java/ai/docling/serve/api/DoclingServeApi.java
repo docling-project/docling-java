@@ -169,6 +169,16 @@ public interface DoclingServeApi
     }
 
     /**
+     * Timeout to establish a connection to the Docling Serve API.
+     */
+    B connectTimeout(Duration connectTimeout);
+
+    /**
+     * Timeout for receiving a response from the Docling Serve API.
+     */
+    B readTimeout(Duration readTimeout);
+
+    /**
      * Sets the polling interval for async operations.
      *
      * <p>This configures how frequently the client will check the status of async

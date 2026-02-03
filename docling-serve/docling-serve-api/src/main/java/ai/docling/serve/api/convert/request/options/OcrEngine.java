@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public enum OcrEngine {
 
+  @JsonProperty("auto") AUTO,
   @JsonProperty("easyocr") EASYOCR,
-  @JsonProperty("mac") OCRMAC,
+  @JsonProperty("ocrmac") OCRMAC,
   @JsonProperty("rapidocr") RAPIDOCR,
-  @JsonProperty("tesseract") TESSEROCR,
-  @JsonProperty("tesseract_cloud") TESSERACT
+  @JsonProperty("tesserocr") TESSEROCR,
+  @JsonProperty("tesseract") TESSERACT
 
 }

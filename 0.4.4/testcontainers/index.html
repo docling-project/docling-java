@@ -980,10 +980,8 @@
 
 <span class="w">  </span><span class="nd">@Test</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">health_is_ok</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getHost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getPort</span><span class="p">();</span>
-
 <span class="w">    </span><span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">docling</span><span class="p">.</span><span class="na">getApiUrl</span><span class="p">())</span>
 <span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="w">    </span><span class="n">HealthCheckResponse</span><span class="w"> </span><span class="n">health</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="na">health</span><span class="p">();</span>
@@ -995,7 +993,6 @@
 <summary>Note</summary>
 <ul>
 <li><code>@Container</code> manages container lifecycle for you. Use a <code>static</code> field to reuse the container across tests in the class.</li>
-<li><code>getHost()</code> and <code>getPort()</code> are provided by Testcontainers/<code>GenericContainer</code>; <code>getPort()</code> maps the container’s internal port to a random free host port.</li>
 </ul>
 </details>
 <h2 id="using-it-with-the-reference-client-for-conversions">Using it with the reference client for conversions<a class="headerlink" href="#using-it-with-the-reference-client-for-conversions" title="Permanent link">#</a></h2>
@@ -1008,8 +1005,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.target.InBodyTarget</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
 
-<span class="n">String</span><span class="w"> </span><span class="n">baseUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getHost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getPort</span><span class="p">();</span>
-<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeClientBuilderFactory</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">().</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">baseUrl</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<span class="n">String</span><span class="w"> </span><span class="n">baseUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">docling</span><span class="p">.</span><span class="na">getApiUrl</span><span class="p">();</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">baseUrl</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">ConvertDocumentRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertDocumentRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">source</span><span class="p">(</span><span class="n">HttpSource</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">url</span><span class="p">(</span><span class="n">URI</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;https://arxiv.org/pdf/2408.09869&quot;</span><span class="p">)).</span><span class="na">build</span><span class="p">())</span>

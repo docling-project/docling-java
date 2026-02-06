@@ -132,7 +132,9 @@
       "profile": "http://pipestream.ai",
       "contributions": [
         "code",
-        "ideas"
+        "ideas",
+        "doc",
+        "test"
       ]
     }
   ]

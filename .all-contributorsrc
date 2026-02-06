@@ -124,6 +124,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "krickert",
+      "name": "Kristian Rickert",
+      "avatar_url": "https://avatars.githubusercontent.com/u/313612?v=4",
+      "profile": "http://pipestream.ai",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ]
 }

@@ -1,0 +1,86 @@
+project:
+  name: docling-java
+  description: A Java API for Docling
+  longDescription: A Java API for Docling
+  license: MIT
+  inceptionYear: 2025
+  copyright: 2025-Present IBM
+  vendor: IBM
+  authors:
+    - Eric Deandrea
+    - Thomas Vitale
+    - Alex Soto
+  tags:
+    - docling
+    - java
+    - AI
+  maintainers:
+    - Eric Deandrea
+    - Thomas Vitale
+    - Alex Soto
+  links:
+    homepage: https://{{repoOwner}}.github.io/{{repoName}}
+    documentation: https://{{repoOwner}}.github.io/{{repoName}}
+    license: https://opensource.org/license/mit
+    bugTracker: https://{{repoHost}}/{{repoOwner}}/{{repoName}}/issues
+    vcsBrowser: https://{{repoHost}}/{{repoOwner}}/{{repoName}}
+    help: https://{{repoHost}}/{{repoOwner}}/{{repoName}}/discussions
+    contribute: https://{{repoHost}}/{{repoOwner}}/{{repoName}}/blob/main/CONTRIBUTING.md
+
+signing:
+  active: ALWAYS
+  armored: true
+
+release:
+  github:
+    enabled: true
+    overwrite: true
+    repoOwner: docling-project
+    name: docling-java
+    sign: true
+    discussionCategoryName: Announcements
+    skipTag: true
+    changelog:
+      enabled: true
+      formatted: ALWAYS
+      links: true
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      hide:
+        categories:
+          - merge
+        contributors:
+          - GitHub
+          - dependabot
+          - all-contributors
+          - docling-java-ops
+      extraProperties:
+        categorizeScopes: true
+    issues:
+      enabled: true
+      comment: '🎉 This issue has been resolved in `{{tagName}}` ([Release Notes]({{releaseNotesUrl}}))'
+    commitAuthor:
+      name: docling-java-ops
+      email: deepsearch-core@zurich.ibm.com
+
+checksum:
+  algorithms:
+    - SHA_256
+
+deploy:
+  maven:
+    mavenCentral:
+      sonatype:
+        retryDelay: 100
+        maxRetries: 100
+        connectTimeout: 18000
+        active: ALWAYS
+        url: https://central.sonatype.com/api/v1/publisher
+        applyMavenCentralRules: true
+        stagingRepositories:
+          - build/staging-deploy
+
+announce:
+  discord:
+    active: ALWAYS

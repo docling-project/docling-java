@@ -100,6 +100,7 @@ jobs:
 
       - name: Release
         if: steps.verify-files.outputs.should_release == 'true'
+        uses: jreleaser/release-action@90ac653bb9c79d11179e65d81499f3f34527dcd5 # v2.5.0
         env:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
@@ -111,9 +112,8 @@ jobs:
           JRELEASER_DRY_RUN: ${{ inputs.dryrun }}
           JRELEASER_TAG_NAME: "v${{ env.CURRENT_VERSION }}"
           JRELEASER_PREVIOUS_TAG_NAME: "v${{ env.PREVIOUS_VERSION }}"
-        run: |
-          echo "Releasing version ${{ env.PREVIOUS_VERSION }} -> ${{ env.CURRENT_VERSION }}"
-          ./gradlew --no-daemon -Dorg.gradle.configuration-cache=false :jreleaserFullRelease
+        with:
+          setup-java: false
 
       # Persist logs
       - name: JReleaser release output

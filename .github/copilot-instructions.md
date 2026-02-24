@@ -185,7 +185,7 @@ Run a single test class:
 
 ## Dependency Management
 
-- **Never add a dependency directly to a `build.gradle.kts`**; always add the version to `gradle/libs.versions.toml` first and reference it via the version catalog.
+- **Never hardcode dependency versions in `build.gradle.kts`**; add versions to `gradle/libs.versions.toml` (or use the BOM) and reference dependencies via the `libs.*` version catalog.
 - Check for security advisories before adding new libraries.
 - Keep Jackson as `compileOnly` where it is already `compileOnly` — it must not become a transitive API dependency.
 

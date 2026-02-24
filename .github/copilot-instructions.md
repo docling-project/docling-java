@@ -77,7 +77,7 @@ docling-java/
 ./gradlew :docling-version-tests:quarkusDev
 ```
 
-> **Note:** Tests in `docling-serve-client` and `docling-testcontainers` that use Testcontainers require a running Docker daemon. Tests in `docling-serve-api` use WireMock and run without Docker.
+> **Note:** Tests in `docling-serve-client` that use WireMock also start a `DoclingServeContainer` via Testcontainers and therefore require a running Docker daemon. Tests in `docling-testcontainers` that use Testcontainers likewise require Docker, while tests in `docling-serve-api` do not use WireMock and can run without Docker.
 
 ## Java Code Conventions
 
@@ -122,7 +122,7 @@ The project supports **both Jackson 2** (`com.fasterxml.jackson`) and **Jackson 
 
 ### Module System (JPMS)
 
-Each module has a `module-info.java`. When adding new packages, export them in `module-info.java`. Jackson and Lombok are `requires static` (optional at runtime).
+Most library modules have a `module-info.java` (some non-library/test modules, such as `docling-version-tests`, do not). When adding new packages to a library module, export them in its `module-info.java`. Jackson and Lombok are `requires static` (optional at runtime).
 
 ### Javadoc
 
@@ -219,7 +219,7 @@ DoclingServeContainer container = new DoclingServeContainer(
 // container.getApiUrl() → "http://localhost:<mapped_port>"
 ```
 
-Default image constant: `DoclingServeContainerConfig.DOCLING_IMAGE` = `ghcr.io/docling-project/docling-serve:<DOCLING_IMAGE_VERSION>`.
+Default image constant pattern: `DoclingServeContainerConfig.DOCLING_IMAGE` → `ghcr.io/docling-project/docling-serve:<DOCLING_IMAGE_VERSION>` (where `<DOCLING_IMAGE_VERSION>` is a concrete tag such as `v1.13.0`).
 
 ## CI/CD
 

@@ -126,7 +126,7 @@ Each module has a `module-info.java`. When adding new packages, export them in `
 
 ### Javadoc
 
-All public types and methods require Javadoc. The build uses `-Xdoclint:syntax,html` and fails on errors (with `isFailOnError = false` for non-syntax issues). Keep Javadoc accurate and complete.
+All public types and methods require Javadoc. The build runs Javadoc with `-Xdoclint:syntax,html`, but the `Javadoc` task is configured with `isFailOnError = false`, so Javadoc issues do not currently fail the build. Treat Javadoc warnings and errors as if they were fatal when contributing and keep Javadoc accurate and complete.
 
 ### Code Style
 

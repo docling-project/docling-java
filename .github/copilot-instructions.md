@@ -131,8 +131,41 @@ All public types and methods require Javadoc. The build uses `-Xdoclint:syntax,h
 ### Code Style
 
 - `.editorconfig` at the repository root defines formatting rules. Follow it.
-- Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages and PR titles.
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) for **all** commit messages and PR titles.
 - Commits should be atomic and squashed before merging.
+
+#### Conventional Commits format
+
+```
+<type>[optional scope]: <short description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Common types used in this project:
+
+| Type | When to use |
+|---|---|
+| `feat` | A new feature or capability |
+| `fix` | A bug fix |
+| `docs` | Documentation-only changes (including `copilot-instructions.md`) |
+| `chore` | Build scripts, CI config, dependency bumps, tooling |
+| `refactor` | Code restructuring with no behaviour change |
+| `test` | Adding or updating tests |
+| `style` | Formatting / code style (no logic change) |
+
+Examples:
+
+```
+docs: add copilot-instructions.md for coding agent onboarding
+feat(serve-client): add retry support to DoclingServeClient
+fix(core): handle null RefItem in DoclingDocument resolution
+chore: bump jackson to 2.18.3
+```
+
+> **Important:** Every commit pushed to this repository — including automated commits made by coding agents — **must** follow this format. PRs with non-conforming commit messages will be asked to reword or squash before merging.
 
 ## Testing Conventions
 

@@ -136,6 +136,16 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "KaleabArgaw",
+      "name": "Kaleab A.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49553213?v=4",
+      "profile": "https://github.com/KaleabArgaw",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
   ]
 }

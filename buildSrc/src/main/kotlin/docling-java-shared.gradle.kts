@@ -2,6 +2,7 @@ plugins {
   id("docling-shared")
   `java-library`
   `jacoco`
+  id("com.diffplug.spotless")
 }
 
 repositories {
@@ -39,6 +40,19 @@ testing {
 
 jacoco {
   toolVersion = libs.findVersion("jacoco").get().toString()
+}
+
+spotless {
+  // Roll out linting incrementally by checking only files changed from main.
+  ratchetFrom("origin/main")
+
+  java {
+    target("src/*/java/**/*.java")
+    removeUnusedImports()
+    formatAnnotations()
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
 }
 
 tasks.withType<Test>().configureEach {

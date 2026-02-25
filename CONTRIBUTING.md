@@ -101,6 +101,26 @@ If you have not done so on this machine, you need to:
 
 The project has a `.editorconfig` file checked into the root. Please make sure the rules in there are adhered to by your IDE.
 
+## Build
+
+To run a full build locally:
+
+```bash
+./gradlew --no-daemon build
+```
+
+To run code linting locally:
+
+```bash
+./gradlew --no-daemon spotlessCheck
+```
+
+To automatically apply formatting fixes:
+
+```bash
+./gradlew --no-daemon spotlessApply
+```
+
 ## The small print
 
 This project is an open source project, please act responsibly, be nice, polite and enjoy!

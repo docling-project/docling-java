@@ -117,6 +117,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/maxmnemonic"><img src="https://avatars.githubusercontent.com/u/101627549?v=4?s=100" width="100px;" alt="Maxim Lysak"/><br /><sub><b>Maxim Lysak</b></sub></a><br /><a href="#content-maxmnemonic" title="Content">🖋</a> <a href="#design-maxmnemonic" title="Design">🎨</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/warnulf"><img src="https://avatars.githubusercontent.com/u/4599260?v=4?s=100" width="100px;" alt="warnulf"/><br /><sub><b>warnulf</b></sub></a><br /><a href="#bug-warnulf" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://pipestream.ai"><img src="https://avatars.githubusercontent.com/u/313612?v=4?s=100" width="100px;" alt="Kristian Rickert"/><br /><sub><b>Kristian Rickert</b></sub></a><br /><a href="#code-krickert" title="Code">💻</a> <a href="#ideas-krickert" title="Ideas, Planning, & Feedback">🤔</a> <a href="#doc-krickert" title="Documentation">📖</a> <a href="#test-krickert" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/KaleabArgaw"><img src="https://avatars.githubusercontent.com/u/49553213?v=4?s=100" width="100px;" alt="Kaleab A."/><br /><sub><b>Kaleab A.</b></sub></a><br /><a href="#code-KaleabArgaw" title="Code">💻</a> <a href="#doc-KaleabArgaw" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.yaml:snakeyaml:2.5")
+  implementation("org.yaml:snakeyaml:2.6")
   implementation(libs.lombok.gradle)
 }
 

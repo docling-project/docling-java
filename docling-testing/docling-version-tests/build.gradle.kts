@@ -20,8 +20,8 @@ dependencies {
 
   compileOnly(libs.quarkus.wiremock)
 
-  testImplementation("io.quarkus:quarkus-junit5")
-  testImplementation("io.quarkus:quarkus-junit5-mockito")
+  testImplementation("io.quarkus:quarkus-junit")
+  testImplementation("io.quarkus:quarkus-junit-mockito")
   testImplementation(libs.quarkus.wiremock.test)
   testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }

@@ -12,8 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.testcontainers.DockerClientFactory;
 
-import io.quarkus.logging.Log;
-
 import ai.docling.client.tester.domain.TagTestResult;
 import ai.docling.client.tester.domain.TagTestResult.Result;
 import ai.docling.client.tester.domain.TagsTestRequest;
@@ -27,9 +25,10 @@ import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.DocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
-import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
+
+import io.quarkus.logging.Log;
 
 @ApplicationScoped
 public class TagsTester {
@@ -90,7 +89,7 @@ public class TagsTester {
   }
 
   private void doConversion(DoclingServeContainer doclingContainer) {
-    var doclingClient = DoclingServeClientBuilderFactory.newBuilder()
+    var doclingClient = DoclingServeApi.builder()
         .baseUrl("http://localhost:%d".formatted(doclingContainer.getPort()))
         .build();
 

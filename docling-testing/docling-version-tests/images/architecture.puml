@@ -1,0 +1,116 @@
+@startuml
+!theme plain
+skinparam defaultFontName Helvetica
+skinparam shadowing false
+
+actor User
+participant "GitHub Actions\n(.github/workflows/version-tests.yml)" as GHA
+participant "VersionTestsCommand\n(Picocli CLI)" as CLI
+participant "RegistryClientFactory" as Factory
+participant "GHCRClient\n(REST Client)" as GHCR
+participant "TagsTester" as Tester
+participant "DoclingServeContainer\n(Testcontainers)" as Container
+participant "DoclingServe\n(Docker)" as Serve
+participant "ResultsHandlers" as Handlers
+participant "MarkdownFileResultsHandler\n(Qute)" as Markdown
+participant "GithubIssueResultsHandler\n(GitHub API)" as GitHub
+
+== Workflow Trigger ==
+
+alt Manual (workflow_dispatch)
+    User -> GHA: Trigger workflow\n(with inputs)
+else Scheduled (cron)
+    GHA -> GHA: Monday 3 AM UTC\n(scheduled trigger)
+end
+
+== Build & Setup ==
+
+GHA -> GHA: Setup Java ${{ env.JAVA_VERSION }}
+GHA -> GHA: Setup Gradle
+GHA -> GHA: Build :docling-version-tests
+GHA -> GHA: Process tags and flags\n(parse inputs, set env vars)
+
+== Run Version Tests ==
+
+GHA -> CLI: Execute quarkus-run.jar\n(with CLI args)
+
+note right of GHA
+  java -jar build/quarkus-app/quarkus-run.jar
+    -p ${PARALLELISM}
+    -i ${IMAGE}
+    -r ${REGISTRY}
+    -o ${OUTPUT_DIR}
+    -e ${EXCLUDE_TAGS_REGEX}
+    --cleanup-container-images
+    ${TAGS} ${CREATE_GITHUB_ISSUE_FLAG}
+end note
+
+== 1. Fetch Tags (if not provided) ==
+
+CLI -> Factory: Get registry client
+Factory -> GHCR: Create client
+CLI -> GHCR: Request authentication token
+GHCR -> GHCR: POST /token?scope=repository:{image}:pull
+GHCR --> CLI: Return token
+
+CLI -> GHCR: Fetch available tags
+GHCR -> GHCR: GET /v2/{image}/tags/list
+GHCR --> CLI: Return tag list
+CLI -> CLI: Filter semantic versions\nApply exclusion regex
+
+== 2. Test Each Tag in Parallel ==
+
+loop For each tag
+    CLI -> Tester: Test tag version
+    Tester -> Container: Create container config\n(image, tag, timeout)
+    Tester -> Container: Start container
+    Container -> Serve: Pull and start\nDocker container
+    Serve --> Container: Container running
+
+    Tester -> Serve: Health check\nGET /health
+    Serve --> Tester: {"status": "ok"}
+
+    Tester -> Serve: Convert test document\n(source: https://docling.ai)
+    Serve --> Tester: Conversion response
+
+    Tester -> Tester: Validate response:\n• No errors\n• Formats present\n• Deserialize JSON
+
+    Tester -> Container: Capture logs
+    Container --> Tester: Container logs
+
+    Tester -> Container: Stop and remove\n(cleanup enabled)
+    Container -> Serve: Stop container
+
+    Tester --> CLI: Test result
+end
+
+== 3. Handle Results ==
+
+CLI -> Handlers: Process results
+
+Handlers -> Markdown: Generate report
+Markdown -> Markdown: Render Qute template
+Markdown --> Handlers: Write results.md
+
+alt test failures && GitHub issue enabled
+    Handlers -> GitHub: Create issue
+    GitHub -> GitHub: POST /repos/{owner}/{repo}/issues
+    GitHub --> Handlers: Issue created
+end
+
+Handlers --> CLI: Results handled
+CLI --> GHA: Exit with status
+
+== Publish Results ==
+
+GHA -> GHA: Copy results.md\nto serve-compatibility.md
+
+GHA -> GHA: Create Pull Request\n(update compatibility table)
+
+alt PR created
+    GHA -> GHA: Auto-merge PR\n(--merge --admin)
+end
+
+GHA --> User: Workflow complete
+
+@enduml

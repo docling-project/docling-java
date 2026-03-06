@@ -44,6 +44,10 @@ public class DoclingDocument {
   @JsonProperty("body")
   private GroupItem body;
 
+  @JsonProperty("furniture")
+  @Nullable
+  private GroupItem furniture;
+
   @JsonProperty("groups")
   @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular

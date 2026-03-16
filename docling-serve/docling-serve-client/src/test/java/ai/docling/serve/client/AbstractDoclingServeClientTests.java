@@ -63,7 +63,9 @@ import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.options.OcrEngine;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.options.PdfBackend;
 import ai.docling.serve.api.convert.request.options.TableFormerMode;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.request.source.S3Source;
@@ -739,6 +741,298 @@ abstract class AbstractDoclingServeClientTests {
       assertThatExceptionOfType(IllegalArgumentException.class)
           .isThrownBy(() -> getDoclingClient().convertFilesAsync(Path.of("src", "test", "resources")))
           .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void shouldConvertToHtmlFormat() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.HTML)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+      assertThat(response.getDocument().getHtmlContent()).isNotEmpty();
+    }
+
+    @Test
+    void shouldConvertToTextFormat() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.TEXT)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+      assertThat(response.getDocument().getTextContent()).isNotEmpty();
+    }
+
+    @Test
+    void shouldConvertWithPdfBackend() {
+      var options = ConvertDocumentOptions.builder()
+          .pdfBackend(PdfBackend.PYPDFIUM2)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithOcrEngine() {
+      var options = ConvertDocumentOptions.builder()
+          .ocrEngine(OcrEngine.TESSERACT)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithForceOcr() {
+      var options = ConvertDocumentOptions.builder()
+          .forceOcr(true)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithTableDisabled() {
+      var options = ConvertDocumentOptions.builder()
+          .doTableStructure(false)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithImagesExcluded() {
+      var options = ConvertDocumentOptions.builder()
+          .includeImages(false)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithPageRange() {
+      var options = ConvertDocumentOptions.builder()
+          .pageRange(1, 2)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithAbortOnError() {
+      var options = ConvertDocumentOptions.builder()
+          .abortOnError(true)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithCodeEnrichment() {
+      var options = ConvertDocumentOptions.builder()
+          .doCodeEnrichment(true)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithFormulaEnrichment() {
+      var options = ConvertDocumentOptions.builder()
+          .doFormulaEnrichment(true)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithPictureClassification() {
+      var options = ConvertDocumentOptions.builder()
+          .doPictureClassification(true)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithMultipleOutputFormats() {
+      var options = ConvertDocumentOptions.builder()
+          .toFormats(List.of(OutputFormat.MARKDOWN, OutputFormat.JSON))
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+      assertThat(response.getDocument().getMarkdownContent()).isNotEmpty();
+      assertThat(response.getDocument().getJsonContent()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithImageScale() {
+      var options = ConvertDocumentOptions.builder()
+          .imagesScale(1.5)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithMdPageBreakPlaceholder() {
+      var options = ConvertDocumentOptions.builder()
+          .mdPageBreakPlaceholder("---BREAK---")
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldConvertWithTableCellMatchingDisabled() {
+      var options = ConvertDocumentOptions.builder()
+          .tableCellMatching(false)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://docs.arconia.io/arconia-cli/latest/development/dev/")).build())
+          .options(options)
+          .build();
+
+      var response = getDoclingClient().convertSource(request);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getStatus()).isNotEmpty();
+      assertThat(response.getDocument()).isNotNull();
     }
   }
 

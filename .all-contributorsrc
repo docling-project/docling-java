@@ -156,6 +156,18 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "ArpanKrChakraborty",
+      "name": "Arpan Chakraborty",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60729468?v=4",
+      "profile": "https://github.com/ArpanKrChakraborty",
+      "contributions": [
+        "code",
+        "test",
+        "content",
+        "doc"
+      ]
     }
   ]
 }

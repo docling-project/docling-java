@@ -784,7 +784,7 @@
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.DoclingServeApi</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.ConvertDocumentRequest</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.request.source.HttpSource</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ConvertDocumentResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.InBodyConvertDocumentResponse</span><span class="p">;</span>
 
 <span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;&lt;location of docling serve instance&gt;&quot;</span><span class="p">)</span>
@@ -798,8 +798,21 @@
 <span class="w">    </span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
-<span class="n">ConvertDocumentResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="p">.</span><span class="na">convertSource</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="n">InBodyConvertDocumentResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">InBodyConvertDocumentResponse</span><span class="p">)</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="p">.</span><span class="na">convertSource</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
 <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">getDocument</span><span class="p">().</span><span class="na">getMarkdownContent</span><span class="p">());</span>
+</code></pre></div>
+<p>If you're unsure of the concrete type returned by the convert API, you can handle it dynamically using the <code>getResponseType()</code> method:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ai.docling.serve.api.convert.response.ResponseType</span><span class="p">;</span>
+
+<span class="c1">// ... your code to create and configure the request ...</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doclingServeApi</span><span class="p">.</span><span class="na">convertSource</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+
+<span class="k">switch</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="na">getResponseType</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">ResponseType</span><span class="p">.</span><span class="na">IN_BODY</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="c1">// Response is InBodyConvertDocumentResponse</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">ResponseType</span><span class="p">.</span><span class="na">ZIP_ARCHIVE</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="c1">// Response is ZipArchiveConvertDocumentResponse</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">ResponseType</span><span class="p">.</span><span class="na">PRE_SIGNED_URL</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="c1">// Response is PreSignedUrlConvertDocumentResponse</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>For more examples and options, explore the modules listed above and the repository README.</p>
 <h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">#</a></h2>

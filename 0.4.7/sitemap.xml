@@ -2,38 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/core/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/getting-started/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/testcontainers/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/testing/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/whats-new/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/docling-serve/serve-api/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/docling-serve/serve-client/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.4.7/includes/docling-serve/serve-compatibility/</loc>
-         <lastmod>2026-02-24</lastmod>
+         <lastmod>2026-03-19</lastmod>
     </url>
 </urlset>

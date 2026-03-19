@@ -1,0 +1,37 @@
+# Codecov configuration for docling-java
+# See: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+
+flags:
+  java17:
+    carryforward: true
+  java21:
+    carryforward: true
+  java25:
+    carryforward: true
+
+ignore:
+  - "**/*Tests.java"
+  - "**/*Test.java"
+  - "**/test/**"
+  - "docs/**"
+  - "buildSrc/**"
+
+# Made with Bob

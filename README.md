@@ -12,6 +12,7 @@ This is the repository for Docling Java, a Java API for using [Docling](https://
 [![docling-serve-client version](https://img.shields.io/maven-central/v/ai.docling/docling-serve-client?label=docling-serve-client)](https://docling-project.github.io/docling-java/dev/docling-serve/serve-client/)
 [![docling-testcontainers version](https://img.shields.io/maven-central/v/ai.docling/docling-testcontainers?label=docling-testcontainers)](https://docling-project.github.io/docling-java/dev/testcontainers/)
 [![License MIT](https://img.shields.io/github/license/docling-project/docling-java)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/docling-project/docling-java/branch/main/graph/badge.svg)](https://codecov.io/gh/docling-project/docling-java)
 [![Discord](https://img.shields.io/discord/1399788921306746971?color=6A7EC2&logo=discord&logoColor=ffffff)](https://docling.ai/discord)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11397/badge)](https://www.bestpractices.dev/projects/11397)
 

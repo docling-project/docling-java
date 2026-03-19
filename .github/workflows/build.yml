@@ -107,6 +107,16 @@ jobs:
       - name: Create aggregated test report
         run: ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          flags: java${{ matrix.java }}
+          name: codecov-java${{ matrix.java }}
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Prepare build reports
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

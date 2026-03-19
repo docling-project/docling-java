@@ -168,6 +168,20 @@
         "content",
         "doc"
       ]
+    },
+    {
+      "login": "rkmangal23",
+      "name": "Rohan Kurian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/124988810?v=4",
+      "profile": "https://github.com/rkmangal23",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "tool",
+        "test",
+        "infra"
+      ]
     }
   ]
 }

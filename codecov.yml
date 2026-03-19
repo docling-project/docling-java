@@ -15,9 +15,17 @@ coverage:
         informational: true
 
 comment:
-  layout: "reach,diff,tree"
+  layout: "reach,diff,flags,tree"
   behavior: default
   require_changes: false
+
+flags:
+  java17:
+    carryforward: true
+  java21:
+    carryforward: true
+  java25:
+    carryforward: true
 
 ignore:
   - "**/*Tests.java"

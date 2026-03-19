@@ -485,6 +485,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="0.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Changes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#048" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.8
+    </span>
+  </a>
+  
 </li>
         
           <li class="md-nav__item">
@@ -810,6 +834,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="0.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Changes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#048" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.8
+    </span>
+  </a>
+  
 </li>
         
           <li class="md-nav__item">
@@ -864,9 +912,42 @@
 
 
 <h1 id="whats-new-in-docling-java">What's New in Docling Java<a class="headerlink" href="#whats-new-in-docling-java" title="Permanent link">#</a></h1>
-<p>Docling Java 0.4.7 provides a number of new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each new feature and bug fix.</p>
+<p>Docling Java 0.4.7 includes important breaking changes, along with new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each change.</p>
 <h2 id="docling-serve">Docling Serve<a class="headerlink" href="#docling-serve" title="Permanent link">#</a></h2>
 <h3 id="047">0.4.7<a class="headerlink" href="#047" title="Permanent link">#</a></h3>
+<h4 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">#</a></h4>
+<ul>
+<li><strong><code>ConvertDocumentResponse</code> is now an abstract class</strong> with three concrete implementations:<ul>
+<li><code>InBodyConvertDocumentResponse</code> - Response content embedded directly in the response body</li>
+<li><code>ZipArchiveConvertDocumentResponse</code> - Response content packaged and returned as a ZIP archive</li>
+<li><code>PreSignedUrlConvertDocumentResponse</code> - Response content packaged as a ZIP archive and uploaded to an S3 bucket or a pre-signed URL and statistical data is returned.</li>
+</ul>
+</li>
+<li>A discriminator method <code>getResponseType()</code> is provided to determine the response type, returning one of:<ul>
+<li><code>ResponseType.IN_BODY</code></li>
+<li><code>ResponseType.ZIP_ARCHIVE</code></li>
+<li><code>ResponseType.PRE_SIGNED_URL</code></li>
+</ul>
+</li>
+<li><strong>Response type determination logic:</strong><ul>
+<li><code>InBodyConvertDocumentResponse</code> (<code>ResponseType.IN_BODY</code>) - Returned when:<ul>
+<li>Target is <code>InBodyTarget</code> (default) AND only a single source is provided</li>
+</ul>
+</li>
+<li><code>ZipArchiveConvertDocumentResponse</code> (<code>ResponseType.ZIP_ARCHIVE</code>) - Returned when:<ul>
+<li>Target is <code>ZipTarget</code> OR</li>
+<li>Multiple sources are provided with default or <code>InBodyTarget</code></li>
+</ul>
+</li>
+<li><code>PreSignedUrlConvertDocumentResponse</code> (<code>ResponseType.PRE_SIGNED_URL</code>) - Returned when:<ul>
+<li>Target is <code>S3Target</code> or <code>PutTarget</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Migration guide:</strong> Use <code>getResponseType()</code> to determine the concrete type and cast accordingly, or use pattern matching (Java 16+) or instanceof checks to handle different response types.</li>
+</ul>
+<h3 id="048">0.4.8<a class="headerlink" href="#048" title="Permanent link">#</a></h3>
 <ul>
 <li>Add S3-based source and target support with enhanced extensibility.</li>
 <li>Introduce API extension point and enhance builder usage.</li>

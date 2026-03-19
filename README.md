@@ -136,6 +136,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mohammedfaisal"><img src="https://avatars.githubusercontent.com/u/3139595?v=4?s=100" width="100px;" alt="Mohammed Faisal"/><br /><sub><b>Mohammed Faisal</b></sub></a><br /><a href="#code-mohammedfaisal" title="Code">💻</a> <a href="#test-mohammedfaisal" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ArpanKrChakraborty"><img src="https://avatars.githubusercontent.com/u/60729468?v=4?s=100" width="100px;" alt="Arpan Chakraborty"/><br /><sub><b>Arpan Chakraborty</b></sub></a><br /><a href="#code-ArpanKrChakraborty" title="Code">💻</a> <a href="#test-ArpanKrChakraborty" title="Tests">⚠️</a> <a href="#content-ArpanKrChakraborty" title="Content">🖋</a> <a href="#doc-ArpanKrChakraborty" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rkmangal23"><img src="https://avatars.githubusercontent.com/u/124988810?v=4?s=100" width="100px;" alt="Rohan Kurian"/><br /><sub><b>Rohan Kurian</b></sub></a><br /><a href="#code-rkmangal23" title="Code">💻</a> <a href="#doc-rkmangal23" title="Documentation">📖</a> <a href="#ideas-rkmangal23" title="Ideas, Planning, & Feedback">🤔</a> <a href="#tool-rkmangal23" title="Tools">🔧</a> <a href="#test-rkmangal23" title="Tests">⚠️</a> <a href="#infra-rkmangal23" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    </tr>
   </tbody>
 </table>
 

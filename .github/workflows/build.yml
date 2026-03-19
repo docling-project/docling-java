@@ -77,7 +77,7 @@ jobs:
 
   prepare-test-reports:
     runs-on: ubuntu-latest
-    if: always() && (github.event_name == 'pull_request')
+    if: always()
     strategy:
       fail-fast: false
       matrix:

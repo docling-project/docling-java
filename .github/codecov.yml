@@ -15,14 +15,6 @@ comment:
   behavior: default
   require_changes: false
 
-flags:
-  java17:
-    carryforward: false
-  java21:
-    carryforward: false
-  java25:
-    carryforward: false
-
 ignore:
   - "**/*Tests.java"
   - "**/*Test.java"

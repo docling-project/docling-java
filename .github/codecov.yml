@@ -9,6 +9,24 @@ coverage:
         target: auto
         threshold: 1%
         if_not_found: success
+      docling-core:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-core/src/main/java/**"
+        if_not_found: success
+      docling-serve-api:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-serve/docling-serve-api/src/main/java/**"
+        if_not_found: success
+      docling-serve-client:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-serve/docling-serve-client/src/main/java/**"
+        if_not_found: success
 
 comment:
   layout: "header,diff,flags,tree,footer"
@@ -21,3 +39,5 @@ ignore:
   - "**/test/**"
   - "docs/**"
   - "buildSrc/**"
+  - "docling-testcontainers/**"
+  - "docling-testing/**"

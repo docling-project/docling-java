@@ -11,7 +11,7 @@ coverage:
         if_not_found: success
 
 comment:
-  layout: "diff,flags,tree"
+  layout: "header,diff,flags,tree,footer"
   behavior: default
   require_changes: false
 
@@ -29,5 +29,3 @@ ignore:
   - "**/test/**"
   - "docs/**"
   - "buildSrc/**"
-
-# Made with Bob

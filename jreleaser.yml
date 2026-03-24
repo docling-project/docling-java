@@ -49,7 +49,6 @@ release:
       formatted: ALWAYS
       links: true
       preset: conventional-commits
-      maxLength: 15000
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       hide:
@@ -60,6 +59,10 @@ release:
           - dependabot
           - all-contributors
           - docling-java-ops
+          - allcontributors
+          - copilot
+          - copilot-swe-agent
+          - claude
       extraProperties:
         categorizeScopes: true
     issues:

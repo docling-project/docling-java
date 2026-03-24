@@ -27,12 +27,22 @@ coverage:
         paths:
           - "docling-serve/docling-serve-client/src/main/java/**"
         if_not_found: success
-
+      docling-testcontainers:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-testcontainers/src/main/java/**"
+        if_not_found: success
+      docling-version-tests:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling/testing/docling-version-tests/src/main/java/**"
+        if_not_found: success
 comment:
   layout: "header,diff,flags,tree,footer"
   behavior: default
   require_changes: false
-
 ignore:
   - "**/*Tests.java"
   - "**/*Test.java"

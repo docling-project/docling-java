@@ -1,5 +1,7 @@
 # Docling Version Tests
 
+[![codecov](https://codecov.io/gh/docling-project/docling-java/branch/main/graph/badge.svg?flag=docling-version-tests)](https://codecov.io/gh/docling-project/docling-java/tree/main/docling-testing/docling-version-tests)
+
 A [Quarkus](https://quarkus.io)-based command-line application for automated compatibility testing of the [`docling-serve-api`](../../docling-serve/docling-serve-api) client library against multiple versions of the [Docling Serve](https://github.com/docling-project/docling-serve) container image.
 
 ## Overview
@@ -231,6 +233,10 @@ Example `results.md` excerpt:
 | v1.13.0 | ✅ SUCCESS | [Click for run details](#v1.13.0-details) |
 | v1.12.0 | ❌ FAILURE | [Click for run details](#v1.12.0-details) |
 ```
+
+## Coverage
+
+View detailed coverage reports for this module on [Codecov](https://codecov.io/gh/docling-project/docling-java/tree/main/docling-testing/docling-version-tests).
 
 ## Development
 

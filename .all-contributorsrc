@@ -182,6 +182,15 @@
         "test",
         "infra"
       ]
+    },
+    {
+      "login": "NelsonMeleth",
+      "name": "Nelson Baby",
+      "avatar_url": "https://avatars.githubusercontent.com/u/21080704?v=4",
+      "profile": "https://github.com/NelsonMeleth",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

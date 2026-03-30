@@ -17,6 +17,10 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   save-pr-info:
     runs-on: ubuntu-latest
@@ -117,8 +121,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           report_type: coverage
-          directory: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport
-          files: ./testCodeCoverageReport.xml
+          files: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           flags: java${{ matrix.java }}
           name: codecov-java${{ matrix.java }}
           fail_ci_if_error: false

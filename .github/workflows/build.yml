@@ -105,7 +105,10 @@ jobs:
         uses: gradle/actions/setup-gradle@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6.0.1
 
       - name: Create aggregated test report
-        run: ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check
+        run: |
+          ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check && \
+            mkdir -p test-report-aggregation/build/reports/tests/junitXml && \
+            find . -path '*/build/test-results/test/*.xml' -exec cp {} test-report-aggregation/build/reports/tests/junitXml \;
 
       - name: Upload coverage to Codecov
         if: github.repository == 'docling-project/docling-java' && env.CODECOV_TOKEN != ''
@@ -113,9 +116,25 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          report_type: coverage
+          directory: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport
+          files: ./testCodeCoverageReport.xml
           flags: java${{ matrix.java }}
           name: codecov-java${{ matrix.java }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+
+      - name: Upload test results to Codecov
+        if: github.repository == 'docling-project/docling-java' && env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          report_type: test_results
+          directory: ./test-report-aggregation/build/reports/tests/junitXml
+          flags: java${{ matrix.java }}
+          name: tests-java${{ matrix.java }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 

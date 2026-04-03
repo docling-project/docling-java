@@ -17,6 +17,7 @@ quarkus = "3.34.2"
 quarkus-github-api = "1.330.0"
 quarkus-wiremock = "1.6.1"
 wiremock = "3.13.2"
+cyclonedx = "3.2.3"
 
 [libraries]
 # assertj
@@ -26,6 +27,7 @@ assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "as
 awaitility = { group = "org.awaitility", name = "awaitility", version.ref = "awaitility" }
 
 # lombok-gradle
+cyclonedx-gradle = { group = "org.cyclonedx", name = "cyclonedx-gradle-plugin", version.ref = "cyclonedx" }
 lombok-gradle = { group = "io.freefair.lombok", name = "io.freefair.lombok.gradle.plugin", version.ref = "lombok-gradle" }
 spotless-gradle = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
 
@@ -63,6 +65,7 @@ quarkus-wiremock-test = { group = "io.quarkiverse.wiremock", name = "quarkus-wir
 wiremock = { group = "org.wiremock", name = "wiremock", version.ref = "wiremock" }
 
 [plugins]
+cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-gradle" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 module-info = { id = "org.gradlex.extra-java-module-info", version.ref = "module-info" }

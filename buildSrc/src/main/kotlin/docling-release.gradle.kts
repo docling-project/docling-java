@@ -15,15 +15,15 @@ publishing {
       from(components["java"])
 
       // Attach SBOM artifacts to publication
-      val cyclonedxTask = tasks.named("cyclonedxDirectBom")
-      afterEvaluate {
-        cyclonedxTask.get().outputs.files.forEach { file ->
-          artifact(file) {
-            classifier = "cyclonedx"
-            extension = file.extension
-            builtBy(cyclonedxTask)
-          }
-        }
+      val cyclonedxTask = tasks.named<org.cyclonedx.gradle.CyclonedxDirectTask>("cyclonedxDirectBom")
+      artifact(cyclonedxTask.flatMap { it.jsonOutput }) {
+        classifier = "cyclonedx"
+        extension = "json"
+      }
+
+      artifact(cyclonedxTask.flatMap { it.xmlOutput }) {
+        classifier = "cyclonedx"
+        extension = "xml"
       }
 
       pom {

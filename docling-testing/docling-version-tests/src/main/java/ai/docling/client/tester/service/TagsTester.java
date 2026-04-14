@@ -19,13 +19,17 @@ import ai.docling.client.tester.domain.TagsTestRequest;
 import ai.docling.client.tester.domain.TagsTestResults;
 import ai.docling.core.DoclingDocument;
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.clear.request.ClearConvertersRequest;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.options.TableFormerMode;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.DocumentResponse;
 import ai.docling.serve.api.convert.response.InBodyConvertDocumentResponse;
+import ai.docling.serve.api.convert.response.ResponseType;
 import ai.docling.serve.api.health.HealthCheckResponse;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
@@ -146,7 +150,7 @@ public class TagsTester {
     
     assertThat(response.getResponseType())
         .as("Response type should be IN_BODY")
-        .isEqualTo(ai.docling.serve.api.convert.response.ResponseType.IN_BODY);
+        .isEqualTo(ResponseType.IN_BODY);
     
     var inBodyResponse = (InBodyConvertDocumentResponse)response;
     
@@ -172,7 +176,7 @@ public class TagsTester {
     var options = ConvertDocumentOptions.builder()
         .doOcr(true)
         .includeImages(true)
-        .tableMode(ai.docling.serve.api.convert.request.options.TableFormerMode.FAST)
+        .tableMode(TableFormerMode.FAST)
         .documentTimeout(Duration.ofMinutes(1))
         .build();
 
@@ -189,7 +193,7 @@ public class TagsTester {
     
     assertThat(response.getResponseType())
         .as("Response type should be IN_BODY")
-        .isEqualTo(ai.docling.serve.api.convert.response.ResponseType.IN_BODY);
+        .isEqualTo(ResponseType.IN_BODY);
     
     var inBodyResponse = (InBodyConvertDocumentResponse)response;
     
@@ -203,7 +207,7 @@ public class TagsTester {
   }
   
   private void testClearConverters(DoclingServeApi doclingClient) {
-    var request = ai.docling.serve.api.clear.request.ClearConvertersRequest.builder().build();
+    var request = ClearConvertersRequest.builder().build();
     var response = doclingClient.clearConverters(request);
     
     assertThat(response)
@@ -216,7 +220,7 @@ public class TagsTester {
   }
   
   private void testClearResults(DoclingServeApi doclingClient) {
-    var request = ai.docling.serve.api.clear.request.ClearResultsRequest.builder().build();
+    var request = ClearResultsRequest.builder().build();
     var response = doclingClient.clearResults(request);
     
     assertThat(response)

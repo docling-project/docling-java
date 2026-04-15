@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
-import ai.docling.serve.client.DoclingServeClientBuilderFactory;
 import ai.docling.serve.client.DoclingServeClientException;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -45,7 +45,7 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerNoUI() {
-    var client = DoclingServeClientBuilderFactory.newBuilder()
+    var client = DoclingServeApi.builder()
         .baseUrl(this.noUiDoclingContainer.getApiUrl())
         .build();
 
@@ -61,7 +61,7 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerAvailable() {
-    var client = DoclingServeClientBuilderFactory.newBuilder()
+    var client = DoclingServeApi.builder()
         .baseUrl(this.noUiDoclingContainer.getApiUrl())
         .build();
 
@@ -77,7 +77,7 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerWithApiKeyClientWithout() {
-    var client = DoclingServeClientBuilderFactory.newBuilder()
+    var client = DoclingServeApi.builder()
         .baseUrl(this.withApiKeyDoclingContainer.getApiUrl())
         .logRequests()
         .logResponses()
@@ -93,7 +93,7 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerWithoutApiKeyClientWith() {
-    var client = DoclingServeClientBuilderFactory.newBuilder()
+    var client = DoclingServeApi.builder()
         .baseUrl(this.doclingContainer.getApiUrl())
         .logRequests()
         .logResponses()
@@ -109,7 +109,7 @@ class DoclingServeContainerAvailableTests {
 
   @Test
   void containerWithApiKeyClientWith() {
-    var client = DoclingServeClientBuilderFactory.newBuilder()
+    var client = DoclingServeApi.builder()
         .baseUrl(this.withApiKeyDoclingContainer.getApiUrl())
         .logRequests()
         .logResponses()

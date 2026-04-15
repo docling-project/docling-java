@@ -1,0 +1,53 @@
+# Codecov configuration for docling-java
+# See: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  range: 70..100
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        if_not_found: success
+      docling-core:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-core/src/main/java/**"
+        if_not_found: success
+      docling-serve-api:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-serve/docling-serve-api/src/main/java/**"
+        if_not_found: success
+      docling-serve-client:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-serve/docling-serve-client/src/main/java/**"
+        if_not_found: success
+      docling-testcontainers:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling-testcontainers/src/main/java/**"
+        if_not_found: success
+      docling-version-tests:
+        target: auto
+        threshold: 1%
+        paths:
+          - "docling/testing/docling-version-tests/src/main/java/**"
+        if_not_found: success
+comment:
+  layout: "header,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+ignore:
+  - "**/*Tests.java"
+  - "**/*Test.java"
+  - "**/test/**"
+  - "docs/**"
+  - "buildSrc/**"
+  - "docling-testcontainers/**"
+  - "docling-testing/**"

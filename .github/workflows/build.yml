@@ -17,6 +17,10 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   save-pr-info:
     runs-on: ubuntu-latest
@@ -68,7 +72,7 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0f4528296b4bc09e8ae0fc7be30185a4ab435545 # v6.0.0
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
 
       - name: build-test-${{ matrix.module }}-java${{ matrix.java }}
         run: |
@@ -77,7 +81,7 @@ jobs:
 
   prepare-test-reports:
     runs-on: ubuntu-latest
-    if: always() && (github.event_name == 'pull_request')
+    if: always() && (github.event_name == 'pull_request' || github.event_name == 'push')
     strategy:
       fail-fast: false
       matrix:
@@ -102,10 +106,40 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0f4528296b4bc09e8ae0fc7be30185a4ab435545 # v6.0.0
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
 
       - name: Create aggregated test report
-        run: ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check
+        run: |
+          ./gradlew --no-daemon -Pjava.version=${{ matrix.java }} :test-report-aggregation:check && \
+            mkdir -p test-report-aggregation/build/reports/tests/junitXml && \
+            find . -path '*/build/test-results/test/*.xml' -exec cp {} test-report-aggregation/build/reports/tests/junitXml \;
+
+      - name: Upload coverage to Codecov
+        if: github.repository == 'docling-project/docling-java' && env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          report_type: coverage
+          files: ./test-report-aggregation/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          flags: java${{ matrix.java }}
+          name: codecov-java${{ matrix.java }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+
+      - name: Upload test results to Codecov
+        if: github.repository == 'docling-project/docling-java' && env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          report_type: test_results
+          directory: ./test-report-aggregation/build/reports/tests/junitXml
+          flags: java${{ matrix.java }}
+          name: tests-java${{ matrix.java }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Prepare build reports
         if: always()
@@ -144,7 +178,7 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0f4528296b4bc09e8ae0fc7be30185a4ab435545 # v6.0.0
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
 
       - name: Generate documentation
         env:

@@ -12,6 +12,7 @@ This is the repository for Docling Java, a Java API for using [Docling](https://
 [![docling-serve-client version](https://img.shields.io/maven-central/v/ai.docling/docling-serve-client?label=docling-serve-client)](https://docling-project.github.io/docling-java/dev/docling-serve/serve-client/)
 [![docling-testcontainers version](https://img.shields.io/maven-central/v/ai.docling/docling-testcontainers?label=docling-testcontainers)](https://docling-project.github.io/docling-java/dev/testcontainers/)
 [![License MIT](https://img.shields.io/github/license/docling-project/docling-java)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/docling-project/docling-java/branch/main/graph/badge.svg)](https://codecov.io/gh/docling-project/docling-java)
 [![Discord](https://img.shields.io/discord/1399788921306746971?color=6A7EC2&logo=discord&logoColor=ffffff)](https://docling.ai/discord)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11397/badge)](https://www.bestpractices.dev/projects/11397)
 
@@ -138,6 +139,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rkmangal23"><img src="https://avatars.githubusercontent.com/u/124988810?v=4?s=100" width="100px;" alt="Rohan Kurian"/><br /><sub><b>Rohan Kurian</b></sub></a><br /><a href="#code-rkmangal23" title="Code">💻</a> <a href="#doc-rkmangal23" title="Documentation">📖</a> <a href="#ideas-rkmangal23" title="Ideas, Planning, & Feedback">🤔</a> <a href="#tool-rkmangal23" title="Tools">🔧</a> <a href="#test-rkmangal23" title="Tests">⚠️</a> <a href="#infra-rkmangal23" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/NelsonMeleth"><img src="https://avatars.githubusercontent.com/u/21080704?v=4?s=100" width="100px;" alt="Nelson Baby"/><br /><sub><b>Nelson Baby</b></sub></a><br /><a href="#code-NelsonMeleth" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

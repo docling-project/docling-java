@@ -1,4 +1,5 @@
 plugins {
+  id("docling-sbom")
   `maven-publish`
 }
 
@@ -12,6 +13,18 @@ publishing {
   publications {
     create<MavenPublication>("maven") {
       from(components["java"])
+
+      // Attach SBOM artifacts to publication
+      val cyclonedxTask = tasks.named<org.cyclonedx.gradle.CyclonedxDirectTask>("cyclonedxDirectBom").get()
+      artifact(cyclonedxTask.jsonOutput) {
+        classifier = "cyclonedx"
+        extension = "json"
+      }
+
+      artifact(cyclonedxTask.xmlOutput) {
+        classifier = "cyclonedx"
+        extension = "xml"
+      }
 
       pom {
         url = "https://docling-project.github.io/docling-java"

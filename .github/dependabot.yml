@@ -3,17 +3,21 @@ updates:
   - package-ecosystem: gradle
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     labels:
       - "version-upgrade"
     commit-message:
       prefix: chore(deps)
+    cooldown:
+      default-days: 3
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
     labels:
       - "version-upgrade"
     commit-message:
       prefix: chore(deps)
+    cooldown:
+      default-days: 7

@@ -19,13 +19,17 @@ import ai.docling.client.tester.domain.TagsTestRequest;
 import ai.docling.client.tester.domain.TagsTestResults;
 import ai.docling.core.DoclingDocument;
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.clear.request.ClearConvertersRequest;
+import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.request.options.TableFormerMode;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.DocumentResponse;
 import ai.docling.serve.api.convert.response.InBodyConvertDocumentResponse;
+import ai.docling.serve.api.convert.response.ResponseType;
 import ai.docling.serve.api.health.HealthCheckResponse;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
@@ -96,6 +100,24 @@ public class TagsTester {
         .build();
 
     checkDoclingHealthy(doclingClient);
+    
+    // Convert with multiple output formats
+    testConvertWithMultipleFormats(doclingClient);
+    
+    // Convert with JSON format and validate DoclingDocument
+    testConvertWithJsonFormat(doclingClient);
+    
+    // Convert with different document options
+    testConvertWithDifferentOptions(doclingClient);
+    
+    // Clear converters
+    testClearConverters(doclingClient);
+    
+    // Clear results
+    testClearResults(doclingClient);
+  }
+  
+  private void testConvertWithMultipleFormats(DoclingServeApi doclingClient) {
     var options = ConvertDocumentOptions.builder()
         .abortOnError(true)
         .includeImages(true)
@@ -108,6 +130,106 @@ public class TagsTester {
         .build();
 
     checkDoclingResponse(doclingClient.convertSource(request));
+  }
+  
+  private void testConvertWithJsonFormat(DoclingServeApi doclingClient) {
+    var options = ConvertDocumentOptions.builder()
+        .toFormat(OutputFormat.JSON)
+        .build();
+
+    var request = ConvertDocumentRequest.builder()
+        .source(HttpSource.builder().url(URI.create("https://docling.ai")).build())
+        .options(options)
+        .build();
+
+    var response = doclingClient.convertSource(request);
+    
+    assertThat(response)
+        .as("Response should not be null")
+        .isNotNull();
+    
+    assertThat(response.getResponseType())
+        .as("Response type should be IN_BODY")
+        .isEqualTo(ResponseType.IN_BODY);
+    
+    var inBodyResponse = (InBodyConvertDocumentResponse)response;
+    
+    assertThat(inBodyResponse.getStatus())
+        .as("Response status should not be empty")
+        .isNotEmpty();
+    
+    assertThat(inBodyResponse.getDocument())
+        .as("Response should have a document")
+        .isNotNull();
+    
+    var doclingDocument = inBodyResponse.getDocument().getJsonContent();
+    assertThat(doclingDocument)
+        .as("Document should have JSON content")
+        .isNotNull();
+    
+    assertThat(doclingDocument.getName())
+        .as("Document name should not be empty")
+        .isNotEmpty();
+  }
+  
+  private void testConvertWithDifferentOptions(DoclingServeApi doclingClient) {
+    var options = ConvertDocumentOptions.builder()
+        .doOcr(true)
+        .includeImages(true)
+        .tableMode(TableFormerMode.FAST)
+        .documentTimeout(Duration.ofMinutes(1))
+        .build();
+
+    var request = ConvertDocumentRequest.builder()
+        .source(HttpSource.builder().url(URI.create("https://docling.ai")).build())
+        .options(options)
+        .build();
+
+    var response = doclingClient.convertSource(request);
+    
+    assertThat(response)
+        .as("Response should not be null")
+        .isNotNull();
+    
+    assertThat(response.getResponseType())
+        .as("Response type should be IN_BODY")
+        .isEqualTo(ResponseType.IN_BODY);
+    
+    var inBodyResponse = (InBodyConvertDocumentResponse)response;
+    
+    assertThat(inBodyResponse.getStatus())
+        .as("Response status should not be empty")
+        .isNotEmpty();
+    
+    assertThat(inBodyResponse.getDocument())
+        .as("Response should have a document")
+        .isNotNull();
+  }
+  
+  private void testClearConverters(DoclingServeApi doclingClient) {
+    var request = ClearConvertersRequest.builder().build();
+    var response = doclingClient.clearConverters(request);
+    
+    assertThat(response)
+        .as("Clear converters response should not be null")
+        .isNotNull();
+    
+    assertThat(response.getStatus())
+        .as("Clear converters status should be 'ok'")
+        .isEqualTo("ok");
+  }
+  
+  private void testClearResults(DoclingServeApi doclingClient) {
+    var request = ClearResultsRequest.builder().build();
+    var response = doclingClient.clearResults(request);
+    
+    assertThat(response)
+        .as("Clear results response should not be null")
+        .isNotNull();
+    
+    assertThat(response.getStatus())
+        .as("Clear results status should be 'ok'")
+        .isEqualTo("ok");
   }
 
   private void checkDoclingResponse(ConvertDocumentResponse response) {

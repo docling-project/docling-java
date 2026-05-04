@@ -2,9 +2,27 @@
 
 Docling Java {{ gradle.project_version }} includes important breaking changes, along with new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full [release notes](https://github.com/docling-project/docling-java/releases) for more details about each change.
 
+## General
+
+### {{ gradle.project_version }}
+
+* **New `docling-bom` module** — A Maven BOM (`ai.docling:docling-bom`) is now published, allowing consumers to align all Docling Java module versions with a single import.
+
+### 0.5.1
+
+* Include `furniture` field in `DoclingDocument`.
+* CycloneDX SBOM artifacts are now published alongside each module.
+
+### 0.1.5
+
+* New `docling-core` module with `DoclingDocument` API mirroring the [docling-core](https://github.com/docling-project/docling-core) Python library's document representation model.
+
 ## Docling Serve
 
 ### {{ gradle.project_version }}
+
+
+### 0.5.0
 
 #### Breaking Changes
 
@@ -26,10 +44,25 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
         * Target is `S3Target` or `PutTarget`
 * **Migration guide:** Use `getResponseType()` to determine the concrete type and cast accordingly, or use pattern matching (Java 16+) or instanceof checks to handle different response types.
 
-### 0.4.8
+### 0.4.7
+
+* Support configuring timeouts in `DoclingServeApi.Builder` via `connectTimeout(Duration)` and `requestTimeout(Duration)`.
+* Fix incorrect values in `OcrEngine` enum.
+
+### 0.4.4
+
+* Fix: path component in `baseUrl` is now correctly preserved when building API request URIs.
+
+### 0.4.3
 
 * Add S3-based source and target support with enhanced extensibility.
 * Introduce API extension point and enhance builder usage.
+
+### 0.4.2
+
+* Migrate from `java.util.logging` to SLF4J for logging.
+* Fix custom `Duration` serializers with `ChronoUnit` support.
+* Fix JSON property name from `options` to `convert_options` in chunk document requests.
 
 ### 0.4.1
 

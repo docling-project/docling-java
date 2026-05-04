@@ -1,6 +1,11 @@
 plugins {
-  id("docling-sbom")
   `maven-publish`
+}
+
+val isJavaPlatform = pluginManager.hasPlugin("java-platform")
+
+if (!isJavaPlatform) {
+  apply(plugin = "docling-sbom")
 }
 
 publishing {
@@ -12,18 +17,22 @@ publishing {
 
   publications {
     create<MavenPublication>("maven") {
-      from(components["java"])
-
-      // Attach SBOM artifacts to publication
-      val cyclonedxTask = tasks.named<org.cyclonedx.gradle.CyclonedxDirectTask>("cyclonedxDirectBom").get()
-      artifact(cyclonedxTask.jsonOutput) {
-        classifier = "cyclonedx"
-        extension = "json"
+      if (isJavaPlatform) {
+        from(components["javaPlatform"])
       }
+      else {
+        from(components["java"])
 
-      artifact(cyclonedxTask.xmlOutput) {
-        classifier = "cyclonedx"
-        extension = "xml"
+        val cyclonedxTask = tasks.named<org.cyclonedx.gradle.CyclonedxDirectTask>("cyclonedxDirectBom").get()
+        artifact(cyclonedxTask.jsonOutput) {
+          classifier = "cyclonedx"
+          extension = "json"
+        }
+
+        artifact(cyclonedxTask.xmlOutput) {
+          classifier = "cyclonedx"
+          extension = "xml"
+        }
       }
 
       pom {

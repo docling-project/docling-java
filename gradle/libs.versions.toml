@@ -15,7 +15,7 @@ slf4j = "2.0.17"
 testcontainers = "2.0.5"
 quarkus = "3.34.6"
 quarkus-github-api = "1.330.0"
-quarkus-wiremock = "1.6.1"
+quarkus-wiremock = "1.6.3"
 wiremock = "3.13.2"
 cyclonedx = "3.2.4"
 

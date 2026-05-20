@@ -62,7 +62,7 @@ public class ValidationErrorDetail {
    */
   @JsonProperty("input")
   @Nullable
-  private String input;
+  private Object input;
 
   /**
    * Represents the context information associated with a validation error.

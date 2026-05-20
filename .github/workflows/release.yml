@@ -34,7 +34,7 @@ jobs:
 #    Verifies that the PR was merged into main, that the PR only runs in the docling-java repo (not a fork), and that the PR branch is NOT from a fork.
     if: (github.event.pull_request.merged == true) && (github.repository == 'docling-project/docling-java') && (github.event.pull_request.head.repo.full_name == 'docling-project/docling-java')
     steps:
-      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
           app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}

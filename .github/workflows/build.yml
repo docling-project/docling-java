@@ -49,6 +49,7 @@ jobs:
           - 17
           - 21
           - 25
+          - 26
         module:
           - docling-serve-api
           - docling-serve-client
@@ -89,6 +90,7 @@ jobs:
           - 17
           - 21
           - 25
+          - 26
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:

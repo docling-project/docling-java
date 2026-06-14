@@ -13,15 +13,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *       ({@link InBodyConvertDocumentResponse})</li>
  *   <li>{@link #ZIP_ARCHIVE} - Content is packaged and returned as a ZIP archive
  *       ({@link ZipArchiveConvertDocumentResponse})</li>
- *   <li>{@link #PRE_SIGNED_URL} - Content is packaged as a ZIP archive and uploaded to the given target URI
- *   and statistical information is returned.
+ *   <li>{@link #PRE_SIGNED_URL} - Content is uploaded to a client-supplied remote target and
+ *   only aggregate processing statistics are returned.
  *       ({@link PreSignedUrlConvertDocumentResponse})</li>
+ *   <li>{@link #PRE_SIGNED_URL_RESPONSE} - Each output artifact is uploaded to the server's
+ *   configured object storage and returned as a time-limited presigned URL grouped by source document.
+ *       ({@link PreSignedUrlConvertResponse})</li>
  * </ul>
  *
  * @see ConvertDocumentResponse
  * @see InBodyConvertDocumentResponse
  * @see ZipArchiveConvertDocumentResponse
  * @see PreSignedUrlConvertDocumentResponse
+ * @see PreSignedUrlConvertResponse
  */
 public enum ResponseType {
   
@@ -44,5 +48,12 @@ public enum ResponseType {
    *
    */
   @JsonProperty("presigned_url")
-  PRE_SIGNED_URL
+  PRE_SIGNED_URL,
+
+  /**
+   * Represents response type - {@link PreSignedUrlConvertResponse}
+   *
+   */
+  @JsonProperty("presigned_url_response")
+  PRE_SIGNED_URL_RESPONSE
 }

@@ -18,10 +18,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
     @JsonSubTypes.Type(InBodyConvertDocumentResponse.class),
     @JsonSubTypes.Type(PreSignedUrlConvertDocumentResponse.class),
+    @JsonSubTypes.Type(PreSignedUrlConvertResponse.class),
     @JsonSubTypes.Type(ZipArchiveConvertDocumentResponse.class)
 })
 public abstract sealed class ConvertDocumentResponse permits InBodyConvertDocumentResponse, PreSignedUrlConvertDocumentResponse,
-    ZipArchiveConvertDocumentResponse {
+    PreSignedUrlConvertResponse, ZipArchiveConvertDocumentResponse {
   /**
    * Type of response
    *

@@ -189,6 +189,13 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
   var target = InBodyTarget.builder().build();
   ```
 
+- Receive results as presigned download URLs (requires docling-serve v1.22.0+)
+
+  ```java
+  import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
+  var presigned = PresignedUrlTarget.builder().build();
+  ```
+
 - Upload results to your storage via HTTP PUT
 
   ```java
@@ -198,6 +205,33 @@ All request/response types come from [`docling-serve-api`](serve-api.md). Common
       // .header("Authorization", "Bearer ...")
       .build();
   ```
+
+## Handling presigned URL responses
+
+When using `PresignedUrlTarget`, the response is a `PreSignedUrlConvertResponse` containing per-document results
+with artifact download links:
+
+```java
+import java.net.URI;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
+import ai.docling.serve.api.convert.response.PreSignedUrlConvertResponse;
+
+ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+    .source(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2408.09869")).build())
+    .target(PresignedUrlTarget.builder().build())
+    .build();
+
+PreSignedUrlConvertResponse response = (PreSignedUrlConvertResponse) api.convertSource(request);
+
+response.getDocuments().forEach(doc -> {
+    System.out.println(doc.getFilename() + " [" + doc.getStatus() + "]");
+    doc.getArtifacts().forEach(artifact ->
+        System.out.println("  " + artifact.getArtifactType() + ": " + artifact.getUri()
+            + (artifact.getUrlExpiresAt() != null ? " (expires: " + artifact.getUrlExpiresAt() + ")" : "")));
+});
+```
 
 ## Error handling tips
 

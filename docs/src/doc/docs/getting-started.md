@@ -38,6 +38,7 @@ switch(result.getResponseType()) {
     case ResponseType.IN_BODY -> // Response is InBodyConvertDocumentResponse
     case ResponseType.ZIP_ARCHIVE -> // Response is ZipArchiveConvertDocumentResponse
     case ResponseType.PRE_SIGNED_URL -> // Response is PreSignedUrlConvertDocumentResponse
+    case ResponseType.PRE_SIGNED_URL_RESPONSE -> // Response is PreSignedUrlConvertResponse (with per-document artifact download URLs)
 }
 ```
 

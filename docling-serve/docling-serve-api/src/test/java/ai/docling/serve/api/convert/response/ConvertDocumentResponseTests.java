@@ -88,6 +88,56 @@ class ConvertDocumentResponseTests {
   }
 
   @Test
+  void createPreSignedUrlConvertResponseWithNullFields() {
+    PreSignedUrlConvertResponse response = PreSignedUrlConvertResponse.builder().build();
+
+    assertThat(response.getNumConverted()).isNull();
+    assertThat(response.getNumFailed()).isNull();
+    assertThat(response.getNumPartiallySucceeded()).isNull();
+    assertThat(response.getNumSucceeded()).isNull();
+    assertThat(response.getProcessingTime()).isNull();
+    assertThat(response.getDocuments()).isNotNull().isEmpty();
+    assertThat(response.getResponseType()).isEqualTo(ResponseType.PRE_SIGNED_URL_RESPONSE);
+  }
+
+  @Test
+  void createPreSignedUrlConvertResponseWithAllFields() {
+    ArtifactRef jsonArtifact = ArtifactRef.builder()
+        .artifactType(ArtifactType.JSON)
+        .mimeType("application/json")
+        .uri(java.net.URI.create("https://example.com/doc.json"))
+        .urlExpiresAt(java.time.Instant.parse("2026-06-15T11:22:41Z"))
+        .build();
+    DocumentArtifactItem document = DocumentArtifactItem.builder()
+        .sourceIndex(0)
+        .sourceUri("https://example.com/example.pdf")
+        .filename("example.pdf")
+        .status(ConversionStatus.SUCCESS)
+        .artifact(jsonArtifact)
+        .build();
+
+    PreSignedUrlConvertResponse response = PreSignedUrlConvertResponse.builder()
+        .processingTime(2.41)
+        .numConverted(1)
+        .numSucceeded(1)
+        .numPartiallySucceeded(0)
+        .numFailed(0)
+        .document(document)
+        .build();
+
+    assertThat(response.getProcessingTime()).isEqualTo(2.41);
+    assertThat(response.getNumConverted()).isEqualTo(1);
+    assertThat(response.getNumSucceeded()).isEqualTo(1);
+    assertThat(response.getNumPartiallySucceeded()).isZero();
+    assertThat(response.getNumFailed()).isZero();
+    assertThat(response.getDocuments()).hasSize(1);
+    assertThat(response.getDocuments().get(0).getStatus()).isEqualTo(ConversionStatus.SUCCESS);
+    assertThat(response.getDocuments().get(0).getArtifacts()).hasSize(1);
+    assertThat(response.getDocuments().get(0).getArtifacts().get(0).getArtifactType()).isEqualTo(ArtifactType.JSON);
+    assertThat(response.getResponseType()).isEqualTo(ResponseType.PRE_SIGNED_URL_RESPONSE);
+  }
+
+  @Test
   void createResponseWithEmptyCollections() {
     DocumentResponse document = DocumentResponse.builder()
         .filename("empty-file.txt")

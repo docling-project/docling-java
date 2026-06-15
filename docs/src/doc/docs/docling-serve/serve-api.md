@@ -117,6 +117,7 @@ Supported sources (`ai.docling.serve.api.convert.request.source`):
 
 Targets (`ai.docling.serve.api.convert.request.target`):
 - `InBodyTarget` — receive results directly in the API response body (default use case)
+- `PresignedUrlTarget` — the service uploads each output artifact to its configured object storage and returns time-limited presigned download URLs (requires docling-serve v1.22.0+)
 - `PutTarget` — the service uploads converted content via HTTP PUT to a specified URI
 - `ZipTarget` — receive a zipped result
 - `S3Target` — upload converted content to an S3 bucket
@@ -133,15 +134,50 @@ Options (`ai.docling.serve.api.convert.request.options.ConvertDocumentOptions`) 
 
 Explore the `options` package for the full list of knobs you can turn.
 
-### Responses: `InBodyConvertDocumentResponse`, `PreSignedUrlConvertDocumentResponse`, `ZipArchiveConvertDocumentResponse`  and `DocumentResponse`
+### Responses: `InBodyConvertDocumentResponse`, `PreSignedUrlConvertDocumentResponse`, `PreSignedUrlConvertResponse`, `ZipArchiveConvertDocumentResponse`, and `DocumentResponse`
 - `InBodyConvertDocumentResponse` contains the converted `document` (if any), `errors`, processing `status`,
     total `processing_time`, and detailed `timings` map.
 - `PreSignedUrlConvertDocumentResponse` contains processing statistics - total `processing_time` and conversion metrics
-  `num_converted`, `num_succeeded`, `num_failed`.
+  `num_converted`, `num_succeeded`, `num_partially_succeeded`, `num_failed`.
+- `PreSignedUrlConvertResponse` is returned when using a `PresignedUrlTarget`. It contains per-document results in a
+  `documents` list, where each `DocumentArtifactItem` carries the conversion `status`, any `errors`, and a list of
+  `ArtifactRef` entries with presigned download URLs for each output format. It also includes the same aggregate
+  conversion metrics as `PreSignedUrlConvertDocumentResponse`.
 - `ZipArchiveConvertDocumentResponse` contains `file_name` and an input stream for the archive.
 - `DocumentResponse` holds the actual content fields you requested, such as `md_content` (Markdown),
   `html_content`, `text_content`, and a `json_content` map. It also includes the `filename` and
   `doctags_content` when relevant.
+
+#### Presigned URL target example
+
+When using a `PresignedUrlTarget`, the response contains per-document artifact download links:
+
+```java
+import java.net.URI;
+import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.source.HttpSource;
+import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
+import ai.docling.serve.api.convert.response.PreSignedUrlConvertResponse;
+
+DoclingServeApi api = DoclingServeApi.builder()
+    .baseUrl("http://localhost:8000")
+    .build();
+
+ConvertDocumentRequest request = ConvertDocumentRequest.builder()
+    .source(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2408.09869")).build())
+    .target(PresignedUrlTarget.builder().build())
+    .build();
+
+PreSignedUrlConvertResponse response = (PreSignedUrlConvertResponse) api.convertSource(request);
+System.out.println("Converted: " + response.getNumSucceeded() + "/" + response.getNumConverted());
+
+response.getDocuments().forEach(doc -> {
+    System.out.println(doc.getFilename() + " -> " + doc.getStatus());
+    doc.getArtifacts().forEach(artifact ->
+        System.out.println("  " + artifact.getArtifactType() + ": " + artifact.getUri()));
+});
+```
 
 ## Health checks
 

@@ -73,12 +73,16 @@ import ai.docling.serve.api.convert.request.options.OutputFormat;
 import ai.docling.serve.api.convert.request.options.TableFormerMode;
 import ai.docling.serve.api.convert.request.source.HttpSource;
 import ai.docling.serve.api.convert.request.source.S3Source;
+import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
 import ai.docling.serve.api.convert.request.target.PutTarget;
 import ai.docling.serve.api.convert.request.target.S3Target;
 import ai.docling.serve.api.convert.request.target.ZipTarget;
+import ai.docling.serve.api.convert.response.ArtifactType;
+import ai.docling.serve.api.convert.response.ConversionStatus;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.InBodyConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.PreSignedUrlConvertDocumentResponse;
+import ai.docling.serve.api.convert.response.PreSignedUrlConvertResponse;
 import ai.docling.serve.api.convert.response.ResponseType;
 import ai.docling.serve.api.convert.response.ZipArchiveConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -641,6 +645,168 @@ abstract class AbstractDoclingServeClientTests {
                       .and(matchingJsonPath("$.target.access_key", equalTo("target-access-key")))
                       .and(matchingJsonPath("$.target.secret_key", equalTo("target-secret-key")))
                       .and(matchingJsonPath("$.target.verify_ssl", equalTo("false")))
+              )
+      );
+    }
+
+    @Test
+    void shouldConvertSourceWithPresignedUrlTargetSuccessfully() {
+      var request = ConvertDocumentRequest.builder()
+          .source(
+              HttpSource
+                  .builder()
+                  .url(URI.create("https://arxiv.org/pdf/2408.09869"))
+                  .build()
+          )
+          .target(
+              PresignedUrlTarget.builder().build()
+          ).build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source")
+              .withRequestBody(equalToJson(writeValueAsString(request)))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "processing_time": 4.13,
+                   "num_converted": 1,
+                   "num_succeeded": 1,
+                   "num_partially_succeeded": 0,
+                   "num_failed": 0,
+                   "documents": [
+                     {
+                       "source_index": 0,
+                       "source_uri": "https://arxiv.org/pdf/2408.09869",
+                       "filename": "2408.09869",
+                       "status": "success",
+                       "errors": [],
+                       "timings": {},
+                       "artifacts": [
+                         {
+                           "artifact_type": "markdown",
+                           "mime_type": "text/markdown",
+                           "uri": "https://storage.example.com/2408.09869.md",
+                           "url_expires_at": "2026-06-15T12:00:00Z"
+                         }
+                       ]
+                     }
+                   ]
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true).convertSource(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getResponseType()).isEqualTo(ResponseType.PRE_SIGNED_URL_RESPONSE);
+      assertThat(response).isInstanceOf(PreSignedUrlConvertResponse.class);
+
+      var presignedResponse = (PreSignedUrlConvertResponse) response;
+      assertThat(presignedResponse.getProcessingTime()).isEqualTo(4.13);
+      assertThat(presignedResponse.getNumConverted()).isEqualTo(1);
+      assertThat(presignedResponse.getNumSucceeded()).isEqualTo(1);
+      assertThat(presignedResponse.getNumPartiallySucceeded()).isZero();
+      assertThat(presignedResponse.getNumFailed()).isZero();
+
+      assertThat(presignedResponse.getDocuments()).hasSize(1);
+      var doc = presignedResponse.getDocuments().get(0);
+      assertThat(doc.getSourceIndex()).isZero();
+      assertThat(doc.getSourceUri()).isEqualTo("https://arxiv.org/pdf/2408.09869");
+      assertThat(doc.getFilename()).isEqualTo("2408.09869");
+      assertThat(doc.getStatus()).isEqualTo(ConversionStatus.SUCCESS);
+      assertThat(doc.getErrors()).isEmpty();
+      assertThat(doc.getArtifacts()).hasSize(1);
+
+      var artifact = doc.getArtifacts().get(0);
+      assertThat(artifact.getArtifactType()).isEqualTo(ArtifactType.MARKDOWN);
+      assertThat(artifact.getMimeType()).isEqualTo("text/markdown");
+      assertThat(artifact.getUri()).isEqualTo(URI.create("https://storage.example.com/2408.09869.md"));
+      assertThat(artifact.getUrlExpiresAt()).isNotNull();
+
+      wireMockServer.verify(
+          postRequestedFor(urlPathEqualTo("/v1/convert/source"))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withRequestBody(
+                  matchingJsonPath("$.sources[0].kind", equalTo("http"))
+                      .and(matchingJsonPath("$.sources[0].url", equalTo("https://arxiv.org/pdf/2408.09869")))
+                      .and(matchingJsonPath("$.target.kind", equalTo("presigned_url")))
+              )
+      );
+    }
+
+    @Test
+    void shouldConvertSourceWithPresignedUrlTargetAndMultipleDocuments() {
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2408.09869")).build())
+          .source(HttpSource.builder().url(URI.create("https://arxiv.org/pdf/2501.17887")).build())
+          .target(PresignedUrlTarget.builder().build())
+          .build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source")
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "processing_time": 8.27,
+                   "num_converted": 2,
+                   "num_succeeded": 2,
+                   "num_partially_succeeded": 0,
+                   "num_failed": 0,
+                   "documents": [
+                     {
+                       "source_index": 0,
+                       "source_uri": "https://arxiv.org/pdf/2408.09869",
+                       "filename": "2408.09869",
+                       "status": "success",
+                       "artifacts": [
+                         {
+                           "artifact_type": "markdown",
+                           "mime_type": "text/markdown",
+                           "uri": "https://storage.example.com/2408.09869.md"
+                         }
+                       ]
+                     },
+                     {
+                       "source_index": 1,
+                       "source_uri": "https://arxiv.org/pdf/2501.17887",
+                       "filename": "2501.17887",
+                       "status": "success",
+                       "artifacts": [
+                         {
+                           "artifact_type": "markdown",
+                           "mime_type": "text/markdown",
+                           "uri": "https://storage.example.com/2501.17887.md"
+                         }
+                       ]
+                     }
+                   ]
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true).convertSource(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getResponseType()).isEqualTo(ResponseType.PRE_SIGNED_URL_RESPONSE);
+
+      var presignedResponse = (PreSignedUrlConvertResponse) response;
+      assertThat(presignedResponse.getNumConverted()).isEqualTo(2);
+      assertThat(presignedResponse.getNumSucceeded()).isEqualTo(2);
+      assertThat(presignedResponse.getDocuments()).hasSize(2);
+      assertThat(presignedResponse.getDocuments().get(0).getFilename()).isEqualTo("2408.09869");
+      assertThat(presignedResponse.getDocuments().get(1).getFilename()).isEqualTo("2501.17887");
+      assertThat(presignedResponse.getDocuments().get(1).getSourceIndex()).isEqualTo(1);
+
+      wireMockServer.verify(
+          postRequestedFor(urlPathEqualTo("/v1/convert/source"))
+              .withRequestBody(
+                  matchingJsonPath("$.target.kind", equalTo("presigned_url"))
+                      .and(matchingJsonPath("$.sources[0].kind", equalTo("http")))
+                      .and(matchingJsonPath("$.sources[1].kind", equalTo("http")))
               )
       );
     }

@@ -6,6 +6,9 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 ### {{ gradle.project_version }}
 
+
+### 0.5.2
+
 * **New `docling-bom` module** — A Maven BOM (`ai.docling:docling-bom`) is now published, allowing consumers to align all Docling Java module versions with a single import.
 * **Codecov configuration fixes** — Fixed module path mappings, ignore rules, and added per-Java-version coverage flags for accurate coverage reporting across all modules.
 
@@ -22,6 +25,11 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 ### {{ gradle.project_version }}
 
+* **New `PresignedUrlTarget` request target** — Request server-managed presigned-URL delivery by setting `target` to `PresignedUrlTarget`. The docling-serve instance uploads each output artifact to its configured object storage and returns time-limited presigned download URLs in the response. Requires docling-serve v1.22.0+.
+* **New `PreSignedUrlConvertResponse` response type** — Returned when using `PresignedUrlTarget`. Contains per-document results in a `documents` list, where each `DocumentArtifactItem` carries the conversion status and a list of `ArtifactRef` entries with presigned download URLs for each output format.
+* **New supporting types** — `DocumentArtifactItem`, `ArtifactRef`, `ArtifactType`, `ConversionStatus`, `ProfilingItem`, `ProfilingScope`.
+* Added `numPartiallySucceeded` field to `PreSignedUrlConvertDocumentResponse` to align with the current OpenAPI spec.
+* Upgraded default Testcontainers image from v1.19.0 to v1.24.0.
 
 ### 0.5.0
 

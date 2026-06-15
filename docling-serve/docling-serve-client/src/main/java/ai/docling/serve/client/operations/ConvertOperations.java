@@ -6,6 +6,7 @@ import java.util.concurrent.CompletionStage;
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
 import ai.docling.serve.api.convert.request.target.PutTarget;
 import ai.docling.serve.api.convert.request.target.S3Target;
 import ai.docling.serve.api.convert.request.target.ZipTarget;
@@ -50,7 +51,8 @@ public final class ConvertOperations extends AsyncOperations implements DoclingS
 
     boolean hasMultipleSources = !Utils.isNullOrEmpty(request.getSources()) ?
                                  request.getSources().size() > 1: Boolean.FALSE;
-    boolean isRemoteTarget = request.getTarget() instanceof S3Target || request.getTarget() instanceof PutTarget;
+    boolean isRemoteTarget = request.getTarget() instanceof S3Target || request.getTarget() instanceof PutTarget
+                             || request.getTarget() instanceof PresignedUrlTarget;
     boolean isZipTarget = request.getTarget() instanceof ZipTarget;
 
     if((hasMultipleSources && !isRemoteTarget) || isZipTarget) {

@@ -28,7 +28,7 @@ public interface DoclingServeContainerConfig {
   /**
    * Represents the version identifier for the docling-serve container image.
    */
-  String DOCLING_IMAGE_VERSION = "v1.19.0";
+  String DOCLING_IMAGE_VERSION = "v1.24.0";
 
   /**
    * Default image name

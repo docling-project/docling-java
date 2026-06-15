@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import ai.docling.serve.api.serialization.Jackson2ValidationErrorDetailListDeserializer;
+import ai.docling.serve.api.serialization.Jackson3ValidationErrorDetailListDeserializer;
 
 /**
  * Represents a validation error with customizable serialization and deserialization behavior.
@@ -34,6 +38,8 @@ public class ValidationError {
    */
   @JsonProperty("detail")
   @JsonSetter(nulls = Nulls.AS_EMPTY)
+  @JsonDeserialize(using = Jackson2ValidationErrorDetailListDeserializer.class)
+  @tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ValidationErrorDetailListDeserializer.class)
   @lombok.Singular
   private List<ValidationErrorDetail> errorDetails;
 

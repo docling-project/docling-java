@@ -25,6 +25,10 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 ### {{ gradle.project_version }}
 
+* **New batch conversion support** — Added `convertSourceBatch()` and `convertSourceBatchAsync()` methods to `DoclingServeConvertApi` for the new `/v1/convert/source/batch` endpoint. Submit multiple HTTP or S3 sources for batch processing with optional webhook callbacks for progress notifications. Requires docling-serve v1.22.0+.
+* **New `BatchConvertDocumentRequest`** — Request model for batch conversions, supporting `sources` (HTTP or S3), `target` (PresignedUrlTarget or S3Target), conversion `options`, and optional `callbacks` (webhook specifications).
+* **New `CallbackSpec`** — Webhook callback specification for receiving progress notifications during batch processing, with `url`, `headers`, and optional `caCert` fields.
+* **New `maxNumElements` field on `S3Source`** — Caps the number of S3 objects processed in a single batch, useful when the source bucket contains many objects.
 * **New `PresignedUrlTarget` request target** — Request server-managed presigned-URL delivery by setting `target` to `PresignedUrlTarget`. The docling-serve instance uploads each output artifact to its configured object storage and returns time-limited presigned download URLs in the response. Requires docling-serve v1.22.0+.
 * **New `PreSignedUrlConvertResponse` response type** — Returned when using `PresignedUrlTarget`. Contains per-document results in a `documents` list, where each `DocumentArtifactItem` carries the conversion status and a list of `ArtifactRef` entries with presigned download URLs for each output format.
 * **New supporting types** — `DocumentArtifactItem`, `ArtifactRef`, `ArtifactType`, `ConversionStatus`, `ProfilingItem`, `ProfilingScope`.

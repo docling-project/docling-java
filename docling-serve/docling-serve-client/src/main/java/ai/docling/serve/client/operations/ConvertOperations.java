@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
+import ai.docling.serve.api.convert.request.BatchConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.target.PresignedUrlTarget;
 import ai.docling.serve.api.convert.request.target.PutTarget;
@@ -13,6 +14,7 @@ import ai.docling.serve.api.convert.request.target.ZipTarget;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.convert.response.ZipArchiveConvertDocumentResponse;
 import ai.docling.serve.api.task.request.TaskResultRequest;
+import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.Utils;
 import ai.docling.serve.api.util.ValidationUtils;
 
@@ -81,5 +83,17 @@ public final class ConvertOperations extends AsyncOperations implements DoclingS
   @Override
   public CompletionStage<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
     return executeAsync(request, "/v1/convert/source/async");
+  }
+
+  @Override
+  public TaskStatusPollResponse convertSourceBatch(BatchConvertDocumentRequest request) {
+    ValidationUtils.ensureNotNull(request, "request");
+    return this.httpOperations.executePost(
+        createRequestContext("/v1/convert/source/batch", request, TaskStatusPollResponse.class));
+  }
+
+  @Override
+  public CompletionStage<ConvertDocumentResponse> convertSourceBatchAsync(BatchConvertDocumentRequest request) {
+    return executeAsync(request, "/v1/convert/source/batch");
   }
 }

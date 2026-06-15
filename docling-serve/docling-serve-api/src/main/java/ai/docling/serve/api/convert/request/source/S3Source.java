@@ -69,6 +69,17 @@ public final class S3Source extends Source {
   @lombok.Builder.Default
   private boolean verifySsl = true;
 
+  /**
+   * Maximum number of elements to read from S3. When set, limits the number of objects processed.
+   * Useful for batch conversions where the S3 source may contain a large number of objects.
+   *
+   * @param maxNumElements Maximum number of elements to read from S3.
+   * @return Maximum number of elements to read from S3.
+   */
+  @JsonProperty("max_num_elements")
+  @org.jspecify.annotations.Nullable
+  private Integer maxNumElements;
+
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
   public static class Builder { }
 }

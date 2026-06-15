@@ -6,8 +6,10 @@ import java.util.concurrent.CompletionStage;
 
 import org.jspecify.annotations.Nullable;
 
+import ai.docling.serve.api.convert.request.BatchConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.FileUtils;
 import ai.docling.serve.api.util.ValidationUtils;
 
@@ -106,6 +108,42 @@ public interface DoclingServeConvertApi {
   default CompletionStage<ConvertDocumentResponse> convertFilesAsync(@Nullable ConvertDocumentRequest request, Path... files) {
     return convertSourceAsync(createRequest(request, files));
   }
+
+  /**
+   * Submits a batch conversion request for processing multiple document sources asynchronously.
+   *
+   * <p>This method posts the batch request to the server, which returns a task status containing
+   * a task ID. The caller can then use {@link DoclingServeTaskApi#pollTaskStatus(ai.docling.serve.api.task.request.TaskStatusPollRequest)}
+   * and {@link DoclingServeTaskApi#convertTaskResult(ai.docling.serve.api.task.request.TaskResultRequest)}
+   * to track and retrieve results.
+   *
+   * @param request the {@link BatchConvertDocumentRequest} containing the sources, target, conversion options, and optional callbacks.
+   * @return a {@link TaskStatusPollResponse} containing the task ID and initial status.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
+   */
+  TaskStatusPollResponse convertSourceBatch(BatchConvertDocumentRequest request);
+
+  /**
+   * Submits a batch conversion request and automatically polls for completion.
+   *
+   * <p>This method submits the batch request, polls the task status in the background,
+   * and completes the returned future with the conversion result when all documents
+   * have been processed.
+   *
+   * <p>Example usage:
+   * <pre>{@code
+   * client.convertSourceBatchAsync(request)
+   *     .thenAccept(response -> System.out.println("Batch complete"))
+   *     .exceptionally(ex -> { ex.printStackTrace(); return null; });
+   * }</pre>
+   *
+   * @param request the {@link BatchConvertDocumentRequest} containing the sources, target, conversion options, and optional callbacks.
+   * @return a {@link CompletionStage} that completes with the {@link ConvertDocumentResponse}
+   *         when all documents have been processed, or completes exceptionally if the
+   *         batch conversion fails or times out.
+   * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
+   */
+  CompletionStage<ConvertDocumentResponse> convertSourceBatchAsync(BatchConvertDocumentRequest request);
 
   private ConvertDocumentRequest createRequest(@Nullable ConvertDocumentRequest request, Path... files) {
     ValidationUtils.ensureNotEmpty(files, "files");

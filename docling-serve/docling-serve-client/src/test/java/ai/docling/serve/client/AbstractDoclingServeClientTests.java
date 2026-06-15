@@ -66,6 +66,8 @@ import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.clear.request.ClearConvertersRequest;
 import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
+import ai.docling.serve.api.convert.request.BatchConvertDocumentRequest;
+import ai.docling.serve.api.convert.request.CallbackSpec;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
 import ai.docling.serve.api.convert.request.options.ImageRefMode;
@@ -1179,6 +1181,275 @@ abstract class AbstractDoclingServeClientTests {
       assertThatExceptionOfType(IllegalArgumentException.class)
           .isThrownBy(() -> getDoclingClient().convertFilesAsync(Path.of("src", "test", "resources")))
           .withMessage("File (src/test/resources) is not a regular file");
+    }
+
+    @Test
+    void shouldConvertSourceBatchWithPresignedUrlTarget() {
+      var request = BatchConvertDocumentRequest.builder()
+          .source(
+              HttpSource.builder()
+                  .url(URI.create("https://arxiv.org/pdf/2408.09869"))
+                  .build()
+          )
+          .source(
+              HttpSource.builder()
+                  .url(URI.create("https://arxiv.org/pdf/2501.17887"))
+                  .build()
+          )
+          .target(PresignedUrlTarget.builder().build())
+          .build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source/batch")
+              .withRequestBody(equalToJson(writeValueAsString(request)))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "task_id": "batch-task-123",
+                   "task_type": "convert",
+                   "task_status": "pending",
+                   "task_position": 1,
+                   "task_meta": null
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true).convertSourceBatch(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getTaskId()).isEqualTo("batch-task-123");
+      assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.PENDING);
+
+      wireMockServer.verify(
+          1,
+          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withRequestBody(
+                  matchingJsonPath("$.sources[0].kind", equalTo("http"))
+                      .and(matchingJsonPath("$.sources[0].url", equalTo("https://arxiv.org/pdf/2408.09869")))
+                      .and(matchingJsonPath("$.sources[1].kind", equalTo("http")))
+                      .and(matchingJsonPath("$.sources[1].url", equalTo("https://arxiv.org/pdf/2501.17887")))
+                      .and(matchingJsonPath("$.target.kind", equalTo("presigned_url")))
+              )
+      );
+    }
+
+    @Test
+    void shouldConvertSourceBatchAsyncWithPresignedUrlTarget() {
+      var request = BatchConvertDocumentRequest.builder()
+          .source(
+              HttpSource.builder()
+                  .url(URI.create("https://arxiv.org/pdf/2408.09869"))
+                  .build()
+          )
+          .target(PresignedUrlTarget.builder().build())
+          .build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source/batch")
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "task_id": "batch-async-task-001",
+                   "task_type": "convert",
+                   "task_status": "pending",
+                   "task_position": 1,
+                   "task_meta": null
+                 }
+              """))
+      );
+
+      wireMockServer.stubFor(
+          get(urlPathEqualTo("/v1/status/poll/batch-async-task-001"))
+              .willReturn(okJson("""
+                 {
+                   "task_id": "batch-async-task-001",
+                   "task_type": "convert",
+                   "task_status": "success",
+                   "task_position": 0,
+                   "task_meta": null
+                 }
+              """))
+      );
+
+      wireMockServer.stubFor(
+          get(urlPathEqualTo("/v1/result/batch-async-task-001"))
+              .willReturn(okJson("""
+                 {
+                   "processing_time": 42.5,
+                   "num_converted": 1,
+                   "num_succeeded": 1,
+                   "num_partially_succeeded": 0,
+                   "num_failed": 0,
+                   "documents": [
+                     {
+                       "source_index": 0,
+                       "source_uri": "https://arxiv.org/pdf/2408.09869",
+                       "filename": "2408.09869",
+                       "status": "success",
+                       "errors": [],
+                       "timings": {},
+                       "artifacts": [
+                         {
+                           "artifact_type": "markdown",
+                           "mime_type": "text/markdown",
+                           "uri": "https://storage.example.com/2408.09869.md",
+                           "url_expires_at": "2026-06-15T12:00:00Z"
+                         }
+                       ]
+                     }
+                   ]
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true)
+          .convertSourceBatchAsync(request).toCompletableFuture().join();
+
+      assertThat(response).isNotNull();
+      assertThat(response.getResponseType()).isEqualTo(ResponseType.PRE_SIGNED_URL_RESPONSE);
+      assertThat(response).isInstanceOf(PreSignedUrlConvertResponse.class);
+
+      var presignedResponse = (PreSignedUrlConvertResponse) response;
+      assertThat(presignedResponse.getProcessingTime()).isEqualTo(42.5);
+      assertThat(presignedResponse.getNumConverted()).isEqualTo(1);
+      assertThat(presignedResponse.getNumSucceeded()).isEqualTo(1);
+      assertThat(presignedResponse.getDocuments()).hasSize(1);
+
+      var doc = presignedResponse.getDocuments().get(0);
+      assertThat(doc.getSourceUri()).isEqualTo("https://arxiv.org/pdf/2408.09869");
+      assertThat(doc.getStatus()).isEqualTo(ConversionStatus.SUCCESS);
+      assertThat(doc.getArtifacts()).hasSize(1);
+      assertThat(doc.getArtifacts().get(0).getArtifactType()).isEqualTo(ArtifactType.MARKDOWN);
+      assertThat(doc.getArtifacts().get(0).getUri()).isEqualTo(URI.create("https://storage.example.com/2408.09869.md"));
+
+    }
+
+    @Test
+    void shouldConvertSourceBatchWithS3SourceAndS3Target() {
+      var request = BatchConvertDocumentRequest.builder()
+          .source(
+              S3Source.builder()
+                  .endpoint("source-s3-endpoint")
+                  .bucket("source-bucket")
+                  .accessKey("source-access-key")
+                  .secretKey("source-secret-key")
+                  .keyPrefix("incoming/")
+                  .maxNumElements(500)
+                  .verifySsl(false)
+                  .build()
+          )
+          .target(
+              S3Target.builder()
+                  .endpoint("target-s3-endpoint")
+                  .bucket("target-bucket")
+                  .accessKey("target-access-key")
+                  .secretKey("target-secret-key")
+                  .keyPrefix("converted/")
+                  .verifySsl(false)
+                  .build()
+          ).build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source/batch")
+              .withRequestBody(equalToJson(writeValueAsString(request)))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "task_id": "batch-s3-task-456",
+                   "task_type": "convert",
+                   "task_status": "pending",
+                   "task_position": 2,
+                   "task_meta": null
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true).convertSourceBatch(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getTaskId()).isEqualTo("batch-s3-task-456");
+      assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.PENDING);
+
+      wireMockServer.verify(
+          1,
+          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withRequestBody(
+                  matchingJsonPath("$.sources[0].kind", equalTo("s3"))
+                      .and(matchingJsonPath("$.sources[0].endpoint", equalTo("source-s3-endpoint")))
+                      .and(matchingJsonPath("$.sources[0].bucket", equalTo("source-bucket")))
+                      .and(matchingJsonPath("$.sources[0].key_prefix", equalTo("incoming/")))
+                      .and(matchingJsonPath("$.sources[0].max_num_elements", equalTo("500")))
+                      .and(matchingJsonPath("$.target.kind", equalTo("s3")))
+                      .and(matchingJsonPath("$.target.endpoint", equalTo("target-s3-endpoint")))
+                      .and(matchingJsonPath("$.target.bucket", equalTo("target-bucket")))
+                      .and(matchingJsonPath("$.target.key_prefix", equalTo("converted/")))
+              )
+      );
+    }
+
+    @Test
+    void shouldConvertSourceBatchWithCallbacks() {
+      var request = BatchConvertDocumentRequest.builder()
+          .source(
+              HttpSource.builder()
+                  .url(URI.create("https://arxiv.org/pdf/2408.09869"))
+                  .build()
+          )
+          .target(PresignedUrlTarget.builder().build())
+          .callback(
+              CallbackSpec.builder()
+                  .url(URI.create("https://my-app.example.com/docling/progress"))
+                  .header("Authorization", "Bearer token123")
+                  .build()
+          )
+          .build();
+
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post("/v1/convert/source/batch")
+              .withRequestBody(equalToJson(writeValueAsString(request)))
+              .withHeader("Content-Type", equalTo("application/json"))
+              .withHeader("Accept", equalTo("application/json"))
+              .willReturn(okJson("""
+                 {
+                   "task_id": "batch-callback-789",
+                   "task_type": "convert",
+                   "task_status": "pending",
+                   "task_position": 1,
+                   "task_meta": null
+                 }
+              """))
+      );
+
+      var response = getDoclingClient(false, true).convertSourceBatch(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getTaskId()).isEqualTo("batch-callback-789");
+
+      wireMockServer.verify(
+          1,
+          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+              .withRequestBody(
+                  matchingJsonPath("$.callbacks[0].url", equalTo("https://my-app.example.com/docling/progress"))
+                      .and(matchingJsonPath("$.callbacks[0].headers.Authorization", equalTo("Bearer token123")))
+              )
+      );
+    }
+
+    @Test
+    void convertSourceBatchNullRequest() {
+      assertThatExceptionOfType(IllegalArgumentException.class)
+          .isThrownBy(() -> getDoclingClient().convertSourceBatch(null))
+          .withMessage("request cannot be null");
     }
   }
 

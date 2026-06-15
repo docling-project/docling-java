@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow.Subscriber;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.clear.request.ClearConvertersRequest;
 import ai.docling.serve.api.clear.request.ClearResultsRequest;
 import ai.docling.serve.api.clear.response.ClearResponse;
+import ai.docling.serve.api.convert.request.BatchConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
 import ai.docling.serve.api.health.HealthCheckResponse;
@@ -47,6 +49,7 @@ import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.Utils;
 import ai.docling.serve.api.util.ValidationUtils;
 import ai.docling.serve.api.validation.ValidationError;
+import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
 import ai.docling.serve.client.operations.ChunkOperations;
 import ai.docling.serve.client.operations.ClearOperations;
@@ -302,8 +305,8 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
     var statusCode = response.statusCode();
 
-    if(statusCode >= 400) {
-      if(StreamResponse.class.equals(expectedReturnType)) {
+    if (statusCode >= 400) {
+      if (StreamResponse.class.equals(expectedReturnType)) {
         // typical 4XX  & 5XX responses are usually accompanied by JSON response bodies
         // hence, reading the stream here.
         try (InputStream is = (InputStream) body){
@@ -313,17 +316,24 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         }
       }
 
-      if(statusCode == 422) {
+      if (statusCode == 422) {
+        var validationError = readValue(body.toString(), ValidationError.class);
+        var errorText = validationError.getErrorDetails()
+          .stream()
+          .map(ValidationErrorDetail::getMessage)
+          .filter(Objects::nonNull)
+          .collect(Collectors.joining("\n"));
+
         throw new ValidationException(
-          readValue(body.toString(), ValidationError.class),
-          "An error occurred while making %s request to %s".formatted(request.method(), request.uri())
+          validationError,
+          "An error occurred while making %s request to %s:\n%s".formatted(request.method(), request.uri(), errorText)
         );
       } else {
         throw new DoclingServeClientException("An error occurred: %s".formatted(body.toString()), statusCode, body.toString());
       }
     }
 
-    if(StreamResponse.class.equals(expectedReturnType)) {
+    if (StreamResponse.class.equals(expectedReturnType)) {
       return (T) StreamResponse
           .builder()
           .headers(headerName -> response.headers().firstValue(headerName))
@@ -392,6 +402,16 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   @Override
   public CompletionStage<ConvertDocumentResponse> convertSourceAsync(ConvertDocumentRequest request) {
     return this.convertOps.convertSourceAsync(request);
+  }
+
+  @Override
+  public TaskStatusPollResponse convertSourceBatch(BatchConvertDocumentRequest request) {
+    return this.convertOps.convertSourceBatch(request);
+  }
+
+  @Override
+  public CompletionStage<ConvertDocumentResponse> convertSourceBatchAsync(BatchConvertDocumentRequest request) {
+    return this.convertOps.convertSourceBatchAsync(request);
   }
 
   private class LoggingBodyPublisher<T> implements BodyPublisher {

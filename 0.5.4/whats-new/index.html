@@ -488,6 +488,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#052" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#051" class="md-nav__link">
     <span class="md-ellipsis">
       0.5.1
@@ -915,6 +924,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#052" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#051" class="md-nav__link">
     <span class="md-ellipsis">
       0.5.1
@@ -1071,6 +1089,7 @@
 <p>Docling Java 0.5.4 includes important breaking changes, along with new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each change.</p>
 <h2 id="general">General<a class="headerlink" href="#general" title="Permanent link">#</a></h2>
 <h3 id="054">0.5.4<a class="headerlink" href="#054" title="Permanent link">#</a></h3>
+<h3 id="052">0.5.2<a class="headerlink" href="#052" title="Permanent link">#</a></h3>
 <ul>
 <li><strong>New <code>docling-bom</code> module</strong> — A Maven BOM (<code>ai.docling:docling-bom</code>) is now published, allowing consumers to align all Docling Java module versions with a single import.</li>
 <li><strong>Codecov configuration fixes</strong> — Fixed module path mappings, ignore rules, and added per-Java-version coverage flags for accurate coverage reporting across all modules.</li>
@@ -1086,6 +1105,13 @@
 </ul>
 <h2 id="docling-serve">Docling Serve<a class="headerlink" href="#docling-serve" title="Permanent link">#</a></h2>
 <h3 id="054_1">0.5.4<a class="headerlink" href="#054_1" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>New <code>PresignedUrlTarget</code> request target</strong> — Request server-managed presigned-URL delivery by setting <code>target</code> to <code>PresignedUrlTarget</code>. The docling-serve instance uploads each output artifact to its configured object storage and returns time-limited presigned download URLs in the response. Requires docling-serve v1.22.0+.</li>
+<li><strong>New <code>PreSignedUrlConvertResponse</code> response type</strong> — Returned when using <code>PresignedUrlTarget</code>. Contains per-document results in a <code>documents</code> list, where each <code>DocumentArtifactItem</code> carries the conversion status and a list of <code>ArtifactRef</code> entries with presigned download URLs for each output format.</li>
+<li><strong>New supporting types</strong> — <code>DocumentArtifactItem</code>, <code>ArtifactRef</code>, <code>ArtifactType</code>, <code>ConversionStatus</code>, <code>ProfilingItem</code>, <code>ProfilingScope</code>.</li>
+<li>Added <code>numPartiallySucceeded</code> field to <code>PreSignedUrlConvertDocumentResponse</code> to align with the current OpenAPI spec.</li>
+<li>Upgraded default Testcontainers image from v1.19.0 to v1.24.0.</li>
+</ul>
 <h3 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link">#</a></h3>
 <h4 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">#</a></h4>
 <ul>

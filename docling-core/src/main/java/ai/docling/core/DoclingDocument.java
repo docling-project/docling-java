@@ -64,16 +64,29 @@ public class DoclingDocument {
   private List<PictureItem> pictures;
 
   @JsonProperty("tables")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<TableItem> tables;
 
   @JsonProperty("key_value_items")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<KeyValueItem> keyValueItems;
 
   @JsonProperty("form_items")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   @lombok.Singular
   private List<FormItem> formItems;
+
+  @JsonProperty("field_regions")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
+  @lombok.Singular
+  private List<FieldRegionItem> fieldRegions;
+
+  @JsonProperty("field_items")
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
+  @lombok.Singular
+  private List<FieldItem> fieldItems;
 
   @JsonProperty("pages")
   @lombok.Singular
@@ -179,6 +192,223 @@ public class DoclingDocument {
     public static class Builder { }
   }
 
+  /**
+   * Fine-granular reference item that captures an optional character span range alongside a JSON
+   * pointer reference. The {@code range} field serializes as a 2-element JSON integer array
+   * {@code [start, end]} to match the Python {@code tuple[int, int]} wire format.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = FineRef.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class FineRef {
+    @JsonProperty("$ref")
+    private String ref;
+
+    /**
+     * Optional character span as a 2-element JSON array {@code [start_inclusive, end_exclusive]},
+     * matching the Python {@code Optional[tuple[int, int]]} wire format.
+     */
+    @JsonProperty("range")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("range")
+    private List<Integer> range;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Source metadata for a cue extracted from a media track (audio, video, subtitles, etc.).
+   * Serialized as a flat JSON object with a {@code "kind": "track"} discriminator field.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = TrackSource.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static final class TrackSource implements SourceType {
+    @JsonProperty("kind")
+    @lombok.Builder.Default
+    private String kind = "track";
+
+    @JsonProperty("start_time")
+    private Double startTime;
+
+    @JsonProperty("end_time")
+    private Double endTime;
+
+    @JsonProperty("identifier")
+    @Nullable
+    private String identifier;
+
+    @JsonProperty("voice")
+    @Nullable
+    private String voice;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder {
+      /**
+       * Guards the {@code kind} discriminator: it is fixed to {@code "track"} and may not be set to
+       * any other value. The constant default declared on {@link TrackSource} is always used, so an
+       * unsupported discriminator can never be built or serialized.
+       */
+      @JsonProperty("kind")
+      public Builder kind(String kind) {
+        if (kind != null && !"track".equals(kind)) {
+          throw new IllegalArgumentException("TrackSource.kind must be \"track\" but was: " + kind);
+        }
+        return this;
+      }
+    }
+  }
+
+  /**
+   * Detected human language of a document node, expressed as a BCP 47 code (e.g. {@code "en"}).
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = LanguageMetaField.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class LanguageMetaField {
+    @JsonProperty("confidence")
+    @Nullable
+    private Double confidence;
+
+    @JsonProperty("created_by")
+    @Nullable
+    private String createdBy;
+
+    @JsonProperty("code")
+    private String code;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * A named entity mention extracted from text, carrying the entity text, an optional type label,
+   * and an optional character span as a 2-element JSON array {@code [start, end]}.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = EntityMention.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class EntityMention {
+    @JsonProperty("confidence")
+    @Nullable
+    private Double confidence;
+
+    @JsonProperty("created_by")
+    @Nullable
+    private String createdBy;
+
+    @JsonProperty("text")
+    private String text;
+
+    @JsonProperty("orig")
+    @Nullable
+    private String orig;
+
+    @JsonProperty("label")
+    @Nullable
+    private String label;
+
+    /**
+     * Character span as a 2-element JSON array {@code [start, end]} (0-indexed,
+     * end-exclusive), matching the Python {@code CharSpan = tuple[int, int]} wire format.
+     */
+    @JsonProperty("charspan")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("charspan")
+    private List<Integer> charspan;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Container for named entity mentions associated with a document node.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = EntitiesMetaField.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class EntitiesMetaField {
+    @JsonProperty("mentions")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<EntityMention> mentions;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Container for salient keyword or keyphrase metadata associated with a document node.
+   * Values are order-preserving and deduplicated.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = KeywordsMetaField.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class KeywordsMetaField {
+    @JsonProperty("values")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("value")
+    private List<String> values;
+
+    /**
+     * Returns the keyword values order-preserving and deduplicated, upholding the same uniqueness
+     * invariant as the Python {@code UniqueList} source model.
+     */
+    public List<String> getValues() {
+      return values == null ? List.of() : List.copyOf(new java.util.LinkedHashSet<>(values));
+    }
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Container for higher-level subject category or thematic label metadata associated with a
+   * document node. Values are order-preserving and deduplicated.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = TopicsMetaField.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class TopicsMetaField {
+    @JsonProperty("values")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("value")
+    private List<String> values;
+
+    /**
+     * Returns the topic values order-preserving and deduplicated, upholding the same uniqueness
+     * invariant as the Python {@code UniqueList} source model.
+     */
+    public List<String> getValues() {
+      return values == null ? List.of() : List.copyOf(new java.util.LinkedHashSet<>(values));
+    }
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   @tools.jackson.databind.annotation.JsonDeserialize(builder = BaseMeta.Builder.class)
   @lombok.extern.jackson.Jacksonized
@@ -189,6 +419,22 @@ public class DoclingDocument {
     @JsonProperty("summary")
     @Nullable
     private SummaryMetaField summary;
+
+    @JsonProperty("language")
+    @Nullable
+    private LanguageMetaField language;
+
+    @JsonProperty("entities")
+    @Nullable
+    private EntitiesMetaField entities;
+
+    @JsonProperty("keywords")
+    @Nullable
+    private KeywordsMetaField keywords;
+
+    @JsonProperty("topics")
+    @Nullable
+    private TopicsMetaField topics;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -204,17 +450,28 @@ public class DoclingDocument {
     @JsonProperty("confidence")
     @Nullable
     private Double confidence;
-    
+
     @JsonProperty("created_by")
     @Nullable
     private String createdBy;
-    
+
     @JsonProperty("text")
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
   }
+
+  @JsonTypeInfo(
+      use = JsonTypeInfo.Id.NAME,
+      include = JsonTypeInfo.As.EXISTING_PROPERTY,
+      property = "kind",
+      visible = true
+  )
+  @JsonSubTypes({
+      @Type(value = TrackSource.class, name = "track")
+  })
+  public sealed interface SourceType permits TrackSource { }
 
   public enum DocItemLabel {
     @JsonProperty("caption") CAPTION,
@@ -239,7 +496,21 @@ public class DoclingDocument {
     @JsonProperty("section_header") SECTION_HEADER,
     @JsonProperty("table") TABLE,
     @JsonProperty("text") TEXT,
-    @JsonProperty("title") TITLE
+    @JsonProperty("title") TITLE,
+    @JsonProperty("field_region") FIELD_REGION,
+    @JsonProperty("field_heading") FIELD_HEADING,
+    @JsonProperty("field_item") FIELD_ITEM,
+    @JsonProperty("field_key") FIELD_KEY,
+    @JsonProperty("field_value") FIELD_VALUE,
+    @JsonProperty("field_hint") FIELD_HINT,
+    @JsonProperty("marker") MARKER
+  }
+
+  public enum Orientation {
+    @JsonProperty("rot_0") ROT_0,
+    @JsonProperty("rot_90") ROT_90,
+    @JsonProperty("rot_180") ROT_180,
+    @JsonProperty("rot_270") ROT_270
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -255,6 +526,8 @@ public class DoclingDocument {
       @Type(value = ListItem.class, name = "list_item"),
       @Type(value = CodeItem.class, name = "code"),
       @Type(value = FormulaItem.class, name = "formula"),
+      @Type(value = FieldHeadingItem.class, name = "field_heading"),
+      @Type(value = FieldValueItem.class, name = "field_value"),
       @Type(value = TextItem.class, name = "text"),
       @Type(value = TextItem.class, name = "paragraph"),
       @Type(value = TextItem.class, name = "caption"),
@@ -264,9 +537,14 @@ public class DoclingDocument {
       @Type(value = TextItem.class, name = "reference"),
       @Type(value = TextItem.class, name = "checkbox_selected"),
       @Type(value = TextItem.class, name = "checkbox_unselected"),
-      @Type(value = TextItem.class, name = "empty_value")
+      @Type(value = TextItem.class, name = "empty_value"),
+      @Type(value = TextItem.class, name = "field_key"),
+      @Type(value = TextItem.class, name = "field_hint"),
+      @Type(value = TextItem.class, name = "marker"),
+      @Type(value = TextItem.class, name = "handwritten_text")
   })
-  public sealed interface BaseTextItem permits TitleItem, SectionHeaderItem, ListItem, CodeItem, FormulaItem, TextItem {
+  public sealed interface BaseTextItem
+      permits TitleItem, SectionHeaderItem, FieldHeadingItem, FieldValueItem, ListItem, CodeItem, FormulaItem, TextItem {
 
     String getSelfRef();
 
@@ -290,6 +568,10 @@ public class DoclingDocument {
 
     @Nullable
     String getHyperlink();
+
+    List<SourceType> getSource();
+
+    List<FineRef> getComments();
   }
 
   public enum Script {
@@ -372,6 +654,16 @@ public class DoclingDocument {
     @Nullable
     private String hyperlink;
 
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
   }
@@ -423,6 +715,81 @@ public class DoclingDocument {
     @JsonProperty("hyperlink")
     @Nullable
     private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @JsonProperty("level")
+    private Integer level;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = FieldHeadingItem.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static final class FieldHeadingItem implements BaseTextItem {
+    @JsonProperty("self_ref")
+    private String selfRef;
+
+    @JsonProperty("parent")
+    @Nullable
+    private RefItem parent;
+
+    @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("child")
+    private List<RefItem> children;
+
+    @JsonProperty("content_layer")
+    private ContentLayer contentLayer;
+
+    @JsonProperty("meta")
+    @Nullable
+    private BaseMeta meta;
+
+    @JsonProperty("label")
+    private DocItemLabel label;
+
+    @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("prov")
+    private List<ProvenanceItem> prov;
+
+    @JsonProperty("orig")
+    private String orig;
+
+    @JsonProperty("text")
+    private String text;
+
+    @JsonProperty("formatting")
+    @Nullable
+    private Formatting formatting;
+
+    @JsonProperty("hyperlink")
+    @Nullable
+    private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
 
     @JsonProperty("level")
     private Integer level;
@@ -478,6 +845,16 @@ public class DoclingDocument {
     @JsonProperty("hyperlink")
     @Nullable
     private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
 
     @JsonProperty("enumerated")
     private boolean enumerated;
@@ -537,6 +914,16 @@ public class DoclingDocument {
     @JsonProperty("hyperlink")
     @Nullable
     private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
 
     @JsonProperty("captions")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
@@ -613,6 +1000,16 @@ public class DoclingDocument {
     @Nullable
     private String hyperlink;
 
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
   }
@@ -664,6 +1061,82 @@ public class DoclingDocument {
     @JsonProperty("hyperlink")
     @Nullable
     private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = FieldValueItem.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static final class FieldValueItem implements BaseTextItem {
+    @JsonProperty("self_ref")
+    private String selfRef;
+
+    @JsonProperty("parent")
+    @Nullable
+    private RefItem parent;
+
+    @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("child")
+    private List<RefItem> children;
+
+    @JsonProperty("content_layer")
+    private ContentLayer contentLayer;
+
+    @JsonProperty("meta")
+    @Nullable
+    private BaseMeta meta;
+
+    @JsonProperty("label")
+    private DocItemLabel label;
+
+    @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("prov")
+    private List<ProvenanceItem> prov;
+
+    @JsonProperty("orig")
+    private String orig;
+
+    @JsonProperty("text")
+    private String text;
+
+    @JsonProperty("formatting")
+    @Nullable
+    private Formatting formatting;
+
+    @JsonProperty("hyperlink")
+    @Nullable
+    private String hyperlink;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @JsonProperty("kind")
+    @Nullable
+    private String kind;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -719,6 +1192,21 @@ public class DoclingDocument {
     @Nullable
     private ImageRef image;
 
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @JsonProperty("annotations")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<Map<String, Object>> annotations;
+
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
   }
@@ -733,22 +1221,73 @@ public class DoclingDocument {
     @JsonProperty("summary")
     @Nullable
     private SummaryMetaField summary;
-    
+
+    @JsonProperty("language")
+    @Nullable
+    private LanguageMetaField language;
+
+    @JsonProperty("entities")
+    @Nullable
+    private EntitiesMetaField entities;
+
+    @JsonProperty("keywords")
+    @Nullable
+    private KeywordsMetaField keywords;
+
+    @JsonProperty("topics")
+    @Nullable
+    private TopicsMetaField topics;
+
     @JsonProperty("description")
     @Nullable
     private DescriptionMetaField description;
-    
+
     @JsonProperty("classification")
     @Nullable
     private PictureClassificationMetaField classification;
-    
+
     @JsonProperty("molecule")
     @Nullable
     private MoleculeMetaField molecule;
-    
+
     @JsonProperty("tabular_chart")
     @Nullable
     private TabularChartMetaField tabularChart;
+
+    @JsonProperty("code")
+    @Nullable
+    private CodeMetaField code;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Source-code representation associated with a picture node (e.g. the code that renders a chart
+   * or diagram). Corresponds to the Python {@code CodeMetaField}; {@code language} is carried as a
+   * raw string to mirror the lenient handling of {@code code_language} elsewhere in the model.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = CodeMetaField.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class CodeMetaField {
+    @JsonProperty("confidence")
+    @Nullable
+    private Double confidence;
+
+    @JsonProperty("created_by")
+    @Nullable
+    private String createdBy;
+
+    @JsonProperty("text")
+    private String text;
+
+    @JsonProperty("language")
+    @Nullable
+    private String language;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -1007,6 +1546,21 @@ public class DoclingDocument {
     @JsonProperty("data")
     private TableData data;
 
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @JsonProperty("annotations")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<Map<String, Object>> annotations;
+
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
   }
@@ -1021,7 +1575,23 @@ public class DoclingDocument {
     @JsonProperty("summary")
     @Nullable
     private SummaryMetaField summary;
-    
+
+    @JsonProperty("language")
+    @Nullable
+    private LanguageMetaField language;
+
+    @JsonProperty("entities")
+    @Nullable
+    private EntitiesMetaField entities;
+
+    @JsonProperty("keywords")
+    @Nullable
+    private KeywordsMetaField keywords;
+
+    @JsonProperty("topics")
+    @Nullable
+    private TopicsMetaField topics;
+
     @JsonProperty("description")
     @Nullable
     private DescriptionMetaField description;
@@ -1040,7 +1610,7 @@ public class DoclingDocument {
     @JsonProperty("table_cells")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
-    private List<Object> tableCells;
+    private List<TableCell> tableCells;
     
     @JsonProperty("num_rows")
     private Integer numRows;
@@ -1052,6 +1622,10 @@ public class DoclingDocument {
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("grid")
     private List<List<TableCell>> grid;
+
+    @JsonProperty("orientation")
+    @Nullable
+    private Orientation orientation;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -1099,6 +1673,10 @@ public class DoclingDocument {
     
     @JsonProperty("fillable")
     private boolean fillable;
+
+    @JsonProperty("ref")
+    @Nullable
+    private RefItem ref;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -1159,6 +1737,16 @@ public class DoclingDocument {
     
     @JsonProperty("graph")
     private GraphData graph;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
@@ -1306,6 +1894,121 @@ public class DoclingDocument {
     
     @JsonProperty("graph")
     private GraphData graph;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Represents a form field region container, grouping one or more related field items within a
+   * document. Corresponds to the Python {@code FieldRegionItem} with label {@code "field_region"}.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = FieldRegionItem.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class FieldRegionItem {
+    @JsonProperty("self_ref")
+    private String selfRef;
+
+    @JsonProperty("parent")
+    @Nullable
+    private RefItem parent;
+
+    @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("child")
+    private List<RefItem> children;
+
+    @JsonProperty("content_layer")
+    private ContentLayer contentLayer;
+
+    @JsonProperty("meta")
+    @Nullable
+    private BaseMeta meta;
+
+    @JsonProperty("label")
+    private DocItemLabel label;
+
+    @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("prov")
+    private List<ProvenanceItem> prov;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
+
+    @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
+    public static class Builder { }
+  }
+
+  /**
+   * Represents a single form field item within a document, typically nested inside a
+   * {@link FieldRegionItem}. Corresponds to the Python {@code FieldItem} with label
+   * {@code "field_item"}.
+   */
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @tools.jackson.databind.annotation.JsonDeserialize(builder = FieldItem.Builder.class)
+  @lombok.extern.jackson.Jacksonized
+  @lombok.Builder(toBuilder = true)
+  @lombok.Getter
+  @lombok.ToString
+  public static class FieldItem {
+    @JsonProperty("self_ref")
+    private String selfRef;
+
+    @JsonProperty("parent")
+    @Nullable
+    private RefItem parent;
+
+    @JsonProperty("children")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("child")
+    private List<RefItem> children;
+
+    @JsonProperty("content_layer")
+    private ContentLayer contentLayer;
+
+    @JsonProperty("meta")
+    @Nullable
+    private BaseMeta meta;
+
+    @JsonProperty("label")
+    private DocItemLabel label;
+
+    @JsonProperty("prov")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("prov")
+    private List<ProvenanceItem> prov;
+
+    @JsonProperty("source")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular("source")
+    private List<SourceType> source;
+
+    @JsonProperty("comments")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    @lombok.Singular
+    private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }

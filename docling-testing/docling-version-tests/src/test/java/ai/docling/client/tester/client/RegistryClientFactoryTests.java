@@ -6,6 +6,9 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import ai.docling.client.tester.client.ghcr.GHCRClient;
 
@@ -22,61 +25,17 @@ class RegistryClientFactoryTests {
 
     @Test
     void shouldReturnGHCRClientForGhcrRegistry() {
-        var client = factory.getRegistryClient("ghcr.io");
-
-        assertThat(client)
+        assertThat(factory.getRegistryClient("ghcr.io"))
                 .isNotNull()
                 .isSameAs(ghcrClient);
     }
 
-    @Test
-    void shouldThrowExceptionForUnsupportedRegistry() {
-        assertThatThrownBy(() -> factory.getRegistryClient("docker.io"))
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = { "docker.io", "quay.io", "GHCR.IO", " ghcr.io " })
+    void shouldThrowExceptionForUnsupportedRegistry(String registry) {
+        assertThatThrownBy(() -> factory.getRegistryClient(registry))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry: docker.io");
-    }
-
-    @Test
-    void shouldThrowExceptionForNullRegistry() {
-        assertThatThrownBy(() -> factory.getRegistryClient(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry: null");
-    }
-
-    @Test
-    void shouldThrowExceptionForEmptyRegistry() {
-        assertThatThrownBy(() -> factory.getRegistryClient(""))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry: ");
-    }
-
-    @Test
-    void shouldThrowExceptionForUnknownRegistry() {
-        assertThatThrownBy(() -> factory.getRegistryClient("quay.io"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry: quay.io");
-    }
-
-    @Test
-    void shouldThrowExceptionForRegistryWithDifferentCase() {
-        // Registry names are case-sensitive
-        assertThatThrownBy(() -> factory.getRegistryClient("GHCR.IO"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry: GHCR.IO");
-    }
-
-    @Test
-    void shouldThrowExceptionForRegistryWithWhitespace() {
-        assertThatThrownBy(() -> factory.getRegistryClient(" ghcr.io "))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported registry:  ghcr.io ");
-    }
-
-    @Test
-    void shouldReturnSameClientInstanceOnMultipleCalls() {
-        var client1 = factory.getRegistryClient("ghcr.io");
-        var client2 = factory.getRegistryClient("ghcr.io");
-
-        assertThat(client1).isSameAs(client2);
+                .hasMessage("Unsupported registry: " + registry);
     }
 }

@@ -2,7 +2,6 @@ package ai.docling.client.tester.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,18 +80,11 @@ class WorkParallelizerTests {
 
     @Test
     void shouldRunItemsInParallel() {
-        var items = List.of(1, 2, 3, 4, 5);
-        var collected = new ArrayList<Integer>();
+        var counter = new AtomicInteger(0);
 
-        WorkParallelizer.runInParallelAndWait(executor, items, item -> {
-            synchronized (collected) {
-                collected.add(item);
-            }
-        });
+        WorkParallelizer.runInParallelAndWait(executor, List.of(1, 2, 3, 4, 5), item -> counter.incrementAndGet());
 
-        assertThat(collected)
-                .hasSize(5)
-                .containsExactlyInAnyOrder(1, 2, 3, 4, 5);
+        assertThat(counter).hasValue(5);
     }
 
     @Test

@@ -17,7 +17,7 @@ final class DefaultDoclingContainerConfig implements DoclingServeContainerConfig
   private final String apiKey;
 
   DefaultDoclingContainerConfig(Builder builder) {
-    if ((builder.image == null) || builder.image.strip().isEmpty()) {
+    if ((builder.image == null) || builder.image.isBlank()) {
       throw new IllegalArgumentException("image must be specified");
     }
 

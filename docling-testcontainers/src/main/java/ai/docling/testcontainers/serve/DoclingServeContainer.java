@@ -44,19 +44,19 @@ public class DoclingServeContainer extends GenericContainer<DoclingServeContaine
     this.config = config;
 
     // Configure the container
-    withExposedPorts(DEFAULT_DOCLING_PORT);
-    withEnv(config.containerEnv());
-    waitingFor(Wait.forHttp("/health"));
+    this.withExposedPorts(DEFAULT_DOCLING_PORT);
+    this.withEnv(config.containerEnv());
+    this.waitingFor(Wait.forHttp("/health"));
 
     if (config.enableUi()) {
-      withEnv("DOCLING_SERVE_ENABLE_UI", "true");
+      this.withEnv("DOCLING_SERVE_ENABLE_UI", "true");
     }
 
-    withStartupTimeout(config.startupTimeout());
+    this.withStartupTimeout(config.startupTimeout());
 
     Optional.ofNullable(config.apiKey())
         .map(String::strip)
-        .ifPresent(apiKey -> withEnv("DOCLING_SERVE_API_KEY", apiKey));
+        .ifPresent(apiKey -> this.withEnv("DOCLING_SERVE_API_KEY", apiKey));
   }
 
   /**

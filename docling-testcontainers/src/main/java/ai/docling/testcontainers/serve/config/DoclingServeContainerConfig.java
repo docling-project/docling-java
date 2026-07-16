@@ -1,7 +1,9 @@
 package ai.docling.testcontainers.serve.config;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -106,8 +108,13 @@ public interface DoclingServeContainerConfig {
      * The name of the container image to be used in the configuration.
      * This variable holds the identifier or tag of the container image
      * that will be utilized when creating or configuring container instances.
-     * It is a required field and must be set to a non-null, non-empty value.
+     * <p>
+     * It may be {@code null} while the builder is still being configured, but a
+     * non-null, non-empty, non-blank value is required by the time {@link #build()} is called;
+     * otherwise {@link #build()} throws {@link IllegalArgumentException}.
+     * </p>
      */
+    @Nullable
     protected String image;
 
     /**
@@ -122,13 +129,16 @@ public interface DoclingServeContainerConfig {
      * A map representing the environment variables to be passed to the container.
      * The keys in the map represent the names of the environment variables,
      * and the corresponding values represent their assigned values.
-     *
+     * <p>
      * This field is used to configure additional environment-specific settings
      * during the container's initialization and execution.
-     *
-     * Modifications to this map may be reflected in the container's runtime environment,
-     * affecting its behavior as defined by the provided environment variables.
+     * </p>
+     * <p>
+     * Mutations to a map passed into {@link #containerEnv(Map)} are not reflected, as the builder makes a defensive copy.
+     * Use {@link #containerEnv(String, String)} to add variables to this builder instance.
+     * </p>
      */
+    @Nullable
     protected Map<String, String> containerEnv;
 
     /**
@@ -140,6 +150,7 @@ public interface DoclingServeContainerConfig {
      * allows precise specification of time intervals.
      * </p>
      */
+    @Nullable
     protected Duration startupTimeout;
 
     /**
@@ -169,18 +180,18 @@ public interface DoclingServeContainerConfig {
     protected Builder(DoclingServeContainerConfig config) {
       this.image = config.image();
       this.enableUi = config.enableUi();
-      this.containerEnv = config.containerEnv();
+      this.containerEnv = new HashMap<>(config.containerEnv());
       this.startupTimeout = config.startupTimeout();
       this.apiKey = config.apiKey();
     }
 
     /**
      * Sets the name of the container image to use for the configuration.
-     * This value is required and must not be null or empty.
+     * This value is required and must not be null, empty, or blank.
      *
      * @param image the name of the container image
      * @return the builder instance for method chaining
-     * @throws IllegalArgumentException if the provided image is null or empty
+     * @throws IllegalArgumentException if the provided image is null, empty, or blank
      */
     public Builder image(String image) {
       this.image = image;
@@ -200,12 +211,22 @@ public interface DoclingServeContainerConfig {
 
     /**
      * Sets the environment variables to be passed to the container.
+     * <p>
+     * The provided map is defensively copied, so later external mutations do not
+     * affect this builder. Passing {@code null} clears any previously configured
+     * environment variables, and the built configuration falls back to an empty map.
+     * </p>
      *
-     * @param containerEnv a map containing the environment variable names and their corresponding values
+     * @param containerEnv a map containing the environment variable names and their corresponding values,
+     *                     or {@code null} to clear the environment variables
      * @return the builder instance for method chaining
      */
-    public Builder containerEnv(Map<String, String> containerEnv) {
-      this.containerEnv = containerEnv;
+    public Builder containerEnv(@Nullable Map<String, String> containerEnv) {
+      if (containerEnv != null) {
+        this.containerEnv = new HashMap<>(containerEnv);
+      } else {
+        this.containerEnv = null;
+      }
       return this;
     }
 
@@ -214,12 +235,17 @@ public interface DoclingServeContainerConfig {
      * This method allows setting a single key-value pair representing
      * an environment variable and its value to be passed to the container.
      *
-     * @param key the name of the environment variable
-     * @param value the value of the environment variable
+     * @param key the name of the environment variable; must not be null
+     * @param value the value of the environment variable; must not be null
      * @return the builder instance for method chaining
      * @throws NullPointerException if the key or value is null
      */
     public Builder containerEnv(String key, String value) {
+      Objects.requireNonNull(key, "key must not be null");
+      Objects.requireNonNull(value, "value must not be null");
+      if (this.containerEnv == null) {
+        this.containerEnv = new HashMap<>();
+      }
       this.containerEnv.put(key, value);
       return this;
     }
@@ -238,11 +264,11 @@ public interface DoclingServeContainerConfig {
     /**
      * Sets the API key to be used for the container configuration.
      *
-     * @param apiKey the API key as a string; this value is used to authenticate
-     *               or authorize the container's operations
+     * @param apiKey the API key as a string, used to authenticate or authorize the
+     *               container's operations, or {@code null} to omit the API key
      * @return the builder instance for method chaining
      */
-    public Builder apiKey(String apiKey) {
+    public Builder apiKey(@Nullable String apiKey) {
       this.apiKey = apiKey;
       return this;
     }

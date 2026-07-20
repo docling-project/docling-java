@@ -210,6 +210,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "margi212",
+      "name": "Margi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39212098?v=4",
+      "profile": "http://linkedin.com/in/margi212",
+      "contributions": [
+        "test"
+      ]
     }
   ]
 }

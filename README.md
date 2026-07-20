@@ -143,6 +143,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/NelsonMeleth"><img src="https://avatars.githubusercontent.com/u/21080704?v=4?s=100" width="100px;" alt="Nelson Baby"/><br /><sub><b>Nelson Baby</b></sub></a><br /><a href="#code-NelsonMeleth" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/dan-m62"><img src="https://avatars.githubusercontent.com/u/267069390?v=4?s=100" width="100px;" alt="dan-m62"/><br /><sub><b>dan-m62</b></sub></a><br /><a href="#code-dan-m62" title="Code">💻</a> <a href="#ideas-dan-m62" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://romankudryashov.com"><img src="https://avatars.githubusercontent.com/u/37952224?v=4?s=100" width="100px;" alt="Roman Kudryashov"/><br /><sub><b>Roman Kudryashov</b></sub></a><br /><a href="#bug-rkudryashov" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/seanJosephFitzpatrick"><img src="https://avatars.githubusercontent.com/u/9217947?v=4?s=100" width="100px;" alt="Sean Fitzpatrick"/><br /><sub><b>Sean Fitzpatrick</b></sub></a><br /><a href="#test-seanJosephFitzpatrick" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

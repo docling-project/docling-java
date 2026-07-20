@@ -311,6 +311,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("orig")
@@ -456,6 +457,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -641,9 +643,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -703,9 +707,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -768,9 +774,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -833,9 +841,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -902,9 +912,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -987,9 +999,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1049,9 +1063,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1111,9 +1127,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1283,6 +1301,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("language")
@@ -1309,6 +1328,7 @@ public class DoclingDocument {
     private String createdBy;
     
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
@@ -1660,6 +1680,7 @@ public class DoclingDocument {
     private Integer endColOffsetIdx;
     
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
     
     @JsonProperty("column_header")
@@ -1794,9 +1815,11 @@ public class DoclingDocument {
     private Integer cellId;
     
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
     
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
     
     @JsonProperty("prov")

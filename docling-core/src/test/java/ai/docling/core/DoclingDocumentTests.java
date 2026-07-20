@@ -554,4 +554,59 @@ class DoclingDocumentTests {
     assertThat(source.getKind()).isEqualTo("track");
   }
 
+  @Test
+  void shouldSerializeEmptyStringTextAndOrigFieldsForTextItems() throws Exception {
+    // Regression test for: @JsonInclude(NON_EMPTY) making DoclingDocument serialization lossy.
+    // Empty string text/orig (e.g. formula with do_formula_enrichment=false) must be preserved.
+    ObjectMapper mapper = new ObjectMapper();
+
+    DoclingDocument document = DoclingDocument.builder()
+        .name("formula-document")
+        .text(DoclingDocument.FormulaItem.builder()
+            .selfRef("#/texts/0")
+            .contentLayer(DoclingDocument.ContentLayer.BODY)
+            .label(DocItemLabel.FORMULA)
+            .orig("")
+            .text("")
+            .build())
+        .build();
+
+    String json = mapper.writeValueAsString(document);
+
+    assertThat(json).contains("\"text\":\"\"");
+    assertThat(json).contains("\"orig\":\"\"");
+  }
+
+  @Test
+  void shouldRoundtripEmptyStringTextThroughDeserializationAndSerialization() throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    String json = """
+        {
+          "name": "formula-document",
+          "texts": [
+            {
+              "self_ref": "#/texts/0",
+              "content_layer": "body",
+              "label": "formula",
+              "orig": "",
+              "text": ""
+            }
+          ]
+        }
+        """;
+
+    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+
+    assertThat(document.getTexts()).hasSize(1);
+    assertThat(document.getTexts().get(0)).isInstanceOf(DoclingDocument.FormulaItem.class);
+    DoclingDocument.FormulaItem formulaItem = (DoclingDocument.FormulaItem) document.getTexts().get(0);
+    assertThat(formulaItem.getText()).isEmpty();
+    assertThat(formulaItem.getOrig()).isEmpty();
+
+    String serialized = mapper.writeValueAsString(document);
+
+    assertThat(serialized).contains("\"text\":\"\"");
+    assertThat(serialized).contains("\"orig\":\"\"");
+  }
+
 }

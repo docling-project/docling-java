@@ -218,6 +218,15 @@
       "profile": "http://linkedin.com/in/margi212",
       "contributions": [
         "test"
+        ]
+    },
+    {
+      "login": "seanJosephFitzpatrick",
+      "name": "Sean Fitzpatrick",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9217947?v=4",
+      "profile": "https://github.com/seanJosephFitzpatrick",
+      "contributions": [
+        "test"
       ]
     }
   ]

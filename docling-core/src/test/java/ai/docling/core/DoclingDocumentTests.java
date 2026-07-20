@@ -555,32 +555,48 @@ class DoclingDocumentTests {
   }
 
   @Test
-  void shouldSerializeEmptyStringTextAndOrigFieldsForTextItems() throws Exception {
-    // Regression test for: @JsonInclude(NON_EMPTY) making DoclingDocument serialization lossy.
-    // Empty string text/orig (e.g. formula with do_formula_enrichment=false) must be preserved.
-    ObjectMapper mapper = new ObjectMapper();
-
-    DoclingDocument document = DoclingDocument.builder()
-        .name("formula-document")
-        .text(DoclingDocument.FormulaItem.builder()
+  void shouldNormalizeEmptyStringTextAndOrigToNullViaBuilder() {
+    DoclingDocument.FormulaItem item =
+        DoclingDocument.FormulaItem.builder()
             .selfRef("#/texts/0")
             .contentLayer(DoclingDocument.ContentLayer.BODY)
             .label(DocItemLabel.FORMULA)
             .orig("")
             .text("")
-            .build())
-        .build();
+            .build();
 
-    String json = mapper.writeValueAsString(document);
-
-    assertThat(json).contains("\"text\":\"\"");
-    assertThat(json).contains("\"orig\":\"\"");
+    assertThat(item.getText()).isNull();
+    assertThat(item.getOrig()).isNull();
   }
 
   @Test
-  void shouldRoundtripEmptyStringTextThroughDeserializationAndSerialization() throws Exception {
+  void shouldOmitTextAndOrigFromSerializationWhenNormalizedToNull() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
-    String json = """
+
+    DoclingDocument document =
+        DoclingDocument.builder()
+            .name("formula-document")
+            .text(
+                DoclingDocument.FormulaItem.builder()
+                    .selfRef("#/texts/0")
+                    .contentLayer(DoclingDocument.ContentLayer.BODY)
+                    .label(DocItemLabel.FORMULA)
+                    .orig("")
+                    .text("")
+                    .build())
+            .build();
+
+    String json = mapper.writeValueAsString(document);
+
+    assertThat(json).doesNotContain("\"text\"");
+    assertThat(json).doesNotContain("\"orig\"");
+  }
+
+  @Test
+  void shouldDeserializeEmptyStringTextAndOrigAsNull() throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    String json =
+        """
         {
           "name": "formula-document",
           "texts": [
@@ -599,14 +615,10 @@ class DoclingDocumentTests {
 
     assertThat(document.getTexts()).hasSize(1);
     assertThat(document.getTexts().get(0)).isInstanceOf(DoclingDocument.FormulaItem.class);
-    DoclingDocument.FormulaItem formulaItem = (DoclingDocument.FormulaItem) document.getTexts().get(0);
-    assertThat(formulaItem.getText()).isEmpty();
-    assertThat(formulaItem.getOrig()).isEmpty();
-
-    String serialized = mapper.writeValueAsString(document);
-
-    assertThat(serialized).contains("\"text\":\"\"");
-    assertThat(serialized).contains("\"orig\":\"\"");
+    DoclingDocument.FormulaItem formulaItem =
+        (DoclingDocument.FormulaItem) document.getTexts().get(0);
+    assertThat(formulaItem.getText()).isNull();
+    assertThat(formulaItem.getOrig()).isNull();
   }
 
 }

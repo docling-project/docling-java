@@ -311,7 +311,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("orig")
@@ -332,7 +332,17 @@ public class DoclingDocument {
     private List<Integer> charspan;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   /**
@@ -457,11 +467,16 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonTypeInfo(
@@ -643,11 +658,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -669,7 +684,17 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -707,11 +732,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -736,7 +761,17 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -774,11 +809,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -803,7 +838,17 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -841,11 +886,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -874,7 +919,17 @@ public class DoclingDocument {
     private String marker;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -912,11 +967,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -961,7 +1016,17 @@ public class DoclingDocument {
     private String codeLanguage;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -999,11 +1064,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -1025,7 +1090,17 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1063,11 +1138,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -1089,7 +1164,17 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1127,11 +1212,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("formatting")
@@ -1157,7 +1242,17 @@ public class DoclingDocument {
     private String kind;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1301,7 +1396,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @JsonProperty("language")
@@ -1309,7 +1404,12 @@ public class DoclingDocument {
     private String language;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1328,11 +1428,16 @@ public class DoclingDocument {
     private String createdBy;
     
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1680,7 +1785,7 @@ public class DoclingDocument {
     private Integer endColOffsetIdx;
     
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
     
     @JsonProperty("column_header")
@@ -1700,7 +1805,12 @@ public class DoclingDocument {
     private RefItem ref;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1815,11 +1925,11 @@ public class DoclingDocument {
     private Integer cellId;
     
     @JsonProperty("text")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String text;
     
     @JsonProperty("orig")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private String orig;
     
     @JsonProperty("prov")
@@ -1831,7 +1941,17 @@ public class DoclingDocument {
     private RefItem itemRef;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+      public Builder orig(String orig) {
+        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
+        return this;
+      }
+
+      public Builder text(String text) {
+        this.text = (text != null && text.isEmpty()) ? null : text;
+        return this;
+      }
+    }
   }
 
   public enum GraphLinkLabel {

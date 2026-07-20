@@ -201,6 +201,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "rkudryashov",
+      "name": "Roman Kudryashov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37952224?v=4",
+      "profile": "https://romankudryashov.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }

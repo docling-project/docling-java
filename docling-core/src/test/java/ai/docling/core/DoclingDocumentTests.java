@@ -555,7 +555,7 @@ class DoclingDocumentTests {
   }
 
   @Test
-  void shouldNormalizeEmptyStringTextAndOrigToNullViaBuilder() {
+  void shouldKeepEmptyStringTextAndOrigViaBuilder() {
     DoclingDocument.FormulaItem item =
         DoclingDocument.FormulaItem.builder()
             .selfRef("#/texts/0")
@@ -565,12 +565,14 @@ class DoclingDocumentTests {
             .text("")
             .build();
 
-    assertThat(item.getText()).isNull();
-    assertThat(item.getOrig()).isNull();
+    // Builder does not normalize empty strings; normalization happens via Jackson deserialization.
+    // Empty strings are still omitted from serialization by @JsonInclude(NON_EMPTY).
+    assertThat(item.getText()).isEmpty();
+    assertThat(item.getOrig()).isEmpty();
   }
 
   @Test
-  void shouldOmitTextAndOrigFromSerializationWhenNormalizedToNull() throws Exception {
+  void shouldOmitEmptyStringTextAndOrigFromSerialization() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
 
     DoclingDocument document =

@@ -312,10 +312,14 @@ public class DoclingDocument {
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("label")
@@ -332,17 +336,7 @@ public class DoclingDocument {
     private List<Integer> charspan;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   /**
@@ -468,15 +462,12 @@ public class DoclingDocument {
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonTypeInfo(
@@ -659,10 +650,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -684,17 +679,7 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -733,10 +718,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -761,17 +750,7 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -810,10 +789,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -838,17 +821,7 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -887,10 +860,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -919,17 +896,7 @@ public class DoclingDocument {
     private String marker;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -968,10 +935,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -1016,17 +987,7 @@ public class DoclingDocument {
     private String codeLanguage;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1065,10 +1026,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -1090,17 +1055,7 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1139,10 +1094,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -1164,17 +1123,7 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1213,10 +1162,14 @@ public class DoclingDocument {
 
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("formatting")
@@ -1242,17 +1195,7 @@ public class DoclingDocument {
     private String kind;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1397,6 +1340,8 @@ public class DoclingDocument {
 
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @JsonProperty("language")
@@ -1404,12 +1349,7 @@ public class DoclingDocument {
     private String language;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1429,15 +1369,12 @@ public class DoclingDocument {
     
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1786,6 +1723,8 @@ public class DoclingDocument {
     
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
     
     @JsonProperty("column_header")
@@ -1805,12 +1744,7 @@ public class DoclingDocument {
     private RefItem ref;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1926,10 +1860,14 @@ public class DoclingDocument {
     
     @JsonProperty("text")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String text;
     
     @JsonProperty("orig")
     @Nullable
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson2Deserializer.class)
+    @tools.jackson.databind.annotation.JsonDeserialize(using = DoclingDocument.EmptyStringToNullJackson3Deserializer.class)
     private String orig;
     
     @JsonProperty("prov")
@@ -1941,17 +1879,7 @@ public class DoclingDocument {
     private RefItem itemRef;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-      public Builder orig(String orig) {
-        this.orig = (orig != null && orig.isEmpty()) ? null : orig;
-        return this;
-      }
-
-      public Builder text(String text) {
-        this.text = (text != null && text.isEmpty()) ? null : text;
-        return this;
-      }
-    }
+    public static class Builder { }
   }
 
   public enum GraphLinkLabel {
@@ -2176,6 +2104,45 @@ public class DoclingDocument {
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
     public static class Builder { }
+  }
+
+
+  /**
+   * Jackson 2 deserializer that maps an empty string value to {@code null}
+   * for {@code text} and {@code orig} fields.
+   */
+  static final class EmptyStringToNullJackson2Deserializer
+      extends com.fasterxml.jackson.databind.deser.std.StdDeserializer<String> {
+
+    EmptyStringToNullJackson2Deserializer() {
+      super(String.class);
+    }
+
+    @Override
+    public String deserialize(com.fasterxml.jackson.core.JsonParser p,
+        com.fasterxml.jackson.databind.DeserializationContext ctx) throws java.io.IOException {
+      String value = p.getText();
+      return (value == null || value.isEmpty()) ? null : value;
+    }
+  }
+
+  /**
+   * Jackson 3 deserializer that maps an empty string value to {@code null}
+   * for {@code text} and {@code orig} fields.
+   */
+  static final class EmptyStringToNullJackson3Deserializer
+      extends tools.jackson.databind.deser.std.StdDeserializer<String> {
+
+    EmptyStringToNullJackson3Deserializer() {
+      super(String.class);
+    }
+
+    @Override
+    public String deserialize(tools.jackson.core.JsonParser p,
+        tools.jackson.databind.DeserializationContext ctx) throws tools.jackson.core.JacksonException {
+      String value = p.getText();
+      return (value == null || value.isEmpty()) ? null : value;
+    }
   }
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")

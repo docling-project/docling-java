@@ -30,7 +30,7 @@ public interface DoclingServeContainerConfig {
   /**
    * Represents the version identifier for the docling-serve container image.
    */
-  String DOCLING_IMAGE_VERSION = "v1.26.0";
+  String DOCLING_IMAGE_VERSION = "v1.29.0";
 
   /**
    * Default image name
@@ -40,7 +40,7 @@ public interface DoclingServeContainerConfig {
   /**
    * The container image to use.
    * <p>
-   *   Default value: {@link #DOCLING_IMAGE}
+   * Default value: {@link #DOCLING_IMAGE}
    * </p>
    */
   String image();
@@ -65,7 +65,7 @@ public interface DoclingServeContainerConfig {
    * that the container is operational within a defined timeframe.
    * </p>
    * <p>
-   *   Default Value: 1 minute
+   * Default Value: 1 minute
    * </p>
    *
    * @return a {@link Duration} representing the startup timeout for the container.
@@ -224,7 +224,8 @@ public interface DoclingServeContainerConfig {
     public Builder containerEnv(@Nullable Map<String, String> containerEnv) {
       if (containerEnv != null) {
         this.containerEnv = new HashMap<>(containerEnv);
-      } else {
+      }
+      else {
         this.containerEnv = null;
       }
       return this;
@@ -235,7 +236,7 @@ public interface DoclingServeContainerConfig {
      * This method allows setting a single key-value pair representing
      * an environment variable and its value to be passed to the container.
      *
-     * @param key the name of the environment variable; must not be null
+     * @param key   the name of the environment variable; must not be null
      * @param value the value of the environment variable; must not be null
      * @return the builder instance for method chaining
      * @throws NullPointerException if the key or value is null

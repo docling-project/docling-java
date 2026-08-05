@@ -51,6 +51,9 @@ import org.junit.jupiter.api.extension.TestWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+
 import ai.docling.core.DoclingDocument;
 import ai.docling.core.DoclingDocument.DocItemLabel;
 import ai.docling.serve.api.DoclingServeApi;
@@ -97,9 +100,6 @@ import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-
 abstract class AbstractDoclingServeClientTests {
   private static final Logger LOG = LoggerFactory.getLogger(AbstractDoclingServeClientTests.class);
 
@@ -121,10 +121,8 @@ abstract class AbstractDoclingServeClientTests {
           Container logs:
           %s
           """.formatted(
-          getClass().getName(),
-          context.getTestMethod().map(Method::getName).orElse(""),
-          Optional.ofNullable(cause).map(Throwable::getMessage).orElse(""),
-          doclingContainer.getLogs());
+          getClass().getName(), context.getTestMethod().map(Method::getName).orElse(""), Optional.ofNullable(cause).map(Throwable::getMessage).orElse(""), doclingContainer
+              .getLogs());
 
       LOG.error(message);
     }
@@ -143,6 +141,7 @@ abstract class AbstractDoclingServeClientTests {
   }
 
   protected abstract WireMockServer getWiremockServer();
+
   protected abstract DoclingServeApi getDoclingClient(boolean requiresAuth, boolean useWiremock);
 
   protected DoclingServeApi getDoclingClient(boolean requiresAuth) {
@@ -205,8 +204,7 @@ abstract class AbstractDoclingServeClientTests {
         .isEqualTo("ok");
 
     verify(
-        1,
-        getRequestedFor(urlPathEqualTo("/path/health"))
+        1, getRequestedFor(urlPathEqualTo("/path/health"))
             .withHeader("Accept", equalTo("application/json"))
     );
   }
@@ -236,34 +234,34 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void shouldThrowExceptionWhenClearResultsRequestIsNull() {
       assertThatThrownBy(() -> getDoclingClient().clearResults(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("request");
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("request");
     }
 
     @Test
     void shouldClearResultsWithDuration() {
       // Setup WireMock stub
       getWiremockServer().stubFor(
-        get(urlPathEqualTo("/v1/clear/results"))
-          .withQueryParam("older_then", equalTo("86400"))  // 24 hours = 86400 seconds
-          .willReturn(okJson("{\"status\": \"ok\"}"))
-                                 );
+          get(urlPathEqualTo("/v1/clear/results"))
+              .withQueryParam("older_then", equalTo("86400"))  // 24 hours = 86400 seconds
+              .willReturn(okJson("{\"status\": \"ok\"}"))
+      );
 
       var request = ClearResultsRequest.builder()
-                                       .olderThen(Duration.ofHours(24))
-                                       .build();
+          .olderThen(Duration.ofHours(24))
+          .build();
 
       var response = getDoclingClient(false, true).clearResults(request);
 
       // Verify response
       assertThat(response)
-        .isNotNull()
-        .extracting(ClearResponse::getStatus)
-        .isEqualTo("ok");
+          .isNotNull()
+          .extracting(ClearResponse::getStatus)
+          .isEqualTo("ok");
 
       // Verify the request was made with correct query parameter
       getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/v1/clear/results"))
-                                   .withQueryParam("older_then", equalTo("86400")));
+          .withQueryParam("older_then", equalTo("86400")));
     }
   }
 
@@ -308,20 +306,16 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(taskPollResponse.get())
           .isNotNull()
           .extracting(
-              TaskStatusPollResponse::getTaskId,
-              TaskStatusPollResponse::getTaskStatus,
-              TaskStatusPollResponse::getTaskType
+              TaskStatusPollResponse::getTaskId, TaskStatusPollResponse::getTaskStatus, TaskStatusPollResponse::getTaskType
           )
           .allMatch(Objects::nonNull);
 
       assertThat(taskPollResponse.get())
           .extracting(
-              TaskStatusPollResponse::getTaskId,
-              TaskStatusPollResponse::getTaskType
+              TaskStatusPollResponse::getTaskId, TaskStatusPollResponse::getTaskType
           )
           .containsExactly(
-              response.getTaskId(),
-              response.getTaskType()
+              response.getTaskId(), response.getTaskType()
           );
 
       if (taskPollResponse.get().getTaskStatus() != TaskStatus.SUCCESS) {
@@ -381,10 +375,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response)
           .isNotNull()
           .extracting(
-              TaskStatusPollResponse::getTaskId,
-              TaskStatusPollResponse::getTaskPosition,
-              TaskStatusPollResponse::getTaskStatus,
-              TaskStatusPollResponse::getTaskType
+              TaskStatusPollResponse::getTaskId, TaskStatusPollResponse::getTaskPosition, TaskStatusPollResponse::getTaskStatus, TaskStatusPollResponse::getTaskType
           )
           .allMatch(Objects::nonNull);
 
@@ -398,8 +389,7 @@ abstract class AbstractDoclingServeClientTests {
       stringBuilder.append("\n→ REQUEST: %s %s\n".formatted(request.method(), request.uri()));
       stringBuilder.append("  HEADERS:\n");
 
-      request.headers().map().forEach((key, values) ->
-          stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
+      request.headers().map().forEach((key, values) -> stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
       );
 
       LOG.info(stringBuilder.toString());
@@ -410,8 +400,7 @@ abstract class AbstractDoclingServeClientTests {
       stringBuilder.append("\n← RESPONSE: %s\n".formatted(response.statusCode()));
       stringBuilder.append("  HEADERS:\n");
 
-      response.headers().map().forEach((key, values) ->
-          stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
+      response.headers().map().forEach((key, values) -> stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
       );
 
       responseBody
@@ -460,7 +449,7 @@ abstract class AbstractDoclingServeClientTests {
     static void assertConvertSingleHttpSourceWithDefaultTarget(ConvertDocumentResponse response) {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.IN_BODY)).isTrue();
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
       assertThat(inBodyResponse.getDocument().getFilename()).isNotEmpty();
@@ -481,7 +470,8 @@ abstract class AbstractDoclingServeClientTests {
           LOG.info("Found entry in ZIP: {} (size: {} bytes)", entry.getName(), entry.getSize());
           zipInputStream.closeEntry();
         }
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         throw new RuntimeException(e);
       }
       assertThat(actualEntries).containsExactlyInAnyOrderElementsOf(expectedEntries);
@@ -489,36 +479,36 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldThrowValidationError() {
-        var file = Path.of("src", "test", "resources", "story.pdf");
+      var file = Path.of("src", "test", "resources", "story.pdf");
 
-        assertThat(file)
-                .exists()
-                .isRegularFile();
+      assertThat(file)
+          .exists()
+          .isRegularFile();
 
-        var source = HttpSource.builder()
-                .url(file.toUri())
-                .build();
+      var source = HttpSource.builder()
+          .url(file.toUri())
+          .build();
 
-        var options = ConvertDocumentOptions.builder()
-                .toFormat(OutputFormat.MARKDOWN)
-                .build();
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.MARKDOWN)
+          .build();
 
-        var request = ConvertDocumentRequest.builder()
-            .source(source)
-            .options(options)
-            .build();
+      var request = ConvertDocumentRequest.builder()
+          .source(source)
+          .options(options)
+          .build();
 
-        assertThatThrownBy(() -> getDoclingClient().convertSource(request))
-            .isInstanceOf(ValidationException.class)
-            .hasMessageStartingWith("An error occurred while making POST request to ")
-            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
-            .extracting(ValidationException::getValidationError)
-            .isNotNull()
-            .extracting(ValidationError::getErrorDetails)
-            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
-            .singleElement()
-            .usingRecursiveComparison()
-            .isEqualTo(
+      assertThatThrownBy(() -> getDoclingClient().convertSource(request))
+          .isInstanceOf(ValidationException.class)
+          .hasMessageStartingWith("An error occurred while making POST request to ")
+          .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+          .extracting(ValidationException::getValidationError)
+          .isNotNull()
+          .extracting(ValidationError::getErrorDetails)
+          .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+          .singleElement()
+          .usingRecursiveComparison()
+          .isEqualTo(
               ValidationErrorDetail.builder()
                   .type("url_scheme")
                   .message("URL scheme should be 'http' or 'https'")
@@ -530,7 +520,7 @@ abstract class AbstractDoclingServeClientTests {
 //                          .expectedSchemes("'http' or 'https'")
 //                          .build()
 //                  ).build()
-            );
+          );
     }
 
     @Test
@@ -554,19 +544,19 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "processing_time": 7,
-                   "num_converted": 10,
-                   "num_succeeded": 5,
-                   "num_failed": 5
-                 }
-              """))
+                     {
+                       "processing_time": 7,
+                       "num_converted": 10,
+                       "num_succeeded": 5,
+                       "num_failed": 5
+                     }
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSource(request);
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.PRE_SIGNED_URL)).isTrue();
-      var preSignedUrlResponse = (PreSignedUrlConvertDocumentResponse)response;
+      var preSignedUrlResponse = (PreSignedUrlConvertDocumentResponse) response;
 
       assertThat(preSignedUrlResponse.getNumConverted()).isEqualTo(10);
       assertThat(preSignedUrlResponse.getNumSucceeded()).isEqualTo(5);
@@ -574,8 +564,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(preSignedUrlResponse.getProcessingTime()).isPositive().isEqualTo(7);
 
       wireMockServer.verify(
-          1,
-          postRequestedFor(urlPathEqualTo("/v1/convert/source"))
+          1, postRequestedFor(urlPathEqualTo("/v1/convert/source"))
               .withHeader("Content-Type", equalTo("application/json"))
               .withRequestBody(
                   matchingJsonPath("$.sources[0].kind", equalTo("http"))
@@ -618,21 +607,20 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "processing_time": 7,
-                   "num_converted": 10,
-                   "num_succeeded": 5,
-                   "num_failed": 5
-                 }
-              """))
+                     {
+                       "processing_time": 7,
+                       "num_converted": 10,
+                       "num_succeeded": 5,
+                       "num_failed": 5
+                     }
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSource(request);
       assertThat(response).isNotNull();
 
       wireMockServer.verify(
-          1,
-          postRequestedFor(urlPathEqualTo("/v1/convert/source"))
+          1, postRequestedFor(urlPathEqualTo("/v1/convert/source"))
               .withHeader("Content-Type", equalTo("application/json"))
               .withRequestBody(
                   matchingJsonPath("$.sources[0].kind", equalTo("s3"))
@@ -672,32 +660,32 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "processing_time": 4.13,
-                   "num_converted": 1,
-                   "num_succeeded": 1,
-                   "num_partially_succeeded": 0,
-                   "num_failed": 0,
-                   "documents": [
                      {
-                       "source_index": 0,
-                       "source_uri": "https://arxiv.org/pdf/2408.09869",
-                       "filename": "2408.09869",
-                       "status": "success",
-                       "errors": [],
-                       "timings": {},
-                       "artifacts": [
+                       "processing_time": 4.13,
+                       "num_converted": 1,
+                       "num_succeeded": 1,
+                       "num_partially_succeeded": 0,
+                       "num_failed": 0,
+                       "documents": [
                          {
-                           "artifact_type": "markdown",
-                           "mime_type": "text/markdown",
-                           "uri": "https://storage.example.com/2408.09869.md",
-                           "url_expires_at": "2026-06-15T12:00:00Z"
+                           "source_index": 0,
+                           "source_uri": "https://arxiv.org/pdf/2408.09869",
+                           "filename": "2408.09869",
+                           "status": "success",
+                           "errors": [],
+                           "timings": {},
+                           "artifacts": [
+                             {
+                               "artifact_type": "markdown",
+                               "mime_type": "text/markdown",
+                               "uri": "https://storage.example.com/2408.09869.md",
+                               "url_expires_at": "2026-06-15T12:00:00Z"
+                             }
+                           ]
                          }
                        ]
                      }
-                   ]
-                 }
-              """))
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSource(request);
@@ -753,42 +741,42 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "processing_time": 8.27,
-                   "num_converted": 2,
-                   "num_succeeded": 2,
-                   "num_partially_succeeded": 0,
-                   "num_failed": 0,
-                   "documents": [
                      {
-                       "source_index": 0,
-                       "source_uri": "https://arxiv.org/pdf/2408.09869",
-                       "filename": "2408.09869",
-                       "status": "success",
-                       "artifacts": [
+                       "processing_time": 8.27,
+                       "num_converted": 2,
+                       "num_succeeded": 2,
+                       "num_partially_succeeded": 0,
+                       "num_failed": 0,
+                       "documents": [
                          {
-                           "artifact_type": "markdown",
-                           "mime_type": "text/markdown",
-                           "uri": "https://storage.example.com/2408.09869.md"
-                         }
-                       ]
-                     },
-                     {
-                       "source_index": 1,
-                       "source_uri": "https://arxiv.org/pdf/2501.17887",
-                       "filename": "2501.17887",
-                       "status": "success",
-                       "artifacts": [
+                           "source_index": 0,
+                           "source_uri": "https://arxiv.org/pdf/2408.09869",
+                           "filename": "2408.09869",
+                           "status": "success",
+                           "artifacts": [
+                             {
+                               "artifact_type": "markdown",
+                               "mime_type": "text/markdown",
+                               "uri": "https://storage.example.com/2408.09869.md"
+                             }
+                           ]
+                         },
                          {
-                           "artifact_type": "markdown",
-                           "mime_type": "text/markdown",
-                           "uri": "https://storage.example.com/2501.17887.md"
+                           "source_index": 1,
+                           "source_uri": "https://arxiv.org/pdf/2501.17887",
+                           "filename": "2501.17887",
+                           "status": "success",
+                           "artifacts": [
+                             {
+                               "artifact_type": "markdown",
+                               "mime_type": "text/markdown",
+                               "uri": "https://storage.example.com/2501.17887.md"
+                             }
+                           ]
                          }
                        ]
                      }
-                   ]
-                 }
-              """))
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSource(request);
@@ -829,13 +817,13 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(ResponseType.IN_BODY.equals(response.getResponseType())).isTrue();
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
       assertThat(inBodyResponse.getDocument().getFilename()).isEqualTo("story.pdf");
 
-      if (inBodyResponse.getProcessingTime()!=null) {
+      if (inBodyResponse.getProcessingTime() != null) {
         assertThat(inBodyResponse.getProcessingTime()).isPositive();
       }
 
@@ -861,7 +849,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(ResponseType.IN_BODY.equals(response.getResponseType())).isTrue();
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
@@ -883,7 +871,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(ResponseType.IN_BODY.equals(response.getResponseType())).isTrue();
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
@@ -906,7 +894,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isInstanceOf(InBodyConvertDocumentResponse.class);
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
@@ -920,7 +908,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(ResponseType.IN_BODY.equals(response.getResponseType())).isTrue();
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
@@ -947,7 +935,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(ResponseType.IN_BODY.equals(response.getResponseType())).isTrue();
       assertThat(response).isNotNull();
 
-      var inBodyResponse = (InBodyConvertDocumentResponse)response;
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
 
 
       assertThat(inBodyResponse).isNotNull();
@@ -963,7 +951,7 @@ abstract class AbstractDoclingServeClientTests {
 
       // Test chaining with thenApply
       String markdownContent = getDoclingClient().convertSourceAsync(request)
-          .thenApply(response -> ((InBodyConvertDocumentResponse)response).getDocument().getMarkdownContent())
+          .thenApply(response -> ((InBodyConvertDocumentResponse) response).getDocument().getMarkdownContent())
           .toCompletableFuture().join();
 
       assertThat(markdownContent).isNotEmpty();
@@ -971,7 +959,9 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldConvertSingleFileSourceWithZipTargetAsync() {
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf")};
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder()
@@ -988,14 +978,16 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(), Set.of("2408.09869.md"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set.of("2408.09869.md"));
     }
 
     @Test
     void shouldConvertSingleFileSourceWithZipTargetAndReferencedImageExportModeAsync() {
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf")};
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder()
@@ -1013,18 +1005,18 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(),
-          Set.of("2408.09869.md",
-              "artifacts/",
-              "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
+          .of("2408.09869.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
     }
 
     @Test
-    void shouldConvertMultipleFileSourcesAsync(){
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf"),
-          Path.of("src", "test", "resources", "story.pdf")};
+    void shouldConvertMultipleFileSourcesAsync() {
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf"),
+          Path.of("src", "test", "resources", "story.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder();
@@ -1040,16 +1032,17 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(),
-          Set.of("2408.09869.md", "story.md"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set.of("2408.09869.md", "story.md"));
     }
 
     @Test
-    void shouldConvertMultipleFileSourcesWithReferencedImageExportModeAsync(){
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf"),
-          Path.of("src", "test", "resources", "story.pdf")};
+    void shouldConvertMultipleFileSourcesWithReferencedImageExportModeAsync() {
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf"),
+          Path.of("src", "test", "resources", "story.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder()
@@ -1066,17 +1059,18 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(),
-          Set.of("2408.09869.md", "story.md", "artifacts/",
-              "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
+          .of("2408.09869.md", "story.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
     }
 
     @Test
     void shouldConvertMultipleFileSourcesWithInBodyTargetAsync() {
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf"),
-          Path.of("src", "test", "resources", "story.pdf")};
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf"),
+          Path.of("src", "test", "resources", "story.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder()
@@ -1093,16 +1087,17 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(),
-          Set.of("2408.09869.md", "story.md"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set.of("2408.09869.md", "story.md"));
     }
 
     @Test
     void shouldConvertMultipleFileSourcesWithInBodyTargetAndReferencedImageExportModeAsync() {
-      Path[] files = new Path[]{Path.of("src", "test", "resources", "2408.09869.pdf"),
-          Path.of("src", "test", "resources", "story.pdf")};
+      Path[] files = new Path[]{
+          Path.of("src", "test", "resources", "2408.09869.pdf"),
+          Path.of("src", "test", "resources", "story.pdf")
+      };
 
       var requestBuilder = ConvertDocumentRequest
           .builder()
@@ -1120,11 +1115,10 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response).isNotNull();
       assertThat(response.getResponseType().equals(ResponseType.ZIP_ARCHIVE)).isTrue();
       assertThat(response).isInstanceOf(ZipArchiveConvertDocumentResponse.class);
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getFileName()).isEqualTo("converted_docs.zip");
-      assertThat(((ZipArchiveConvertDocumentResponse)response).getInputStream()).isNotNull();
-      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse)response).getInputStream(),
-          Set.of("2408.09869.md", "story.md", "artifacts/",
-              "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
+      assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
+      assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
+          .of("2408.09869.md", "story.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
     }
 
     @Test
@@ -1137,7 +1131,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void convertFilesEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().convertFiles(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().convertFiles(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1165,7 +1159,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void convertFilesAsyncEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().convertFilesAsync(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().convertFilesAsync(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1207,14 +1201,14 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "task_id": "batch-task-123",
-                   "task_type": "convert",
-                   "task_status": "pending",
-                   "task_position": 1,
-                   "task_meta": null
-                 }
-              """))
+                     {
+                       "task_id": "batch-task-123",
+                       "task_type": "convert",
+                       "task_status": "pending",
+                       "task_position": 1,
+                       "task_meta": null
+                     }
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSourceBatch(request);
@@ -1223,8 +1217,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.PENDING);
 
       wireMockServer.verify(
-          1,
-          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+          1, postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
               .withHeader("Content-Type", equalTo("application/json"))
               .withRequestBody(
                   matchingJsonPath("$.sources[0].kind", equalTo("http"))
@@ -1254,58 +1247,58 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "task_id": "batch-async-task-001",
-                   "task_type": "convert",
-                   "task_status": "pending",
-                   "task_position": 1,
-                   "task_meta": null
-                 }
-              """))
+                     {
+                       "task_id": "batch-async-task-001",
+                       "task_type": "convert",
+                       "task_status": "pending",
+                       "task_position": 1,
+                       "task_meta": null
+                     }
+                  """))
       );
 
       wireMockServer.stubFor(
           get(urlPathEqualTo("/v1/status/poll/batch-async-task-001"))
               .willReturn(okJson("""
-                 {
-                   "task_id": "batch-async-task-001",
-                   "task_type": "convert",
-                   "task_status": "success",
-                   "task_position": 0,
-                   "task_meta": null
-                 }
-              """))
+                     {
+                       "task_id": "batch-async-task-001",
+                       "task_type": "convert",
+                       "task_status": "success",
+                       "task_position": 0,
+                       "task_meta": null
+                     }
+                  """))
       );
 
       wireMockServer.stubFor(
           get(urlPathEqualTo("/v1/result/batch-async-task-001"))
               .willReturn(okJson("""
-                 {
-                   "processing_time": 42.5,
-                   "num_converted": 1,
-                   "num_succeeded": 1,
-                   "num_partially_succeeded": 0,
-                   "num_failed": 0,
-                   "documents": [
                      {
-                       "source_index": 0,
-                       "source_uri": "https://arxiv.org/pdf/2408.09869",
-                       "filename": "2408.09869",
-                       "status": "success",
-                       "errors": [],
-                       "timings": {},
-                       "artifacts": [
+                       "processing_time": 42.5,
+                       "num_converted": 1,
+                       "num_succeeded": 1,
+                       "num_partially_succeeded": 0,
+                       "num_failed": 0,
+                       "documents": [
                          {
-                           "artifact_type": "markdown",
-                           "mime_type": "text/markdown",
-                           "uri": "https://storage.example.com/2408.09869.md",
-                           "url_expires_at": "2026-06-15T12:00:00Z"
+                           "source_index": 0,
+                           "source_uri": "https://arxiv.org/pdf/2408.09869",
+                           "filename": "2408.09869",
+                           "status": "success",
+                           "errors": [],
+                           "timings": {},
+                           "artifacts": [
+                             {
+                               "artifact_type": "markdown",
+                               "mime_type": "text/markdown",
+                               "uri": "https://storage.example.com/2408.09869.md",
+                               "url_expires_at": "2026-06-15T12:00:00Z"
+                             }
+                           ]
                          }
                        ]
                      }
-                   ]
-                 }
-              """))
+                  """))
       );
 
       var response = getDoclingClient(false, true)
@@ -1363,14 +1356,14 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "task_id": "batch-s3-task-456",
-                   "task_type": "convert",
-                   "task_status": "pending",
-                   "task_position": 2,
-                   "task_meta": null
-                 }
-              """))
+                     {
+                       "task_id": "batch-s3-task-456",
+                       "task_type": "convert",
+                       "task_status": "pending",
+                       "task_position": 2,
+                       "task_meta": null
+                     }
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSourceBatch(request);
@@ -1379,8 +1372,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response.getTaskStatus()).isEqualTo(TaskStatus.PENDING);
 
       wireMockServer.verify(
-          1,
-          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+          1, postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
               .withHeader("Content-Type", equalTo("application/json"))
               .withRequestBody(
                   matchingJsonPath("$.sources[0].kind", equalTo("s3"))
@@ -1421,14 +1413,14 @@ abstract class AbstractDoclingServeClientTests {
               .withHeader("Content-Type", equalTo("application/json"))
               .withHeader("Accept", equalTo("application/json"))
               .willReturn(okJson("""
-                 {
-                   "task_id": "batch-callback-789",
-                   "task_type": "convert",
-                   "task_status": "pending",
-                   "task_position": 1,
-                   "task_meta": null
-                 }
-              """))
+                     {
+                       "task_id": "batch-callback-789",
+                       "task_type": "convert",
+                       "task_status": "pending",
+                       "task_position": 1,
+                       "task_meta": null
+                     }
+                  """))
       );
 
       var response = getDoclingClient(false, true).convertSourceBatch(request);
@@ -1436,8 +1428,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(response.getTaskId()).isEqualTo("batch-callback-789");
 
       wireMockServer.verify(
-          1,
-          postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
+          1, postRequestedFor(urlPathEqualTo("/v1/convert/source/batch"))
               .withRequestBody(
                   matchingJsonPath("$.callbacks[0].url", equalTo("https://my-app.example.com/docling/progress"))
                       .and(matchingJsonPath("$.callbacks[0].headers.Authorization", equalTo("Bearer token123")))
@@ -1479,7 +1470,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void chunkFilesHierarchicalEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunker(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1507,7 +1498,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void chunkFilesHierarchicalAsyncEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHierarchicalChunkerAsync(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1549,7 +1540,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void chunkFilesHybridEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunker(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1563,7 +1554,7 @@ abstract class AbstractDoclingServeClientTests {
     @Test
     void chunkFilesHybridAsyncEmptyFiles() {
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync(new Path[] {}))
+          .isThrownBy(() -> getDoclingClient().chunkFilesWithHybridChunkerAsync(new Path[]{}))
           .withMessage("files cannot be null or empty");
     }
 
@@ -1731,36 +1722,36 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldThrowValidationErrorHierarchicalChunker() {
-        var file = Path.of("src", "test", "resources", "story.pdf");
+      var file = Path.of("src", "test", "resources", "story.pdf");
 
-        assertThat(file)
-                .exists()
-                .isRegularFile();
+      assertThat(file)
+          .exists()
+          .isRegularFile();
 
-        var source = HttpSource.builder()
-                .url(file.toUri())
-                .build();
+      var source = HttpSource.builder()
+          .url(file.toUri())
+          .build();
 
-        var options = ConvertDocumentOptions.builder()
-                .toFormat(OutputFormat.MARKDOWN)
-                .build();
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.MARKDOWN)
+          .build();
 
-        var request = HierarchicalChunkDocumentRequest.builder()
-            .source(source)
-            .options(options)
-            .build();
+      var request = HierarchicalChunkDocumentRequest.builder()
+          .source(source)
+          .options(options)
+          .build();
 
-        assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHierarchicalChunker(request))
-            .isInstanceOf(ValidationException.class)
-            .hasMessageStartingWith("An error occurred while making POST request to ")
-            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
-            .extracting(ValidationException::getValidationError)
-            .isNotNull()
-            .extracting(ValidationError::getErrorDetails)
-            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
-            .singleElement()
-            .usingRecursiveComparison()
-            .isEqualTo(
+      assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHierarchicalChunker(request))
+          .isInstanceOf(ValidationException.class)
+          .hasMessageStartingWith("An error occurred while making POST request to ")
+          .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+          .extracting(ValidationException::getValidationError)
+          .isNotNull()
+          .extracting(ValidationError::getErrorDetails)
+          .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+          .singleElement()
+          .usingRecursiveComparison()
+          .isEqualTo(
               ValidationErrorDetail.builder()
                   .type("url_scheme")
                   .message("URL scheme should be 'http' or 'https'")
@@ -1772,7 +1763,7 @@ abstract class AbstractDoclingServeClientTests {
 //                          .expectedSchemes("'http' or 'https'")
 //                          .build()
 //                  ).build()
-            );
+          );
     }
 
     @Test
@@ -1804,36 +1795,36 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void shouldThrowValidationErrorHybridChunker() {
-        var file = Path.of("src", "test", "resources", "story.pdf");
+      var file = Path.of("src", "test", "resources", "story.pdf");
 
-        assertThat(file)
-                .exists()
-                .isRegularFile();
+      assertThat(file)
+          .exists()
+          .isRegularFile();
 
-        var source = HttpSource.builder()
-                .url(file.toUri())
-                .build();
+      var source = HttpSource.builder()
+          .url(file.toUri())
+          .build();
 
-        var options = ConvertDocumentOptions.builder()
-                .toFormat(OutputFormat.MARKDOWN)
-                .build();
+      var options = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.MARKDOWN)
+          .build();
 
-        var request = HybridChunkDocumentRequest.builder()
-            .source(source)
-            .options(options)
-            .build();
+      var request = HybridChunkDocumentRequest.builder()
+          .source(source)
+          .options(options)
+          .build();
 
-        assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHybridChunker(request))
-            .isInstanceOf(ValidationException.class)
-            .hasMessageStartingWith("An error occurred while making POST request to ")
-            .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
-            .extracting(ValidationException::getValidationError)
-            .isNotNull()
-            .extracting(ValidationError::getErrorDetails)
-            .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
-            .singleElement()
-            .usingRecursiveComparison()
-            .isEqualTo(
+      assertThatThrownBy(() -> getDoclingClient().chunkSourceWithHybridChunker(request))
+          .isInstanceOf(ValidationException.class)
+          .hasMessageStartingWith("An error occurred while making POST request to ")
+          .asInstanceOf(InstanceOfAssertFactories.throwable(ValidationException.class))
+          .extracting(ValidationException::getValidationError)
+          .isNotNull()
+          .extracting(ValidationError::getErrorDetails)
+          .asInstanceOf(InstanceOfAssertFactories.list(ValidationErrorDetail.class))
+          .singleElement()
+          .usingRecursiveComparison()
+          .isEqualTo(
               ValidationErrorDetail.builder()
                   .type("url_scheme")
                   .message("URL scheme should be 'http' or 'https'")
@@ -1845,7 +1836,7 @@ abstract class AbstractDoclingServeClientTests {
 //                          .expectedSchemes("'http' or 'https'")
 //                          .build()
 //                  ).build()
-            );
+          );
     }
 
     @Test

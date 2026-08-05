@@ -40,6 +40,7 @@ release:
   github:
     enabled: true
     overwrite: true
+    draft: false
     name: docling-java
     sign: true
     discussionCategoryName: Announcements

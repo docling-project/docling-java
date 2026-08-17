@@ -46,7 +46,7 @@ public interface DoclingServeConvertApi {
    * If the request is null, default conversion options are applied.
    *
    * @param request an optional {@link ConvertDocumentRequest} specifying conversion settings and parameters
-   * @param files an array of {@link Path} objects representing the file paths to be converted
+   * @param files   an array of {@link Path} objects representing the file paths to be converted
    * @return a {@link ConvertDocumentResponse} containing the processed document data, any errors encountered,
    *         and additional processing metadata
    * @throws ai.docling.serve.api.validation.ValidationException If request validation fails for any reason.
@@ -148,8 +148,7 @@ public interface DoclingServeConvertApi {
   private ConvertDocumentRequest createRequest(@Nullable ConvertDocumentRequest request, Path... files) {
     ValidationUtils.ensureNotEmpty(files, "files");
 
-    var builder = Optional.ofNullable(request)
-        .map(ConvertDocumentRequest::toBuilder)
+    var builder = Optional.ofNullable(request).<ConvertDocumentRequest.Builder<?, ?>>map(ConvertDocumentRequest::toBuilder)
         .orElseGet(ConvertDocumentRequest::builder);
 
     FileUtils.createFileSources(files)

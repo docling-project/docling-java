@@ -123,6 +123,12 @@ jobs:
         with:
           setup-java: false
 
+      - name: Attest build provenance
+        if: steps.verify-files.outputs.should_release == 'true'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: "${{ github.workspace }}/out/jreleaser/catalogs/github/docling-java-${{ env.CURRENT_VERSION }}"
+
       # Persist logs
       - name: JReleaser release output
         if: always()

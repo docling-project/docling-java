@@ -12,6 +12,8 @@ open module ai.docling.serve.api {
 
   exports ai.docling.serve.api;
   exports ai.docling.serve.api.health;
+  exports ai.docling.serve.api.request;
+  exports ai.docling.serve.api.response;
   exports ai.docling.serve.api.util;
 
   // Chunking API
@@ -42,5 +44,6 @@ open module ai.docling.serve.api {
 
   // SPI
   exports ai.docling.serve.api.spi;
+
   uses ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
 }

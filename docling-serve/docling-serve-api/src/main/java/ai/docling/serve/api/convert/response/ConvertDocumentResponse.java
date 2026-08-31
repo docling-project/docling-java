@@ -3,6 +3,7 @@ package ai.docling.serve.api.convert.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ai.docling.serve.api.response.ProcessedDocumentResponse;
 import ai.docling.serve.api.serialization.Jackson2ConvertDocumentResponseDeserializer;
 import ai.docling.serve.api.serialization.Jackson3ConvertDocumentResponseDeserializer;
 
@@ -14,12 +15,14 @@ import ai.docling.serve.api.serialization.Jackson3ConvertDocumentResponseDeseria
  *
  * <p>Serialization uses {@link JsonInclude.Include#NON_EMPTY}, so nulls and empty
  * collections/strings are omitted from JSON output.</p>
+ *
+ * @see ProcessedDocumentResponse
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ConvertDocumentResponseDeserializer.class)
 @tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ConvertDocumentResponseDeserializer.class)
-public abstract sealed class ConvertDocumentResponse permits InBodyConvertDocumentResponse, PreSignedUrlConvertDocumentResponse,
-    PreSignedUrlConvertResponse, ZipArchiveConvertDocumentResponse {
+public abstract sealed class ConvertDocumentResponse extends ProcessedDocumentResponse permits InBodyConvertDocumentResponse,
+    PreSignedUrlConvertDocumentResponse, PreSignedUrlConvertResponse, ZipArchiveConvertDocumentResponse {
   /**
    * Type of response
    *

@@ -25,6 +25,11 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 ### {{ gradle.project_version }}
 
+* **New `DocumentRequest` sealed base class** — `ConvertDocumentRequest`, `BatchConvertDocumentRequest`, and `ChunkDocumentRequest` now extend a common `DocumentRequest` abstract class in the `ai.docling.serve.api.request` package. This enables polymorphism when working with different request types — for example, accepting a `DocumentRequest` and dispatching to the correct endpoint based on the concrete type via pattern matching.
+* **New `ProcessedDocumentResponse` sealed base class** — `ConvertDocumentResponse` and `ChunkDocumentResponse` now extend a common `ProcessedDocumentResponse` abstract class in the `ai.docling.serve.api.response` package. This enables polymorphic handling of document processing responses — for example, using `ProcessedDocumentResponse` as a type bound in generic APIs that work with both conversion and chunking results.
+
+### 0.6.1
+
 * **New batch conversion support** — Added `convertSourceBatch()` and `convertSourceBatchAsync()` methods to `DoclingServeConvertApi` for the new `/v1/convert/source/batch` endpoint. Submit multiple HTTP or S3 sources for batch processing with optional webhook callbacks for progress notifications. Requires docling-serve v1.22.0+.
 * **New `BatchConvertDocumentRequest`** — Request model for batch conversions, supporting `sources` (HTTP or S3), `target` (PresignedUrlTarget or S3Target), conversion `options`, and optional `callbacks` (webhook specifications).
 * **New `CallbackSpec`** — Webhook callback specification for receiving progress notifications during batch processing, with `url`, `headers`, and optional `caCert` fields.

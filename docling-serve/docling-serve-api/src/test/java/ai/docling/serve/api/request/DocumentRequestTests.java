@@ -88,6 +88,44 @@ class DocumentRequestTests {
   }
 
   @Test
+  void toBuilderReachableThroughBaseType() {
+    var target = InBodyTarget.builder().build();
+
+    DocumentRequest original = ConvertDocumentRequest.builder()
+        .target(target)
+        .build();
+
+    DocumentRequest withSource = original.toBuilder()
+        .source(HTTP_SOURCE)
+        .build();
+
+    assertThat(withSource.getSources())
+        .singleElement()
+        .isEqualTo(HTTP_SOURCE);
+
+    assertThat(withSource.getTarget()).isSameAs(target);
+  }
+
+  @Test
+  void toBuilderThroughBaseTypePreservesConcreteType() {
+    List<DocumentRequest> requests = List.of(
+        ConvertDocumentRequest.builder().source(HTTP_SOURCE).build(), BatchConvertDocumentRequest.builder().source(HTTP_SOURCE).target(ZipTarget.builder().build())
+            .build(), HierarchicalChunkDocumentRequest.builder().source(HTTP_SOURCE).build(), HybridChunkDocumentRequest.builder().source(HTTP_SOURCE).build()
+    );
+
+    var rebuiltClasses = requests.stream()
+        .map(request -> request.toBuilder().build())
+        .map(Object::getClass)
+        .toList();
+
+    var originalClasses = requests.stream()
+        .map(Object::getClass)
+        .toList();
+
+    assertThat(rebuiltClasses).isEqualTo(originalClasses);
+  }
+
+  @Test
   void batchConvertGetTargetThrowsWhenTargetIsNull() {
     BatchConvertDocumentRequest request = BatchConvertDocumentRequest.builder()
         .source(HTTP_SOURCE)

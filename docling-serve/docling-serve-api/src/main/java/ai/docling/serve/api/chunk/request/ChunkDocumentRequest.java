@@ -33,6 +33,9 @@ public sealed abstract class ChunkDocumentRequest extends DocumentRequest
   @JsonProperty("include_converted_doc")
   private boolean includeConvertedDoc;
 
+  @Override
+  public abstract ChunkDocumentRequest.Builder<?, ?> toBuilder();
+
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
   public abstract static class ChunkDocumentRequestBuilder<C extends ChunkDocumentRequest, B extends ChunkDocumentRequestBuilder<C, B>> extends DocumentRequest.DocumentRequestBuilder<C, B> {
   }

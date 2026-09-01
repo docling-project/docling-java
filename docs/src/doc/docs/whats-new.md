@@ -27,6 +27,7 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 * **New `DocumentRequest` sealed base class** — `ConvertDocumentRequest`, `BatchConvertDocumentRequest`, and `ChunkDocumentRequest` now extend a common `DocumentRequest` abstract class in the `ai.docling.serve.api.request` package. This enables polymorphism when working with different request types — for example, accepting a `DocumentRequest` and dispatching to the correct endpoint based on the concrete type via pattern matching.
 * **New `ProcessedDocumentResponse` sealed base class** — `ConvertDocumentResponse` and `ChunkDocumentResponse` now extend a common `ProcessedDocumentResponse` abstract class in the `ai.docling.serve.api.response` package. This enables polymorphic handling of document processing responses — for example, using `ProcessedDocumentResponse` as a type bound in generic APIs that work with both conversion and chunking results.
+* **`toBuilder()` on the `DocumentRequest` base type** — `DocumentRequest` (and the intermediate `ChunkDocumentRequest`) now expose `toBuilder()`, so a request can be cloned and modified through the base type without first pattern-matching on the concrete subtype. This makes it possible to inject a `source` or `target` once — polymorphically — before dispatching, e.g. `request.toBuilder().source(source).build()`.
 
 ### 0.6.1
 

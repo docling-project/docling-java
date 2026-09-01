@@ -32,6 +32,13 @@ import ai.docling.serve.api.convert.request.target.Target;
  *   case HybridChunkDocumentRequest r       -> client.chunkSourceWithHybridChunker(r);
  * }
  * }</pre>
+ *
+ * <p>Because {@link #toBuilder()} is available on the base type, a source (or target) can be
+ * injected once — polymorphically — before dispatching, without needing to know the concrete type:
+ *
+ * <pre>{@code
+ * DocumentRequest withSource = request.toBuilder().source(source).build();
+ * }</pre>
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @tools.jackson.databind.annotation.JsonDeserialize(builder = DocumentRequest.DocumentRequestBuilder.class)
@@ -62,6 +69,14 @@ public abstract sealed class DocumentRequest
   @JsonProperty("target")
   @Nullable
   private Target target;
+
+  /**
+   * Returns a builder pre-populated with this request's current field values, allowing a modified
+   * copy to be created. Each concrete subtype returns its own builder covariantly.
+   *
+   * @return a builder initialized from this request
+   */
+  public abstract DocumentRequest.Builder<?, ?> toBuilder();
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
   public abstract static class DocumentRequestBuilder<C extends DocumentRequest, B extends DocumentRequestBuilder<C, B>> {

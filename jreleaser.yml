@@ -40,7 +40,7 @@ release:
   github:
     enabled: true
     overwrite: true
-    immutableRelease: true
+    immutableRelease: false
     name: docling-java
     sign: true
     discussionCategoryName: Announcements

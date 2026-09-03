@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.yaml:snakeyaml:2.6")
+  implementation("org.yaml:snakeyaml:2.7")
   implementation(libs.cyclonedx.gradle)
   implementation(libs.lombok.gradle)
   implementation(libs.spotless.gradle)

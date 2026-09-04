@@ -1,5 +1,6 @@
 package ai.docling.serve.api.convert.request;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.source.Source;
 import ai.docling.serve.api.convert.request.target.Target;
 import ai.docling.serve.api.request.DocumentRequest;
 
@@ -68,5 +70,37 @@ public final class BatchConvertDocumentRequest extends DocumentRequest {
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
   public abstract static class BatchConvertDocumentRequestBuilder<C extends BatchConvertDocumentRequest, B extends BatchConvertDocumentRequestBuilder<C, B>> extends DocumentRequest.DocumentRequestBuilder<C, B> {
+  }
+
+  /**
+   * Builder for {@link BatchConvertDocumentRequest}.
+   *
+   * <p>The {@code source}, {@code sources}, {@code clearSources}, and {@code target} mutators are
+   * redeclared here (delegating to the base builder) so that they are members of this concrete
+   * builder type rather than being inherited only from {@link DocumentRequest.Builder}. This keeps
+   * fluent calls such as {@code BatchConvertDocumentRequest.builder().source(...)} resolvable under
+   * GraalVM native image {@code --link-at-build-time}, where a virtual call whose declared owner is
+   * this subtype must be found on the subtype itself.
+   */
+  public abstract static class Builder<C extends BatchConvertDocumentRequest, B extends Builder<C, B>> extends DocumentRequest.Builder<C, B> {
+    @Override
+    public B source(Source source) {
+      return super.source(source);
+    }
+
+    @Override
+    public B sources(Collection<? extends Source> sources) {
+      return super.sources(sources);
+    }
+
+    @Override
+    public B clearSources() {
+      return super.clearSources();
+    }
+
+    @Override
+    public B target(Target target) {
+      return super.target(target);
+    }
   }
 }

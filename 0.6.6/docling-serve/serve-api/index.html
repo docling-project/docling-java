@@ -647,6 +647,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       Quick start
@@ -1360,6 +1369,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       Quick start
@@ -1993,6 +2011,17 @@ interface. You can use any implementation of this interface to talk to a running
 </div>
 <p>Note: The API module does not perform network I/O by itself. To call a live service, combine it with
 an implementation such as <a href="../serve-client/"><code>docling-serve-client</code></a>.</p>
+<h2 id="graalvm-native-image">GraalVM Native Image<a class="headerlink" href="#graalvm-native-image" title="Permanent link">#</a></h2>
+<p>The API JAR ships reflection metadata at
+<code>META-INF/native-image/ai.docling/docling-serve-api/reflect-config.json</code>. It covers
+request and response models, polymorphic sources and targets, enums, Lombok
+builders (including inherited builders), and custom Jackson serializers and
+deserializers. The transitive <code>docling-core</code> dependency supplies metadata for
+<code>DoclingDocument</code> and its nested types.</p>
+<p>GraalVM discovers these files automatically. Spring Boot native applications can
+use the models without a custom <code>RuntimeHintsRegistrar</code>. Include your chosen
+Jackson version as usual; the metadata supports Jackson 2 and Jackson 3 separately
+and does not add either as a runtime dependency.</p>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">#</a></h2>
 <p>Below is a minimal example using the reference client to create an implementation of <code>DoclingServeApi</code>,
 build a conversion request, and retrieve Markdown output. The request/response types all come from

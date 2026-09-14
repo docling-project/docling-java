@@ -670,6 +670,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       Quick start
@@ -1339,6 +1348,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       Quick start
@@ -1959,6 +1977,18 @@
 <summary>Jackson Implementation Required</summary>
 <p>Make sure you also include either a Jackson 2 or Jackson 3 dependency.</p>
 </details>
+<h2 id="graalvm-native-image">GraalVM Native Image<a class="headerlink" href="#graalvm-native-image" title="Permanent link">#</a></h2>
+<p>The client uses the Jackson reflection metadata shipped by <code>docling-serve-api</code>
+and <code>docling-core</code>. GraalVM's default <code>ServiceLoader</code> support discovers the
+provider declared in <code>META-INF/services</code> and registers its constructor, so
+<code>DoclingServeApi.builder()</code> does not require additional client reflection or
+resource configuration. Include the client and your chosen Jackson dependency
+when building the native executable; provider discovery uses the dependencies
+available at image build time.</p>
+<p>Native smoke tests on GraalVM 25 cover service discovery, automatic Jackson
+selection with Jackson 2 or Jackson 3 individually, and health and conversion
+requests through Java's <code>HttpClient</code> against a local HTTP server. These checks
+include request serialization and nested document deserialization.</p>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">#</a></h2>
 <p>Create a client with <code>DoclingServeApi.builder()</code>, build a request, and call <code>convertSource()</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.URI</span><span class="p">;</span>

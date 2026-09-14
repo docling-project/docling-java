@@ -34,7 +34,8 @@ project:
 
 signing:
   active: ALWAYS
-  armored: true
+  pgp:
+    armored: true
 
 release:
   github:
@@ -77,6 +78,10 @@ checksum:
   algorithms:
     - SHA_256
 
+catalog:
+  github:
+    active: ALWAYS
+
 deploy:
   maven:
     mavenCentral:
@@ -91,5 +96,6 @@ deploy:
           - build/staging-deploy
 
 announce:
-  discord:
-    active: ALWAYS
+  webhooks:
+    discord:
+      active: ALWAYS

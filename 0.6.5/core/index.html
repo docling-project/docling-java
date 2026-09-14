@@ -570,6 +570,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#core-concepts" class="md-nav__link">
     <span class="md-ellipsis">
       Core concepts
@@ -791,6 +800,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graalvm-native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraalVM Native Image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#core-concepts" class="md-nav__link">
     <span class="md-ellipsis">
       Core concepts
@@ -844,6 +862,13 @@
 </div>
 </div>
 </div>
+<h2 id="graalvm-native-image">GraalVM Native Image<a class="headerlink" href="#graalvm-native-image" title="Permanent link">#</a></h2>
+<p>The JAR includes reflection metadata at
+<code>META-INF/native-image/ai.docling/docling-core/reflect-config.json</code> for Jackson 2
+and Jackson 3 serialization and deserialization. It covers <code>DoclingDocument</code>, its
+nested types, enums, and Lombok builders. GraalVM discovers this metadata
+automatically, including in Spring Boot native applications, so application-level
+reflection hints for these models are unnecessary.</p>
 <h2 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">#</a></h2>
 <p>The <code>DoclingDocument</code> class is the primary representation of a document in Docling. It can be retrieved as the result of a document conversion process against a Docling Serve backend via the <a href="../docling-serve/serve-api/"><code>docling-serve-api</code></a> or <a href="../docling-serve/serve-client/"><code>docling-serve-client</code></a> modules.</p>
 <p>To learn more about the <code>DoclingDocument</code> model and related types, refer to the Docling documentation: <a href="https://docling-project.github.io/docling/concepts/docling_document/">Docling Document</a>.</p>

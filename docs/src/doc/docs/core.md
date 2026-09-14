@@ -32,6 +32,15 @@ Add the dependency to your project.
     </dependency>
     ```
 
+## GraalVM Native Image
+
+The JAR includes reflection metadata at
+`META-INF/native-image/ai.docling/docling-core/reflect-config.json` for Jackson 2
+and Jackson 3 serialization and deserialization. It covers `DoclingDocument`, its
+nested types, enums, and Lombok builders. GraalVM discovers this metadata
+automatically, including in Spring Boot native applications, so application-level
+reflection hints for these models are unnecessary.
+
 ## Core concepts
 
 The `DoclingDocument` class is the primary representation of a document in Docling. It can be retrieved as the result of a document conversion process against a Docling Serve backend via the [`docling-serve-api`](docling-serve/serve-api.md) or [`docling-serve-client`](docling-serve/serve-client.md) modules.

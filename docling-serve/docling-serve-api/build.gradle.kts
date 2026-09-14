@@ -2,9 +2,19 @@ plugins {
   id("docling-java-shared")
   id("docling-release")
   id("docling-lombok")
+  id("docling-native-image")
 }
 
 description = "Docling Serve API"
+
+nativeImageMetadata {
+  // These packages expose operations, service discovery, and utilities rather than JSON models.
+  excludePackages(
+    "ai.docling.serve.api",
+    "ai.docling.serve.api.spi",
+    "ai.docling.serve.api.util"
+  )
+}
 
 dependencies {
   api(project(":docling-core"))

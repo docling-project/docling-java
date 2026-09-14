@@ -1,6 +1,7 @@
 [versions]
 assertj = "3.27.7"
 awaitility = "4.3.0"
+graalvm-buildtools = "1.1.12"
 jackson2 = "2.22.2"
 jackson3 = "3.2.2"
 jacoco = "0.8.14"
@@ -66,6 +67,7 @@ wiremock = { group = "org.wiremock", name = "wiremock", version.ref = "wiremock"
 
 [plugins]
 cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
+graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-buildtools" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-gradle" }
 quarkus = { id = "io.quarkus", version.ref = "quarkus" }
 module-info = { id = "org.gradlex.extra-java-module-info", version.ref = "module-info" }

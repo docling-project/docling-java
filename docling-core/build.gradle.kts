@@ -2,6 +2,7 @@ plugins {
   id("docling-java-shared")
   id("docling-release")
   id("docling-lombok")
+  id("docling-native-image")
 }
 
 description = "Docling Core"

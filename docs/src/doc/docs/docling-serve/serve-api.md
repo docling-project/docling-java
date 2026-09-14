@@ -45,6 +45,20 @@ Add the API dependency to your project.
 Note: The API module does not perform network I/O by itself. To call a live service, combine it with
 an implementation such as [`docling-serve-client`](serve-client.md).
 
+## GraalVM Native Image
+
+The API JAR ships reflection metadata at
+`META-INF/native-image/ai.docling/docling-serve-api/reflect-config.json`. It covers
+request and response models, polymorphic sources and targets, enums, Lombok
+builders (including inherited builders), and custom Jackson serializers and
+deserializers. The transitive `docling-core` dependency supplies metadata for
+`DoclingDocument` and its nested types.
+
+GraalVM discovers these files automatically. Spring Boot native applications can
+use the models without a custom `RuntimeHintsRegistrar`. Include your chosen
+Jackson version as usual; the metadata supports Jackson 2 and Jackson 3 separately
+and does not add either as a runtime dependency.
+
 ## Quick start
 
 Below is a minimal example using the reference client to create an implementation of `DoclingServeApi`,

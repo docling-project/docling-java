@@ -2,6 +2,9 @@ package ai.docling.serve.client.operations;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+
+import org.jspecify.annotations.Nullable;
 
 import ai.docling.serve.api.DoclingServeChunkApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -19,9 +22,31 @@ public final class ChunkOperations extends AsyncOperations implements DoclingSer
   private final HttpOperations httpOperations;
   private final DoclingServeTaskApi taskApi;
 
-  public ChunkOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi,
-                         Duration asyncPollInterval, Duration asyncTimeout) {
-    super(httpOperations, taskApi, asyncPollInterval, asyncTimeout);
+  /**
+   * Creates a new ChunkOperations instance whose async operations run on the default async executor of
+   * {@link java.util.concurrent.CompletableFuture}.
+   *
+   * @param httpOperations    the HTTP operations handler for executing requests
+   * @param taskApi           the task operations handler for polling and retrieving results
+   * @param asyncPollInterval the interval between status polls for async operations
+   * @param asyncTimeout      the maximum time to wait for async operations to complete
+   */
+  public ChunkOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi, Duration asyncPollInterval, Duration asyncTimeout) {
+    this(httpOperations, taskApi, asyncPollInterval, asyncTimeout, null);
+  }
+
+  /**
+   * Creates a new ChunkOperations instance whose async operations run on the given executor.
+   *
+   * @param httpOperations    the HTTP operations handler for executing requests
+   * @param taskApi           the task operations handler for polling and retrieving results
+   * @param asyncPollInterval the interval between status polls for async operations
+   * @param asyncTimeout      the maximum time to wait for async operations to complete
+   * @param asyncExecutor     the executor to run async operations on, or {@code null} to use the
+   *                          default async executor of {@link java.util.concurrent.CompletableFuture}
+   */
+  public ChunkOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi, Duration asyncPollInterval, Duration asyncTimeout, @Nullable Executor asyncExecutor) {
+    super(httpOperations, taskApi, asyncPollInterval, asyncTimeout, asyncExecutor);
     this.httpOperations = httpOperations;
     this.taskApi = taskApi;
   }

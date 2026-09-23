@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.stream.Collectors;
 
@@ -90,6 +91,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final Duration readTimeout;
   private final Duration asyncPollInterval;
   private final Duration asyncTimeout;
+  private final @Nullable Executor asyncExecutor;
 
   private final HealthOperations healthOps;
   private final ConvertOperations convertOps;
@@ -129,12 +131,13 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     this.apiKey = builder.apiKey;
     this.asyncPollInterval = builder.asyncPollInterval;
     this.asyncTimeout = builder.asyncTimeout;
+    this.asyncExecutor = builder.asyncExecutor;
 
     // Initialize operations handlers
     this.healthOps = new HealthOperations(this);
     this.taskOps = new TaskOperations(this);
-    this.convertOps = new ConvertOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout);
-    this.chunkOps = new ChunkOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout);
+    this.convertOps = new ConvertOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout, this.asyncExecutor);
+    this.chunkOps = new ChunkOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout, this.asyncExecutor);
     this.clearOps = new ClearOperations(this);
   }
 
@@ -176,7 +179,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
           .stream()
           .map(this::maskSensitiveHeaderValues)
           .forEach(entry -> stringBuilder.append("  %s: %s\n".formatted(entry.getKey(), String.join(", ", entry.getValue())))
-      );
+          );
 
       LOG.info(stringBuilder.toString());
     }
@@ -188,8 +191,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
   private Map.Entry<String, List<String>> maskSensitiveHeaderValues(Map.Entry<String, List<String>> entry) {
     return Map.entry(
-        entry.getKey(),
-        entry.getValue().stream()
+        entry.getKey(), entry.getValue().stream()
             .map(value -> isSensitiveHeader(entry.getKey()) ? "*".repeat(value.length()) : value)
             .toList()
     );
@@ -201,8 +203,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       stringBuilder.append("\n← RESPONSE: %s\n".formatted(response.statusCode()));
       stringBuilder.append("  HEADERS:\n");
 
-      response.headers().map().forEach((key, values) ->
-          stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
+      response.headers().map().forEach((key, values) -> stringBuilder.append("  %s: %s\n".formatted(key, String.join(", ", values)))
       );
 
       responseBody
@@ -221,9 +222,10 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
     try {
       HttpResponse<?> response = null;
-      if(StreamResponse.class.equals(expectedValueType)) {
+      if (StreamResponse.class.equals(expectedValueType)) {
         response = this.httpClient.send(request, BodyHandlers.ofInputStream());
-      } else {
+      }
+      else {
         response = this.httpClient.send(request, BodyHandlers.ofString());
       }
       return getResponse(request, response, expectedValueType);
@@ -281,9 +283,9 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         .header("Accept", "application/json")
         .timeout(this.readTimeout);
 
-      if (Utils.isNotNullOrBlank(this.apiKey)) {
-        requestBuilder.header(API_KEY_HEADER_NAME, this.apiKey);
-      }
+    if (Utils.isNotNullOrBlank(this.apiKey)) {
+      requestBuilder.header(API_KEY_HEADER_NAME, this.apiKey);
+    }
 
     return requestBuilder;
   }
@@ -309,9 +311,10 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       if (StreamResponse.class.equals(expectedReturnType)) {
         // typical 4XX  & 5XX responses are usually accompanied by JSON response bodies
         // hence, reading the stream here.
-        try (InputStream is = (InputStream) body){
+        try (InputStream is = (InputStream) body) {
           body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
           throw new DoclingServeClientException(e);
         }
       }
@@ -319,16 +322,16 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       if (statusCode == 422) {
         var validationError = readValue(body.toString(), ValidationError.class);
         var errorText = validationError.getErrorDetails()
-          .stream()
-          .map(ValidationErrorDetail::getMessage)
-          .filter(Objects::nonNull)
-          .collect(Collectors.joining("\n"));
+            .stream()
+            .map(ValidationErrorDetail::getMessage)
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining("\n"));
 
         throw new ValidationException(
-          validationError,
-          "An error occurred while making %s request to %s:\n%s".formatted(request.method(), request.uri(), errorText)
+            validationError, "An error occurred while making %s request to %s:\n%s".formatted(request.method(), request.uri(), errorText)
         );
-      } else {
+      }
+      else {
         throw new DoclingServeClientException("An error occurred: %s".formatted(body.toString()), statusCode, body.toString());
       }
     }
@@ -337,9 +340,10 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       return (T) StreamResponse
           .builder()
           .headers(headerName -> response.headers().firstValue(headerName))
-          .body((InputStream)body)
+          .body((InputStream) body)
           .build();
-    } else {
+    }
+    else {
       return readValue(body.toString(), expectedReturnType);
     }
   }
@@ -466,6 +470,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     private Duration readTimeout = Duration.ofSeconds(30);
     private Duration asyncPollInterval = Duration.ofSeconds(2);
     private Duration asyncTimeout = Duration.ofMinutes(5);
+    private @Nullable Executor asyncExecutor;
 
     /**
      * Protected constructor for use by subclasses of {@link DoclingServeClientBuilder}.
@@ -493,6 +498,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       this.prettyPrintJson = doclingClient.prettyPrintJson;
       this.asyncPollInterval = doclingClient.asyncPollInterval;
       this.asyncTimeout = doclingClient.asyncTimeout;
+      this.asyncExecutor = doclingClient.asyncExecutor;
     }
 
     /**
@@ -588,6 +594,22 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     @Override
     public B asyncTimeout(Duration asyncTimeout) {
       this.asyncTimeout = asyncTimeout;
+      return (B) this;
+    }
+
+    /**
+     * Sets the {@link Executor} used to run async operations.
+     *
+     * <p>If not set, async operations run on the default async executor of
+     * {@link java.util.concurrent.CompletableFuture}. The executor is never shut down by the client.
+     *
+     * @param asyncExecutor the executor to use for async operations (must not be null)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if asyncExecutor is null
+     */
+    @Override
+    public B asyncExecutor(Executor asyncExecutor) {
+      this.asyncExecutor = ensureNotNull(asyncExecutor, "asyncExecutor");
       return (B) this;
     }
   }

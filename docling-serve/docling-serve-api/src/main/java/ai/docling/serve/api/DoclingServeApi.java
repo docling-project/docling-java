@@ -4,6 +4,7 @@ import static ai.docling.serve.api.util.ValidationUtils.ensureNotBlank;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
@@ -15,8 +16,7 @@ import ai.docling.serve.api.spi.ServiceLoaderHelper;
 /**
  * Docling Serve API interface.
  */
-public interface DoclingServeApi
-    extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
+public interface DoclingServeApi extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
 
   /**
    * Creates and returns a builder instance capable of constructing implementations of {@link DoclingServeApi}.
@@ -35,12 +35,14 @@ public interface DoclingServeApi
 
     if (factories.isEmpty()) {
       // No factory found
-      throw new IllegalStateException("No instance of %s found to build a %s instance. You are probably missing a library on your classpath.".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName()));
+      throw new IllegalStateException("No instance of %s found to build a %s instance. You are probably missing a library on your classpath."
+          .formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName()));
     }
 
     if (factories.size() > 1) {
       // Multiple factories found
-      throw new IllegalStateException("Multiple instances of %s found to build a %s instance: [%s]".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName(), factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(", "))));
+      throw new IllegalStateException("Multiple instances of %s found to build a %s instance: [%s]".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class
+          .getName(), factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(", "))));
     }
 
     // Only 1 factory (what we want)
@@ -201,6 +203,31 @@ public interface DoclingServeApi
      * @throws IllegalArgumentException if asyncTimeout is null or negative
      */
     B asyncTimeout(Duration asyncTimeout);
+
+    /**
+     * Sets the {@link Executor} used to run async operations.
+     *
+     * <p>This configures where the work of the async methods (such as
+     * {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)}) is executed: submitting
+     * the task, polling for its status and retrieving its result. If not set, async operations run
+     * on the default async executor of {@link java.util.concurrent.CompletableFuture}.
+     *
+     * <p>The lifecycle of the executor is owned by the caller: the client never shuts it down.
+     * Avoid direct executors such as {@code Runnable::run}: the blocking HTTP requests would then run
+     * on the calling thread, making the async methods partially blocking, and on the shared scheduler
+     * thread of {@link java.util.concurrent.CompletableFuture#delayedExecutor(long, java.util.concurrent.TimeUnit, Executor)}.
+     *
+     * <p>The default implementation throws {@link UnsupportedOperationException}, so that existing
+     * builder implementations keep compiling; builders supporting a custom executor override it.
+     *
+     * @param asyncExecutor the executor to use for async operations (must not be null)
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException      if asyncExecutor is null
+     * @throws UnsupportedOperationException if this builder does not support a custom executor
+     */
+    default B asyncExecutor(Executor asyncExecutor) {
+      throw new UnsupportedOperationException("A custom async executor is not supported by " + getClass().getName());
+    }
 
     /**
      * Builds and returns an instance of the specified type, representing the completed configuration

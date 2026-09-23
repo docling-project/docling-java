@@ -2,6 +2,9 @@ package ai.docling.serve.client.operations;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+
+import org.jspecify.annotations.Nullable;
 
 import ai.docling.serve.api.DoclingServeConvertApi;
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -27,16 +30,30 @@ public final class ConvertOperations extends AsyncOperations implements DoclingS
   private final DoclingServeTaskApi taskApi;
 
   /**
-   * Creates a new ConvertOperations instance.
+   * Creates a new ConvertOperations instance whose async operations run on the default async executor of
+   * {@link java.util.concurrent.CompletableFuture}.
    *
    * @param httpOperations    the HTTP operations handler for executing requests
    * @param taskApi           the task operations handler for polling and retrieving results
    * @param asyncPollInterval the interval between status polls for async operations
    * @param asyncTimeout      the maximum time to wait for async operations to complete
    */
-  public ConvertOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi,
-                           Duration asyncPollInterval, Duration asyncTimeout) {
-    super(httpOperations, taskApi, asyncPollInterval, asyncTimeout);
+  public ConvertOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi, Duration asyncPollInterval, Duration asyncTimeout) {
+    this(httpOperations, taskApi, asyncPollInterval, asyncTimeout, null);
+  }
+
+  /**
+   * Creates a new ConvertOperations instance whose async operations run on the given executor.
+   *
+   * @param httpOperations    the HTTP operations handler for executing requests
+   * @param taskApi           the task operations handler for polling and retrieving results
+   * @param asyncPollInterval the interval between status polls for async operations
+   * @param asyncTimeout      the maximum time to wait for async operations to complete
+   * @param asyncExecutor     the executor to run async operations on, or {@code null} to use the
+   *                          default async executor of {@link java.util.concurrent.CompletableFuture}
+   */
+  public ConvertOperations(HttpOperations httpOperations, DoclingServeTaskApi taskApi, Duration asyncPollInterval, Duration asyncTimeout, @Nullable Executor asyncExecutor) {
+    super(httpOperations, taskApi, asyncPollInterval, asyncTimeout, asyncExecutor);
     this.httpOperations = httpOperations;
     this.taskApi = taskApi;
   }
@@ -52,23 +69,21 @@ public final class ConvertOperations extends AsyncOperations implements DoclingS
     final var uri = "/v1/convert/source";
 
     boolean hasMultipleSources = !Utils.isNullOrEmpty(request.getSources()) ?
-                                 request.getSources().size() > 1: Boolean.FALSE;
-    boolean isRemoteTarget = request.getTarget() instanceof S3Target || request.getTarget() instanceof PutTarget
-                             || request.getTarget() instanceof PresignedUrlTarget;
+        request.getSources().size() > 1 : Boolean.FALSE;
+    boolean isRemoteTarget = request.getTarget() instanceof S3Target || request.getTarget() instanceof PutTarget || request.getTarget() instanceof PresignedUrlTarget;
     boolean isZipTarget = request.getTarget() instanceof ZipTarget;
 
-    if((hasMultipleSources && !isRemoteTarget) || isZipTarget) {
+    if ((hasMultipleSources && !isRemoteTarget) || isZipTarget) {
       StreamResponse response = this.httpOperations
-          .executePostWithStreamResponse(createRequestContext(uri, request,
-              StreamResponse.class));
+          .executePostWithStreamResponse(createRequestContext(uri, request, StreamResponse.class));
       String fileName = response.getHeaders().getFileName().orElse("converted_docs.zip");
       return ZipArchiveConvertDocumentResponse
           .builder().fileName(fileName)
           .inputStream(response.getBody())
           .build();
-    } else {
-      return this.httpOperations.executePost(createRequestContext(uri, request,
-          ConvertDocumentResponse.class));
+    }
+    else {
+      return this.httpOperations.executePost(createRequestContext(uri, request, ConvertDocumentResponse.class));
     }
   }
 

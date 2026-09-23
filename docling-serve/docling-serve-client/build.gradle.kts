@@ -7,7 +7,7 @@ description = "Docling Serve Client"
 
 dependencies {
   api(project(":docling-serve-api"))
-  api(libs.slf4j.api)
+  implementation(libs.slf4j.api)
   compileOnly(platform(libs.jackson.bom))
   compileOnly(libs.jackson.databind)
   compileOnly(libs.jackson2.databind)

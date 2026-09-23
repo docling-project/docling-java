@@ -29,11 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ai.docling.serve.api.DoclingServeApi;
-import ai.docling.serve.api.DoclingServeChunkApi;
-import ai.docling.serve.api.DoclingServeClearApi;
-import ai.docling.serve.api.DoclingServeConvertApi;
-import ai.docling.serve.api.DoclingServeHealthApi;
-import ai.docling.serve.api.DoclingServeTaskApi;
+import ai.docling.serve.api.DoclingServeApiBuilder;
+import ai.docling.serve.api.DoclingServeApiConfig;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
@@ -48,7 +45,6 @@ import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
 import ai.docling.serve.api.util.Utils;
-import ai.docling.serve.api.util.ValidationUtils;
 import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
@@ -70,8 +66,8 @@ import ai.docling.serve.client.operations.TaskOperations;
  * deserialization, allowing implementation-specific customization.
  *
  * <p>The client is structured hierarchically, with separate nested implementations
- * for each API interface ({@link DoclingServeHealthApi}, {@link DoclingServeConvertApi},
- * {@link DoclingServeChunkApi}, {@link DoclingServeClearApi}, {@link DoclingServeTaskApi}).
+ * for each API interface ({@link ai.docling.serve.api.DoclingServeHealthApi}, {@link ai.docling.serve.api.DoclingServeConvertApi},
+ * {@link ai.docling.serve.api.DoclingServeChunkApi}, {@link ai.docling.serve.api.DoclingServeClearApi}, {@link ai.docling.serve.api.DoclingServeTaskApi}).
  * These implementations share common HTTP execution logic and configuration.
  *
  * <p>Concrete subclasses must implement {@link #readValue(String, Class)} and
@@ -83,15 +79,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
   private final URI baseUrl;
   private final HttpClient httpClient;
-  private final boolean logRequests;
-  private final boolean logResponses;
-  private final boolean prettyPrintJson;
-  private final @Nullable String apiKey;
-  private final Duration connectTimeout;
-  private final Duration readTimeout;
-  private final Duration asyncPollInterval;
-  private final Duration asyncTimeout;
-  private final @Nullable Executor asyncExecutor;
+  private final DoclingServeApiConfig config;
 
   private final HealthOperations healthOps;
   private final ConvertOperations convertOps;
@@ -99,13 +87,48 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   private final ClearOperations clearOps;
   private final TaskOperations taskOps;
 
-  protected DoclingServeClient(DoclingServeClientBuilder builder) {
-    ValidationUtils.ensurePositiveDuration(builder.connectTimeout, "connectTimeout");
-    ValidationUtils.ensurePositiveDuration(builder.readTimeout, "readTimeout");
-    ValidationUtils.ensurePositiveDuration(builder.asyncPollInterval, "asyncPollInterval");
-    ValidationUtils.ensurePositiveDuration(builder.asyncTimeout, "asyncTimeout");
+  /**
+   * Creates a builder for the client matching the version of Jackson on the classpath: a
+   * {@link DoclingServeJackson3Client} if Jackson 3 is available, otherwise a {@link DoclingServeJackson2Client}.
+   *
+   * <p>Use this builder for client-specific settings that don't depend on Jackson, such as
+   * {@link DoclingServeClientBuilder#httpClientBuilder(HttpClient.Builder)}. For the options shared by every
+   * implementation, prefer {@link DoclingServeApi#builder()}. To customize the JSON mapper, which depends on the
+   * version of Jackson, use {@link DoclingServeJackson3Client#builder()} or {@link DoclingServeJackson2Client#builder()}.
+   *
+   * @return a new builder for the detected client
+   * @throws IllegalStateException if neither Jackson 2 nor Jackson 3 is on the classpath
+   */
+  public static DoclingServeClientBuilder<?, ?> builder() {
+    return builderFor(Thread.currentThread().getContextClassLoader());
+  }
 
-    var base = ensureNotNull(builder.baseUrl, "baseUrl");
+  // Package-private so the detection can be tested with a class loader hiding Jackson
+  static DoclingServeClientBuilder<?, ?> builderFor(ClassLoader classLoader) {
+    if (JacksonVersion.JACKSON_3.isOnClasspath(classLoader)) {
+      return DoclingServeJackson3Client.builder();
+    }
+    else if (JacksonVersion.JACKSON_2.isOnClasspath(classLoader)) {
+      return DoclingServeJackson2Client.builder();
+    }
+
+    throw new IllegalStateException("""
+        Neither Jackson 2 nor Jackson 3 is on the classpath. You must add one of the following dependencies:
+
+        For Jackson 2:
+          Maven:  com.fasterxml.jackson.core:jackson-databind
+          Gradle: implementation("com.fasterxml.jackson.core:jackson-databind:<version>")
+
+        For Jackson 3:
+          Maven:  tools.jackson.core:jackson-databind
+          Gradle: implementation("tools.jackson.core:jackson-databind:<version>")
+        """);
+  }
+
+  protected DoclingServeClient(DoclingServeClientBuilder builder) {
+    this.config = builder.settings.config();
+
+    var base = this.config.baseUrl();
 
     if (Objects.equals(base.getScheme(), "http")) {
       // Docling Serve uses Python FastAPI which causes errors when called from JDK HttpClient.
@@ -118,27 +141,30 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         URI.create(base + "/") :
         base;
 
-    this.connectTimeout = builder.connectTimeout;
-    this.readTimeout = builder.readTimeout;
-
-    this.httpClient = ensureNotNull(builder.httpClientBuilder, "httpClientBuilder")
-        .connectTimeout(connectTimeout)
+    this.httpClient = builder.httpClientBuilder
+        .connectTimeout(this.config.connectTimeout())
         .build();
-
-    this.logRequests = builder.logRequests;
-    this.logResponses = builder.logResponses;
-    this.prettyPrintJson = builder.prettyPrintJson;
-    this.apiKey = builder.apiKey;
-    this.asyncPollInterval = builder.asyncPollInterval;
-    this.asyncTimeout = builder.asyncTimeout;
-    this.asyncExecutor = builder.asyncExecutor;
 
     // Initialize operations handlers
     this.healthOps = new HealthOperations(this);
     this.taskOps = new TaskOperations(this);
-    this.convertOps = new ConvertOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout, this.asyncExecutor);
-    this.chunkOps = new ChunkOperations(this, this.taskOps, this.asyncPollInterval, this.asyncTimeout, this.asyncExecutor);
+    this.convertOps = new ConvertOperations(this, this.taskOps, this.config.asyncPollInterval(), this.config.asyncTimeout(), this.config.asyncExecutor());
+    this.chunkOps = new ChunkOperations(this, this.taskOps, this.config.asyncPollInterval(), this.config.asyncTimeout(), this.config.asyncExecutor());
     this.clearOps = new ClearOperations(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This is the configuration the client was built with, as set on its builder: options left at their
+   * default value are not recorded as explicitly set.
+   *
+   * <p>Client-specific settings, such as the HTTP client or the JSON mapper, are not part of the
+   * configuration: use the {@code toBuilder()} method of the concrete client to keep them.
+   */
+  @Override
+  public DoclingServeApiConfig config() {
+    return this.config;
   }
 
   /**
@@ -163,7 +189,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   protected abstract <T> String writeValueAsString(T value);
 
   protected boolean prettyPrintJson() {
-    return this.prettyPrintJson;
+    return this.config.prettyPrint();
   }
 
   protected void logRequest(HttpRequest request) {
@@ -207,14 +233,14 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       );
 
       responseBody
-          .map(body -> this.prettyPrintJson ? writeValueAsString(readValue(body, Object.class)) : body)
+          .map(body -> this.config.prettyPrint() ? writeValueAsString(readValue(body, Object.class)) : body)
           .ifPresent(body -> stringBuilder.append("  BODY:\n%s".formatted(body)));
       LOG.info(stringBuilder.toString());
     }
   }
 
   protected <T> T execute(HttpRequest request, Class<T> expectedValueType) {
-    if (this.logRequests) {
+    if (this.config.logRequests()) {
       logRequest(request);
     }
 
@@ -281,10 +307,12 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     var requestBuilder = HttpRequest.newBuilder()
         .uri(this.baseUrl.resolve(resolvePath(requestContext.getUri())))
         .header("Accept", "application/json")
-        .timeout(this.readTimeout);
+        .timeout(this.config.readTimeout());
 
-    if (Utils.isNotNullOrBlank(this.apiKey)) {
-      requestBuilder.header(API_KEY_HEADER_NAME, this.apiKey);
+    var apiKey = this.config.apiKey();
+
+    if (Utils.isNotNullOrBlank(apiKey)) {
+      requestBuilder.header(API_KEY_HEADER_NAME, apiKey);
     }
 
     return requestBuilder;
@@ -301,7 +329,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     var body = response.body();
 
     // if expectedReturnType is StreamResponse.class, avoid logging potential binary data
-    if (this.logResponses && !(StreamResponse.class.equals(expectedReturnType))) {
+    if (this.config.logResponses() && !(StreamResponse.class.equals(expectedReturnType))) {
       logResponse((HttpResponse<String>) response, Optional.ofNullable(body.toString()));
     }
 
@@ -440,7 +468,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
     @Override
     public void subscribe(Subscriber<? super ByteBuffer> subscriber) {
-      if (logRequests) {
+      if (config.logRequests()) {
         LOG.info("\n→ REQUEST BODY: \n{}", this.stringContent);
       }
 
@@ -451,149 +479,196 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   /**
    * Abstract base class for building instances of {@link DoclingServeClient}.
    *
-   * <p>This builder class provides methods for configuring shared properties such as the
-   * base URL and the HTTP client. Concrete subclasses may extend this builder to
-   * add additional configuration options.
+   * <p>The options shared by every implementation are collected into a {@link DoclingServeApiConfig}, which the
+   * built client reports from {@link DoclingServeClient#config()}. This builder adds the client-specific settings,
+   * such as the {@link HttpClient}, and concrete subclasses add their own, such as the JSON mapper.
+   *
+   * <p>Values are validated when they are set.
    *
    * @param <C> the type of {@link DoclingServeClient} being built
    * @param <B> the type of the builder implementation
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({
+      "unchecked",
+      "removal"
+  })
   public abstract static class DoclingServeClientBuilder<C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> implements DoclingApiBuilder<C, B> {
-    private URI baseUrl = DEFAULT_BASE_URL;
-    private HttpClient.Builder httpClientBuilder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
-    private boolean logRequests = false;
-    private boolean logResponses = false;
-    private boolean prettyPrintJson = false;
-    private @Nullable String apiKey;
-    private Duration connectTimeout = Duration.ofSeconds(5);
-    private Duration readTimeout = Duration.ofSeconds(30);
-    private Duration asyncPollInterval = Duration.ofSeconds(2);
-    private Duration asyncTimeout = Duration.ofMinutes(5);
-    private @Nullable Executor asyncExecutor;
+    private DoclingServeApiBuilder settings;
+    private HttpClient.Builder httpClientBuilder;
 
     /**
      * Protected constructor for use by subclasses of {@link DoclingServeClientBuilder}.
      *
      * <p>Initializes a new instance of the builder with default configuration values.
-     * This constructor ensures that the builder cannot be instantiated directly,
-     * promoting proper use and extension by subclasses.
      */
     protected DoclingServeClientBuilder() {
+      this.settings = DoclingServeApi.builder();
+      this.httpClientBuilder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
     }
 
     /**
      * Initializes a new {@link DoclingServeClientBuilder} instance using the configuration
-     * from the provided {@link DoclingServeClient}.
+     * of the provided {@link DoclingServeClient}.
      *
-     * @param doclingClient the {@link DoclingServeClient} whose configuration (e.g., base URL)
-     *                      will be used to initialize the builder
+     * <p>Settings of the underlying {@link HttpClient} are not kept, apart from its redirect policy:
+     * a proxy, an SSL context or an authenticator must be configured again with
+     * {@link #httpClientBuilder(HttpClient.Builder)}.
+     *
+     * @param doclingClient the {@link DoclingServeClient} whose configuration will be used to initialize the builder
      */
     protected DoclingServeClientBuilder(DoclingServeClient doclingClient) {
-      this.baseUrl = doclingClient.baseUrl;
-      this.httpClientBuilder = HttpClient.newBuilder();
-      this.apiKey = doclingClient.apiKey;
-      this.logRequests = doclingClient.logRequests;
-      this.logResponses = doclingClient.logResponses;
-      this.prettyPrintJson = doclingClient.prettyPrintJson;
-      this.asyncPollInterval = doclingClient.asyncPollInterval;
-      this.asyncTimeout = doclingClient.asyncTimeout;
-      this.asyncExecutor = doclingClient.asyncExecutor;
+      this.settings = doclingClient.config.toBuilder();
+      this.httpClientBuilder = HttpClient.newBuilder()
+          .followRedirects(doclingClient.httpClient.followRedirects());
+    }
+
+    /**
+     * Replaces every option shared by all implementations with the given configuration. Options that
+     * aren't explicitly set in it fall back to their default value. Client-specific settings are kept.
+     *
+     * @param config the configuration to apply
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code config} is null
+     */
+    public B config(DoclingServeApiConfig config) {
+      this.settings = ensureNotNull(config, "config").toBuilder();
+      return (B) this;
     }
 
     /**
      * Sets the base URL for the client.
      *
-     * <p>This method configures the base URL that will be used for all API requests
-     * executed by the client. The provided URL must be non-null.
-     *
      * @param baseUrl the base URL to use, as a {@link URI}
      * @return this builder instance for method chaining
      * @throws IllegalArgumentException if {@code baseUrl} is null
+     * @see DoclingServeApiConfig#BASE_URL
      */
     @Override
     public B baseUrl(URI baseUrl) {
-      this.baseUrl = baseUrl;
+      this.settings.baseUrl(baseUrl);
       return (B) this;
     }
 
     /**
      * Sets the HTTP client builder to be used for creating the underlying HTTP client.
      *
-     * <p>This allows customization of HTTP client properties such as timeouts,
-     * proxy settings, SSL context, and other connection parameters.
+     * <p>This allows customization of HTTP client properties such as proxy settings, SSL context,
+     * and other connection parameters. The connect timeout is always set from {@link #connectTimeout(Duration)}.
      *
      * @param httpClientBuilder the {@link HttpClient.Builder} to use
-     * @return this {@link DoclingServeJackson3Client.Builder} instance for method chaining
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code httpClientBuilder} is null
      */
     public B httpClientBuilder(HttpClient.Builder httpClientBuilder) {
-      this.httpClientBuilder = httpClientBuilder;
-      return (B) this;
-    }
-
-    @Override
-    public B apiKey(@Nullable String apiKey) {
-      this.apiKey = apiKey;
-      return (B) this;
-    }
-
-    @Override
-    public B logRequests(boolean logRequests) {
-      this.logRequests = logRequests;
-      return (B) this;
-    }
-
-    @Override
-    public B logResponses(boolean logResponses) {
-      this.logResponses = logResponses;
-      return (B) this;
-    }
-
-    @Override
-    public B prettyPrint(boolean prettyPrint) {
-      this.prettyPrintJson = prettyPrint;
-      return (B) this;
-    }
-
-    @Override
-    public B connectTimeout(Duration connectTimeout) {
-      this.connectTimeout = connectTimeout;
-      return (B) this;
-    }
-
-    @Override
-    public B readTimeout(Duration readTimeout) {
-      this.readTimeout = readTimeout;
+      this.httpClientBuilder = ensureNotNull(httpClientBuilder, "httpClientBuilder");
       return (B) this;
     }
 
     /**
-     * Sets the polling interval for async operations.
+     * Sets the API key used to authenticate requests.
      *
-     * <p>This configures how frequently the client will check the status of async
-     * conversion tasks when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest).
-     *
-     * @param asyncPollInterval the polling interval (must not be null or negative)
+     * @param apiKey the API key, or {@code null} to unset it
      * @return this builder instance for method chaining
+     * @see DoclingServeApiConfig#API_KEY
+     */
+    @Override
+    public B apiKey(@Nullable String apiKey) {
+      this.settings.apiKey(apiKey);
+      return (B) this;
+    }
+
+    /**
+     * Sets whether requests are logged.
+     *
+     * @param logRequests {@code true} to log requests
+     * @return this builder instance for method chaining
+     * @see DoclingServeApiConfig#LOG_REQUESTS
+     */
+    @Override
+    public B logRequests(boolean logRequests) {
+      this.settings.logRequests(logRequests);
+      return (B) this;
+    }
+
+    /**
+     * Sets whether responses are logged.
+     *
+     * @param logResponses {@code true} to log responses
+     * @return this builder instance for method chaining
+     * @see DoclingServeApiConfig#LOG_RESPONSES
+     */
+    @Override
+    public B logResponses(boolean logResponses) {
+      this.settings.logResponses(logResponses);
+      return (B) this;
+    }
+
+    /**
+     * Sets whether JSON requests and responses are pretty-printed.
+     *
+     * @param prettyPrint {@code true} to pretty-print JSON
+     * @return this builder instance for method chaining
+     * @see DoclingServeApiConfig#PRETTY_PRINT
+     */
+    @Override
+    public B prettyPrint(boolean prettyPrint) {
+      this.settings.prettyPrint(prettyPrint);
+      return (B) this;
+    }
+
+    /**
+     * Sets the timeout to establish a connection to the Docling Serve API.
+     *
+     * @param connectTimeout the connect timeout
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code connectTimeout} is null, zero or negative
+     * @see DoclingServeApiConfig#CONNECT_TIMEOUT
+     */
+    @Override
+    public B connectTimeout(Duration connectTimeout) {
+      this.settings.connectTimeout(connectTimeout);
+      return (B) this;
+    }
+
+    /**
+     * Sets the timeout for receiving a response from the Docling Serve API.
+     *
+     * @param readTimeout the read timeout
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code readTimeout} is null, zero or negative
+     * @see DoclingServeApiConfig#READ_TIMEOUT
+     */
+    @Override
+    public B readTimeout(Duration readTimeout) {
+      this.settings.readTimeout(readTimeout);
+      return (B) this;
+    }
+
+    /**
+     * Sets how frequently the status of an async task is polled.
+     *
+     * @param asyncPollInterval the poll interval
+     * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code asyncPollInterval} is null, zero or negative
+     * @see DoclingServeApiConfig#ASYNC_POLL_INTERVAL
      */
     @Override
     public B asyncPollInterval(Duration asyncPollInterval) {
-      this.asyncPollInterval = asyncPollInterval;
+      this.settings.asyncPollInterval(asyncPollInterval);
       return (B) this;
     }
 
     /**
-     * Sets the timeout for async operations.
+     * Sets the maximum time to wait for an async task to complete.
      *
-     * <p>This configures the maximum time to wait for an async conversion task to complete
-     * when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest).
-     *
-     * @param asyncTimeout the timeout duration (must not be null or negative)
+     * @param asyncTimeout the async timeout
      * @return this builder instance for method chaining
+     * @throws IllegalArgumentException if {@code asyncTimeout} is null, zero or negative
+     * @see DoclingServeApiConfig#ASYNC_TIMEOUT
      */
     @Override
     public B asyncTimeout(Duration asyncTimeout) {
-      this.asyncTimeout = asyncTimeout;
+      this.settings.asyncTimeout(asyncTimeout);
       return (B) this;
     }
 
@@ -603,14 +678,35 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
      * <p>If not set, async operations run on the default async executor of
      * {@link java.util.concurrent.CompletableFuture}. The executor is never shut down by the client.
      *
-     * @param asyncExecutor the executor to use for async operations (must not be null)
+     * @param asyncExecutor the executor to use for async operations
      * @return this builder instance for method chaining
-     * @throws IllegalArgumentException if asyncExecutor is null
+     * @throws IllegalArgumentException if {@code asyncExecutor} is null
+     * @see DoclingServeApiConfig#ASYNC_EXECUTOR
      */
-    @Override
     public B asyncExecutor(Executor asyncExecutor) {
-      this.asyncExecutor = ensureNotNull(asyncExecutor, "asyncExecutor");
+      this.settings.asyncExecutor(asyncExecutor);
       return (B) this;
+    }
+  }
+
+  private enum JacksonVersion {
+    JACKSON_2("com.fasterxml.jackson.databind.json.JsonMapper"),
+    JACKSON_3("tools.jackson.databind.json.JsonMapper");
+
+    private final String jacksonClassName;
+
+    JacksonVersion(String jacksonClassName) {
+      this.jacksonClassName = jacksonClassName;
+    }
+
+    private boolean isOnClasspath(ClassLoader classLoader) {
+      try {
+        Class.forName(this.jacksonClassName, false, classLoader);
+        return true;
+      }
+      catch (ClassNotFoundException e) {
+        return false;
+      }
     }
   }
 }

@@ -62,6 +62,7 @@ nav:
     - Docling Serve:
       - API: docling-serve/serve-api.md
       - Client: docling-serve/serve-client.md
+      - Migrating to DoclingServeApiProvider: docling-serve/serve-api-provider-migration.md
     - Testing: testing.md
     - Testcontainers: testcontainers.md
 

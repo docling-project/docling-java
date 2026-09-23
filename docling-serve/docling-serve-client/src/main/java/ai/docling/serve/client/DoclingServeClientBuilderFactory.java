@@ -1,24 +1,22 @@
 package ai.docling.serve.client;
 
-import ai.docling.serve.api.DoclingServeApi;
-import ai.docling.serve.api.DoclingServeApi.DoclingApiBuilder;
-import ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
 import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
 
 /**
- * A factory class for creating instances of {@link DoclingServeClientBuilder}.
+ * A factory class for creating instances of {@link DoclingServeClientBuilder}, matching the version of Jackson
+ * (2 or 3) on the classpath.
  *
- * <p>This factory determines which version of Jackson (2 or 3) is available
- * on the application's classpath and provides a corresponding builder for
- * creating {@link DoclingServeClient} implementations.
- *
- * <p>If neither Jackson 2 nor Jackson 3 is present on the classpath, an
- * {@link IllegalStateException} is thrown.
- *
- * <p>The factory uses a type-safe generic method to support custom subclasses of
- * {@link DoclingServeClient} and {@link DoclingServeClientBuilder}.
+ * @deprecated Use {@link ai.docling.serve.api.DoclingServeApi#builder()} for the options shared by every
+ *             implementation, or {@link DoclingServeClient#builder()} for client-specific settings such as the
+ *             HTTP client: it detects the version of Jackson the same way. To customize the JSON mapper, use
+ *             {@link DoclingServeJackson3Client#builder()} or {@link DoclingServeJackson2Client#builder()}. This
+ *             class will be removed in a future release.
  */
-public final class DoclingServeClientBuilderFactory implements DoclingServeApiBuilderFactory {
+@Deprecated(since = "0.7.0", forRemoval = true)
+public final class DoclingServeClientBuilderFactory {
+  private DoclingServeClientBuilderFactory() {
+  }
+
   /**
    * Creates and returns a new instance of a {@link DoclingServeClientBuilder} compatible
    * with the Jackson version present on the provided classloader's classpath.
@@ -28,35 +26,17 @@ public final class DoclingServeClientBuilderFactory implements DoclingServeApiBu
    * If neither version of Jackson is found on the classpath, an
    * {@link IllegalStateException} is thrown.
    *
-   * <p>The method uses generics to support custom implementations of
-   * {@link DoclingServeClient} and {@link DoclingServeClientBuilder}.
-   *
-   * @param <C> the type of {@link DoclingServeClient} to be created by the builder
-   * @param <B> the type of {@link DoclingServeClientBuilder} to be returned
+   * @param <C>         the type of {@link DoclingServeClient} to be created by the builder
+   * @param <B>         the type of {@link DoclingServeClientBuilder} to be returned
    * @param classLoader the {@link ClassLoader} used to check for Jackson's presence
    * @return a compatible {@link DoclingServeClientBuilder} instance
    * @throws IllegalStateException if neither Jackson 2 nor Jackson 3 is available on the classpath
+   * @deprecated Use {@link DoclingServeClient#builder()} instead.
    */
+  @Deprecated(since = "0.7.0", forRemoval = true)
   @SuppressWarnings("unchecked")
   public static <C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> B newBuilder(ClassLoader classLoader) {
-    if (JacksonVersion.JACKSON_3.isOnClasspath(classLoader)) {
-      return (B) DoclingServeJackson3Client.builder();
-    }
-    else if (JacksonVersion.JACKSON_2.isOnClasspath(classLoader)) {
-      return (B) DoclingServeJackson2Client.builder();
-    }
-
-    throw new IllegalStateException("""
-        Neither Jackson 2 nor Jackson 3 is on the classpath. You must add one of the following dependencies:
-
-        For Jackson 2:
-          Maven:  com.fasterxml.jackson.core:jackson-databind
-          Gradle: implementation("com.fasterxml.jackson.core:jackson-databind:<version>")
-
-        For Jackson 3:
-          Maven:  tools.jackson.core:jackson-databind
-          Gradle: implementation("tools.jackson.core:jackson-databind:<version>")
-        """);
+    return (B) DoclingServeClient.builderFor(classLoader);
   }
 
   /**
@@ -68,44 +48,14 @@ public final class DoclingServeClientBuilderFactory implements DoclingServeApiBu
    * for {@code DoclingServeJackson2Client}. If neither are found, an
    * {@link IllegalStateException} is thrown.
    *
-   * <p>This method utilizes generics to support custom implementations of
-   * {@link DoclingServeClient} and {@link DoclingServeClientBuilder}.
-   *
    * @param <C> the type of {@link DoclingServeClient} to be created by the builder
    * @param <B> the type of {@link DoclingServeClientBuilder} to be returned
    * @return a compatible {@link DoclingServeClientBuilder} instance
    * @throws IllegalStateException if neither Jackson 2 nor Jackson 3 is available on the classpath
+   * @deprecated Use {@link DoclingServeClient#builder()} instead.
    */
+  @Deprecated(since = "0.7.0", forRemoval = true)
   public static <C extends DoclingServeClient, B extends DoclingServeClientBuilder<C, B>> B newBuilder() {
     return newBuilder(Thread.currentThread().getContextClassLoader());
-  }
-
-  @Override
-  public <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> B getBuilder() {
-    return (B) newBuilder();
-  }
-
-  private enum JacksonVersion {
-    JACKSON_2("com.fasterxml.jackson.databind.json.JsonMapper"),
-    JACKSON_3("tools.jackson.databind.json.JsonMapper");
-
-    private final String jacksonClassName;
-
-    JacksonVersion(String jacksonClassName) {
-      this.jacksonClassName = jacksonClassName;
-    }
-
-    private boolean isOnClasspath() {
-      return isOnClasspath(Thread.currentThread().getContextClassLoader());
-    }
-
-    private boolean isOnClasspath(ClassLoader classLoader) {
-      try {
-        Class.forName(this.jacksonClassName, false, classLoader);
-        return true;
-      } catch (ClassNotFoundException e) {
-        return false;
-      }
-    }
   }
 }

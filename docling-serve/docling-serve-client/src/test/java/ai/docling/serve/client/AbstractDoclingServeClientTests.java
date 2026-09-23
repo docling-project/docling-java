@@ -96,7 +96,6 @@ import ai.docling.serve.api.util.FileUtils;
 import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
-import ai.docling.serve.client.DoclingServeClient.DoclingServeClientBuilder;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -162,17 +161,14 @@ abstract class AbstractDoclingServeClientTests {
 
   @Test
   void builderWorks() {
-    var clientBuilder = DoclingServeApi.builder()
+    var client = DoclingServeApi.builder()
         .logRequests()
         .logResponses()
         .prettyPrint()
-        .baseUrl(doclingContainer.getApiUrl());
+        .baseUrl(doclingContainer.getApiUrl())
+        .build();
 
-    assertThat(clientBuilder)
-        .isNotNull()
-        .isInstanceOf(DoclingServeClientBuilder.class);
-
-    assertThat(clientBuilder.build())
+    assertThat(client)
         .isNotNull()
         .isInstanceOf(DoclingServeClient.class);
   }

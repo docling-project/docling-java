@@ -5,7 +5,14 @@ import ai.docling.serve.api.DoclingServeApi.DoclingApiBuilder;
 
 /**
  * Factory interface for creating builder instances to construct implementations of {@link DoclingServeApi}.
+ *
+ * @deprecated Implement {@link DoclingServeApiProvider} instead. This SPI is no longer implemented by any
+ *             docling-java module and will be removed in a future release. It is still discovered as a fallback when no
+ *             {@link DoclingServeApiProvider} is available, but configuration options added after its deprecation (such as
+ *             {@code asyncExecutor}) are rejected when building through it.
  */
+@Deprecated(since = "0.7.0", forRemoval = true)
+@SuppressWarnings("removal")
 public interface DoclingServeApiBuilderFactory {
   /**
    * Retrieves a builder instance for constructing implementations of {@link DoclingServeApi}.

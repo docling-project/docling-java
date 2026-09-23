@@ -25,6 +25,7 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
   }
 
   @Override
+  @SuppressWarnings("removal")
   public Builder toBuilder() {
     return new Builder(this);
   }
@@ -37,9 +38,12 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
    * various properties, such as the JSON mapper builder, before creating a new
    * {@link DoclingServeJackson2Client}.
    *
+   * <p>Use this builder to customize the JSON mapper with {@link Builder#jsonParser(JsonMapper.Builder)}.
+   * Otherwise prefer {@link DoclingServeClient#builder()}, which detects the version of Jackson on the classpath.
+   *
    * @return a new {@link Builder} instance for configuring and building a {@link DoclingServeJackson2Client}
    */
-  static Builder builder() {
+  public static Builder builder() {
     return new Builder();
   }
 
@@ -47,7 +51,8 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
   protected <T> T readValue(String json, Class<T> valueType) {
     try {
       return this.jsonMapper.readValue(json, valueType);
-    } catch (JsonProcessingException e) {
+    }
+    catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
   }
@@ -58,7 +63,8 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
       return prettyPrintJson() ?
           this.jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(value) :
           this.jsonMapper.writeValueAsString(value);
-    } catch (JsonProcessingException e) {
+    }
+    catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
   }
@@ -76,6 +82,7 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
     private JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder()
         // This is the default in Jackson 3 whereas it needs to be set explicitly in Jackson 2.
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     private Builder() {
     }
 

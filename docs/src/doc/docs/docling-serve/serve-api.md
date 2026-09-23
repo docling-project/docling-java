@@ -7,7 +7,7 @@ with a [Docling Serve](https://github.com/docling-project/docling-serve) backend
 interface. You can use any implementation of this interface to talk to a running
 [Docling Serve](https://github.com/docling-project/docling-serve) instance.
 
-The base Java version is 17. This module has no other required dependencies, although it is compatible with both Jackson [2.x](https://github.com/FasterXML/jackson) and [3.x](https://github.com/FasterXML/jackson/blob/main/jackson3/MIGRATING_TO_JACKSON_3.md).
+The base Java version is 17. Its only other required dependency is [SLF4J](https://www.slf4j.org/) (`slf4j-api`), and it is compatible with both Jackson [2.x](https://github.com/FasterXML/jackson) and [3.x](https://github.com/FasterXML/jackson/blob/main/jackson3/MIGRATING_TO_JACKSON_3.md).
 
 If you need a ready-to-use HTTP implementation, see the reference client:
 - Docling Serve Client: [`docling-serve-client`](serve-client.md)
@@ -108,9 +108,45 @@ provided by the `docling-serve-client` module.
 
 ### Extension Points
 
-The `docling-serve-api` module uses the [Java Service Provider Interface](https://www.baeldung.com/java-spi) to define an extension point for building/customizing instances of `DoclingServeApi`. An application (or downstream framework) can create an implementation of `ai.docling.serve.api.spi.DoclingServeApiBuilderFactory` and register it via the `META-INF/services/ai.docling.serve.api.spi.DoclingServeApiBuilderFactory` file, or providing an implementation using Java modules.
+The `docling-serve-api` module uses the [Java Service Provider Interface](https://www.baeldung.com/java-spi) to define an extension point for creating instances of `DoclingServeApi`. An application (or downstream framework) can implement `ai.docling.serve.api.spi.DoclingServeApiProvider` and register it via the `META-INF/services/ai.docling.serve.api.spi.DoclingServeApiProvider` file, or with a `provides` clause in `module-info.java`.
 
-This is exactly what the `docling-serve-client` module does to provide its implementation. See [`module-info.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/module-info.java) and [`DoclingServeClientBuilderFactory.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/ai/docling/serve/client/DoclingServeClientBuilderFactory.java).
+`DoclingServeApi.builder()` collects the configuration into an immutable `DoclingServeApiConfig`, and `build()` hands it to the single available provider:
+
+```java
+public final class MyProvider implements DoclingServeApiProvider {
+  @Override
+  public DoclingServeApi create(DoclingServeApiConfig config) {
+    return new MyDoclingServeApi(config);
+  }
+}
+```
+
+Because providers receive a configuration object rather than implementing a builder, new options can be added in later releases without breaking existing providers. The API they create reports its configuration through `DoclingServeApi.config()`.
+
+This is exactly what the `docling-serve-client` module does to provide its implementation. See [`module-info.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/module-info.java) and [`DoclingServeClientProvider.java`](https://github.com/docling-project/docling-java/blob/main/docling-serve/docling-serve-client/src/main/java/ai/docling/serve/client/DoclingServeClientProvider.java).
+
+#### Declaring unsupported options
+
+A provider that cannot honor an option declares it in `unsupportedOptions()`, together with what should happen when a caller explicitly sets it:
+
+- `IGNORE` — silently ignore the option.
+- `WARN` — log a warning naming the option and the provider.
+- `FAIL` — make `build()` throw an `UnsupportedConfigurationException`.
+
+Options left at their default value are never reported. For example, a reactive implementation that manages its own threads can declare the async executor as meaningless for it:
+
+```java
+@Override
+public Map<ConfigOption<?>, Unsupported> unsupportedOptions() {
+  return Map.of(DoclingServeApiConfig.ASYNC_EXECUTOR, Unsupported.WARN);
+}
+```
+
+Options absent from this map are assumed to be honored. Providers must not silently ignore the base URL, the API key or the timeouts.
+
+#### Migrating from `DoclingServeApiBuilderFactory`
+
+The previous SPI, `ai.docling.serve.api.spi.DoclingServeApiBuilderFactory`, is deprecated for removal. It is still used when no `DoclingServeApiProvider` is available, but options added after its deprecation (such as `asyncExecutor`) make `build()` fail through it. See [Migrating to `DoclingServeApiProvider`](serve-api-provider-migration.md) for a step-by-step guide.
 
 ### Requests: `ConvertDocumentRequest`
 
@@ -233,12 +269,12 @@ In the case of a request validation error (i.e. `docling-serve` throws a `422` e
 
 ## Logging and builders
 
-`DoclingServeApi` exposes a `toBuilder()` method so implementations can be duplicated and tweaked. Most
-client builders, including the reference client, also expose `logRequests()` and `logResponses()` for
-simple diagnostics:
+`DoclingServeApi.builder()` exposes `logRequests()` and `logResponses()` for simple diagnostics.
+To create a modified copy of an existing API, start from its configuration:
 
 ```java
-DoclingServeApi newApi = api.toBuilder()
+DoclingServeApi newApi = api.config()
+    .toBuilder()
     .logRequests()
     .logResponses()
     .build();

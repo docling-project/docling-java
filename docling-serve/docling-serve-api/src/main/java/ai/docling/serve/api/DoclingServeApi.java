@@ -4,14 +4,8 @@ import static ai.docling.serve.api.util.ValidationUtils.ensureNotBlank;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
-
-import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
-import ai.docling.serve.api.spi.DoclingServeApiBuilderFactory;
-import ai.docling.serve.api.spi.ServiceLoaderHelper;
 
 /**
  * Docling Serve API interface.
@@ -19,44 +13,50 @@ import ai.docling.serve.api.spi.ServiceLoaderHelper;
 public interface DoclingServeApi extends DoclingServeHealthApi, DoclingServeConvertApi, DoclingServeChunkApi, DoclingServeClearApi, DoclingServeTaskApi {
 
   /**
-   * Creates and returns a builder instance capable of constructing implementations of {@link DoclingServeApi}.
-   * The method ensures that exactly one factory capable of building a builder instance is available
-   * via the {@link DoclingServeApiBuilderFactory} interface.
+   * Creates a new builder for a {@link DoclingServeApi}.
    *
-   * If no factories are found, or if multiple factories are found, an {@link IllegalStateException} is thrown.
+   * <p>Calling {@link DoclingServeApiBuilder#build()} creates the API using the single
+   * {@link ai.docling.serve.api.spi.DoclingServeApiProvider} available through {@link java.util.ServiceLoader}. If none is
+   * available, it falls back to the deprecated {@link ai.docling.serve.api.spi.DoclingServeApiBuilderFactory} SPI.
    *
-   * @param <T> the type of the {@link DoclingServeApi} implementation being built
-   * @param <B> the type of the builder implementation for the {@link DoclingServeApi}
-   * @return a builder instance of type {@code B} constructed using the available factory
-   * @throws IllegalStateException if no factories or more than one factory are found
+   * @return a new builder with no option set
    */
-  static <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> B builder() {
-    var factories = ServiceLoaderHelper.loadFactories(DoclingServeApiBuilderFactory.class);
-
-    if (factories.isEmpty()) {
-      // No factory found
-      throw new IllegalStateException("No instance of %s found to build a %s instance. You are probably missing a library on your classpath."
-          .formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class.getName()));
-    }
-
-    if (factories.size() > 1) {
-      // Multiple factories found
-      throw new IllegalStateException("Multiple instances of %s found to build a %s instance: [%s]".formatted(DoclingServeApiBuilderFactory.class.getName(), DoclingApiBuilder.class
-          .getName(), factories.stream().map(f -> f.getClass().getName()).collect(Collectors.joining(", "))));
-    }
-
-    // Only 1 factory (what we want)
-    return factories.iterator().next().getBuilder();
+  static DoclingServeApiBuilder builder() {
+    return new DoclingServeApiBuilder();
   }
+
+  /**
+   * The configuration this API runs with.
+   *
+   * <p>Use {@code config().toBuilder()} to create a modified copy of this API through the available
+   * {@link ai.docling.serve.api.spi.DoclingServeApiProvider}, for example
+   * {@code api.config().toBuilder().logRequests().build()}.
+   *
+   * <p>Implementations must report the effective value of every option, so that an API built from the
+   * returned configuration behaves like this one. An implementation created from a
+   * {@link DoclingServeApiConfig} may simply return it.
+   *
+   * @return the configuration of this API
+   */
+  DoclingServeApiConfig config();
 
   /**
    * Creates and returns a builder instance capable of constructing a duplicate or modified
    * version of the current API instance. The builder provides a customizable way to adjust
    * configuration or properties before constructing a new API instance.
    *
+   * @param <T> the type of the {@link DoclingServeApi} implementation being built
+   * @param <B> the type of the builder implementation
    * @return a {@link DoclingApiBuilder} initialized with the state of the current API instance.
+   * @deprecated Use {@code config().toBuilder()} instead, which does not depend on the implementation.
+   *             Implementation-specific builders remain available from the {@code toBuilder()} method
+   *             of the concrete implementation.
    */
-  @SuppressWarnings("unchecked")
+  @Deprecated(since = "0.7.0", forRemoval = true)
+  @SuppressWarnings({
+      "unchecked",
+      "removal"
+  })
   <T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> DoclingApiBuilder<T, B> toBuilder();
 
   /**
@@ -65,7 +65,11 @@ public interface DoclingServeApi extends DoclingServeHealthApi, DoclingServeConv
    *
    * @param <T> the type of the {@link DoclingServeApi} implementation being built.
    * @param <B> the type of the concrete builder implementation.
+   * @deprecated This interface only exists to support the deprecated {@link ai.docling.serve.api.spi.DoclingServeApiBuilderFactory} SPI.
+   *             Use {@link DoclingServeApi#builder()} to configure an API, and implement {@link ai.docling.serve.api.spi.DoclingServeApiProvider}
+   *             to provide one. This interface will not gain new configuration options.
    */
+  @Deprecated(since = "0.7.0", forRemoval = true)
   interface DoclingApiBuilder<T extends DoclingServeApi, B extends DoclingApiBuilder<T, B>> {
     /**
      * Sets the base URL for the client.
@@ -184,7 +188,7 @@ public interface DoclingServeApi extends DoclingServeHealthApi, DoclingServeConv
      * Sets the polling interval for async operations.
      *
      * <p>This configures how frequently the client will check the status of async
-     * conversion tasks when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
+     * conversion tasks when using {@link DoclingServeApi#convertSourceAsync(ai.docling.serve.api.convert.request.ConvertDocumentRequest)} (ConvertDocumentRequest)}.
      *
      * @param asyncPollInterval the polling interval (must not be null or negative)
      * @return this builder instance for method chaining
@@ -196,38 +200,13 @@ public interface DoclingServeApi extends DoclingServeHealthApi, DoclingServeConv
      * Sets the timeout for async operations.
      *
      * <p>This configures the maximum time to wait for an async conversion task to complete
-     * when using {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)} (ConvertDocumentRequest)}.
+     * when using {@link DoclingServeApi#convertSourceAsync(ai.docling.serve.api.convert.request.ConvertDocumentRequest)} (ConvertDocumentRequest)}.
      *
      * @param asyncTimeout the timeout duration (must not be null or negative)
      * @return this builder instance for method chaining
      * @throws IllegalArgumentException if asyncTimeout is null or negative
      */
     B asyncTimeout(Duration asyncTimeout);
-
-    /**
-     * Sets the {@link Executor} used to run async operations.
-     *
-     * <p>This configures where the work of the async methods (such as
-     * {@link DoclingServeApi#convertSourceAsync(ConvertDocumentRequest)}) is executed: submitting
-     * the task, polling for its status and retrieving its result. If not set, async operations run
-     * on the default async executor of {@link java.util.concurrent.CompletableFuture}.
-     *
-     * <p>The lifecycle of the executor is owned by the caller: the client never shuts it down.
-     * Avoid direct executors such as {@code Runnable::run}: the blocking HTTP requests would then run
-     * on the calling thread, making the async methods partially blocking, and on the shared scheduler
-     * thread of {@link java.util.concurrent.CompletableFuture#delayedExecutor(long, java.util.concurrent.TimeUnit, Executor)}.
-     *
-     * <p>The default implementation throws {@link UnsupportedOperationException}, so that existing
-     * builder implementations keep compiling; builders supporting a custom executor override it.
-     *
-     * @param asyncExecutor the executor to use for async operations (must not be null)
-     * @return this builder instance for method chaining
-     * @throws IllegalArgumentException      if asyncExecutor is null
-     * @throws UnsupportedOperationException if this builder does not support a custom executor
-     */
-    default B asyncExecutor(Executor asyncExecutor) {
-      throw new UnsupportedOperationException("A custom async executor is not supported by " + getClass().getName());
-    }
 
     /**
      * Builds and returns an instance of the specified type, representing the completed configuration

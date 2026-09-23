@@ -19,6 +19,7 @@ public class DoclingServeJackson3Client extends DoclingServeClient {
   }
 
   @Override
+  @SuppressWarnings("removal")
   public Builder toBuilder() {
     return new Builder(this);
   }
@@ -29,9 +30,12 @@ public class DoclingServeJackson3Client extends DoclingServeClient {
    * <p>This method serves as the entry point for creating a new {@link DoclingServeJackson3Client.Builder}
    * to customize and build a {@code DoclingServeJackson3Client}.
    *
+   * <p>Use this builder to customize the JSON mapper with {@link Builder#jsonParser(JsonMapper.Builder)}.
+   * Otherwise prefer {@link DoclingServeClient#builder()}, which detects the version of Jackson on the classpath.
+   *
    * @return a new {@link Builder} instance
    */
-  static Builder builder() {
+  public static Builder builder() {
     return new Builder();
   }
 

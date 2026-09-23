@@ -18,9 +18,11 @@ nativeImageMetadata {
 
 dependencies {
   api(project(":docling-core"))
+  api(libs.slf4j.api)
   compileOnly(platform(libs.jackson.bom))
   compileOnly(libs.jackson.annotations)
   compileOnly(libs.jackson.databind)
   compileOnly(libs.jackson2.databind)
   testImplementation(project(":docling-testcontainers"))
+  testImplementation(libs.slf4j.simple)
 }

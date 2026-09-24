@@ -1,6 +1,7 @@
 package ai.docling.serve.client.operations;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -36,7 +37,7 @@ public final class TaskOperations implements DoclingServeTaskApi {
    *                unique task identifier and optional wait time for polling.
    *                Must not be null.
    * @return a {@link TaskStatusPollResponse} containing the current status of
-   *     the task, its position in the queue, and any associated metadata.
+   *         the task, its position in the queue, and any associated metadata.
    * @throws IllegalArgumentException if the {@code request} is null.
    */
   public TaskStatusPollResponse pollTaskStatus(TaskStatusPollRequest request) {
@@ -44,9 +45,7 @@ public final class TaskOperations implements DoclingServeTaskApi {
 
     return this.httpOperations.executeGet(createRequestContext(
         "/v1/status/poll/%s?wait=%d".formatted(
-            request.getTaskId(),
-            request.getWaitTime().toSeconds()),
-        TaskStatusPollResponse.class)
+            request.getTaskId(), request.getWaitTime().toSeconds()), TaskStatusPollResponse.class)
     );
   }
 
@@ -58,7 +57,7 @@ public final class TaskOperations implements DoclingServeTaskApi {
    * @param request an instance of {@link TaskResultRequest} containing the unique task
    *                identifier. Must not be null.
    * @return a {@link ConvertDocumentResponse} containing details about the converted
-   *     document, processing time, status, and any associated errors or metadata.
+   *         document, processing time, status, and any associated errors or metadata.
    * @throws IllegalArgumentException if {@code request} is null.
    */
   public ConvertDocumentResponse convertTaskResult(TaskResultRequest request) {
@@ -69,9 +68,9 @@ public final class TaskOperations implements DoclingServeTaskApi {
       case HttpOperations.CONTENT_TYPE_JSON -> {
         try (var is = response.getBody()) {
           return httpOperations
-              .readValue(new String(is.readAllBytes(), StandardCharsets.UTF_8)
-                  , ConvertDocumentResponse.class);
-        } catch (IOException e) {
+              .readValue(new String(is.readAllBytes(), StandardCharsets.UTF_8), ConvertDocumentResponse.class);
+        }
+        catch (IOException e) {
           throw new DoclingServeClientException(e);
         }
       }
@@ -82,7 +81,10 @@ public final class TaskOperations implements DoclingServeTaskApi {
             .inputStream(response.getBody())
             .build();
       }
-      default -> throw new DoclingServeClientException(null, "Invalid Content-Type in Task API response");
+      default -> {
+        closeQuietly(response.getBody());
+        throw new DoclingServeClientException(null, "Invalid Content-Type in Task API response");
+      }
     }
   }
 
@@ -96,12 +98,21 @@ public final class TaskOperations implements DoclingServeTaskApi {
    * @param request an instance of {@link TaskResultRequest} containing the unique task
    *                identifier. Must not be null.
    * @return a {@link ChunkDocumentResponse} containing details about the chunks,
-   *     documents, processing time, and any associated metadata.
+   *         documents, processing time, and any associated metadata.
    * @throws IllegalArgumentException if {@code request} is null.
    */
   public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
     return this.httpOperations.executeGet(createRequestContext("/v1/result/%s".formatted(request.getTaskId()), ChunkDocumentResponse.class));
+  }
+
+  private static void closeQuietly(InputStream inputStream) {
+    try {
+      inputStream.close();
+    }
+    catch (IOException ignored) {
+      // the Content-Type error is the failure worth reporting
+    }
   }
 
   private <O> RequestContext<Object, O> createRequestContext(String uri, Class<O> responseType) {

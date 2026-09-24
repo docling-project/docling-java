@@ -237,6 +237,16 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "Ashfaqbs",
+      "name": "Ashfaq",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105435085?v=4",
+      "profile": "https://github.com/Ashfaqbs",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ]
 }

@@ -172,6 +172,17 @@ abstract class AbstractDoclingServeClientTests {
    */
   protected abstract DoclingServeApi getDoclingClientWithFailingDeserializer();
 
+  /**
+   * A client, built without {@code prettyPrint()}, whose JSON mapper throws {@code IllegalStateException} with
+   * the message {@code boom} specifically when deserializing a {@link ValidationError}, through a mixin rather
+   * than a deserializer registered for the type directly, since {@link ValidationError} has a builder (see
+   * {@link #getDoclingClientWithFailingDeserializer()}).
+   *
+   * <p>Used to confirm that a failure of {@code parseValidationError} that is not a {@link JsonReadException},
+   * such as a broken custom deserializer, is not swallowed and re-reported as a generic 422.
+   */
+  protected abstract DoclingServeApi getDoclingClientWithFailingValidationErrorDeserializer();
+
   protected DoclingServeApi getDoclingClient(boolean requiresAuth) {
     return getDoclingClient(requiresAuth, false);
   }
@@ -580,7 +591,7 @@ abstract class AbstractDoclingServeClientTests {
         "{\"detail\":[]}"
     })
     void jsonBodyWithoutValidationDetailsKeepsStatusAndBody(String body) {
-      stubHealth(body);
+      stubHealth("application/json", body);
 
       assertThatThrownBy(() -> getDoclingClient(false, true).health())
           .isNotInstanceOf(ValidationException.class)
@@ -591,7 +602,7 @@ abstract class AbstractDoclingServeClientTests {
 
     @Test
     void jsonBodyWithValidationDetailsIsAValidationException() {
-      stubHealth("{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"sources\"],\"msg\":\"Field required\"}]}");
+      stubHealth("application/json", "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"sources\"],\"msg\":\"Field required\"}]}");
 
       assertThatThrownBy(() -> getDoclingClient(false, true).health())
           .isNotInstanceOf(DoclingServeClientException.class)
@@ -605,13 +616,35 @@ abstract class AbstractDoclingServeClientTests {
           .isEqualTo("Field required");
     }
 
-    private void stubHealth(String body) {
+    // A 422 from something other than docling-serve, e.g. a gateway, may not carry a JSON body at all
+    @Test
+    void nonJsonBodyKeepsStatusAndBody() {
+      stubHealth("text/html", "<html>Unprocessable by gateway</html>");
+
+      assertThatThrownBy(() -> getDoclingClient(false, true).health())
+          .asInstanceOf(InstanceOfAssertFactories.type(DoclingServeClientException.class))
+          .returns(422, DoclingServeClientException::getStatusCode)
+          .returns("<html>Unprocessable by gateway</html>", DoclingServeClientException::getResponseBody);
+    }
+
+    // Guards the narrowed catch in parseValidationError: only a JsonReadException falls back to a generic
+    // 422, any other failure while reading the body as a ValidationError must propagate
+    @Test
+    void failureThatIsNotAParseFailureIsNotHiddenAsAGeneric422() {
+      stubHealth("application/json", "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\"],\"msg\":\"Field required\"}]}");
+
+      assertThatThrownBy(() -> getDoclingClientWithFailingValidationErrorDeserializer().health())
+          .isExactlyInstanceOf(IllegalStateException.class)
+          .hasMessage("boom");
+    }
+
+    private void stubHealth(String contentType, String body) {
       getWiremockServer().stubFor(
           get(urlPathEqualTo("/health"))
               .willReturn(
                   aResponse()
                       .withStatus(422)
-                      .withHeader("Content-Type", "application/json")
+                      .withHeader("Content-Type", contentType)
                       .withBody(body)
               )
       );

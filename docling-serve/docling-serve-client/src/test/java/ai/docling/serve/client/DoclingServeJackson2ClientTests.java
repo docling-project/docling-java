@@ -8,11 +8,13 @@ import org.junit.jupiter.api.BeforeAll;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.validation.ValidationError;
 
 /**
  * Integration tests for {@link DoclingServeJackson2Client}.
@@ -68,10 +70,24 @@ class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
         .build();
   }
 
+  @Override
+  protected DoclingServeApi getDoclingClientWithFailingValidationErrorDeserializer() {
+    return DoclingServeJackson2Client.builder()
+        .baseUrl(wireMockServer.baseUrl())
+        .jsonParser(JsonMapper.builder().addMixIn(ValidationError.class, FailingValidationErrorMixIn.class))
+        .build();
+  }
+
   static class FailingDeserializer<T> extends JsonDeserializer<T> {
     @Override
     public T deserialize(JsonParser parser, DeserializationContext context) {
       throw new IllegalStateException("boom");
     }
+  }
+
+  // A mixin, not a deserializer registered for ValidationError directly, since Jackson does not consult one
+  // registered for a type that has a builder over the builder (see FailingDeserializer above)
+  @JsonDeserialize(using = FailingDeserializer.class)
+  abstract static class FailingValidationErrorMixIn {
   }
 }

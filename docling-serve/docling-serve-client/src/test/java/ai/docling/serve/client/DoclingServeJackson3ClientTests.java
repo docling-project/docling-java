@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.validation.ValidationError;
 
 /**
  * Integration tests for {@link DoclingServeClient}.
@@ -69,10 +71,24 @@ class DoclingServeJackson3ClientTests extends AbstractDoclingServeClientTests {
         .build();
   }
 
+  @Override
+  protected DoclingServeApi getDoclingClientWithFailingValidationErrorDeserializer() {
+    return DoclingServeJackson3Client.builder()
+        .baseUrl(wireMockServer.baseUrl())
+        .jsonParser(JsonMapper.builder().addMixIn(ValidationError.class, FailingValidationErrorMixIn.class))
+        .build();
+  }
+
   static class FailingDeserializer<T> extends ValueDeserializer<T> {
     @Override
     public T deserialize(JsonParser parser, DeserializationContext context) {
       throw new IllegalStateException("boom");
     }
+  }
+
+  // A mixin, not a deserializer registered for ValidationError directly, since Jackson does not consult one
+  // registered for a type that has a builder over the builder (see FailingDeserializer above)
+  @JsonDeserialize(using = FailingDeserializer.class)
+  abstract static class FailingValidationErrorMixIn {
   }
 }

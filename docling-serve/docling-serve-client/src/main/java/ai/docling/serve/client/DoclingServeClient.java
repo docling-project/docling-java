@@ -347,8 +347,9 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         }
       }
 
-      if (statusCode == 422) {
-        var validationError = readValue(body.toString(), ValidationError.class);
+      var validationError = statusCode == 422 ? parseValidationError(body.toString()) : null;
+
+      if (validationError != null) {
         var errorText = validationError.getErrorDetails()
             .stream()
             .map(ValidationErrorDetail::getMessage)
@@ -373,6 +374,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     }
     else {
       return readValue(body.toString(), expectedReturnType);
+    }
+  }
+
+  // A 422 from something other than docling-serve (e.g. a gateway) may not carry a validation body;
+  // fall back to the generic error so the status code and body are not lost to a parse failure.
+  private @Nullable ValidationError parseValidationError(String body) {
+    try {
+      return readValue(body, ValidationError.class);
+    }
+    catch (RuntimeException e) {
+      LOG.debug("422 response body is not a validation error", e);
+      return null;
     }
   }
 

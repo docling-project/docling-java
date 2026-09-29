@@ -149,6 +149,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ashfaqbs"><img src="https://avatars.githubusercontent.com/u/105435085?v=4?s=100" width="100px;" alt="Ashfaq"/><br /><sub><b>Ashfaq</b></sub></a><br /><a href="#code-Ashfaqbs" title="Code">💻</a> <a href="#bug-Ashfaqbs" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Naman-Gururani"><img src="https://avatars.githubusercontent.com/u/91726734?v=4?s=100" width="100px;" alt="Naman-Gururani"/><br /><sub><b>Naman-Gururani</b></sub></a><br /><a href="#code-Naman-Gururani" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

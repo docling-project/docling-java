@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -101,6 +102,13 @@ import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
 abstract class AbstractDoclingServeClientTests {
   private static final Logger LOG = LoggerFactory.getLogger(AbstractDoclingServeClientTests.class);
+
+  // docling-serve names extracted images after a hash of their content, which changes whenever the
+  // rendered image bytes do (e.g. across docling-serve versions), so ZIP entry names are compared
+  // with the hash replaced by a placeholder.
+  private static final String IMAGE_HASH_PLACEHOLDER = "<hash>";
+  private static final Pattern IMAGE_ARTIFACT_HASH = Pattern.compile("(?<=^artifacts/image_\\d{6}_)[0-9a-f]{64}(?=\\.png$)");
+  private static final String FIRST_IMAGE_ARTIFACT_ENTRY = "artifacts/image_000000_%s.png".formatted(IMAGE_HASH_PLACEHOLDER);
 
   protected static final DoclingServeContainer doclingContainer = new DoclingServeContainer(
       DoclingServeContainerConfig.builder()
@@ -462,7 +470,10 @@ abstract class AbstractDoclingServeClientTests {
       try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
         ZipEntry entry;
         while ((entry = zipInputStream.getNextEntry()) != null) {
-          actualEntries.add(entry.getName());
+          var normalizedName = IMAGE_ARTIFACT_HASH
+              .matcher(entry.getName())
+              .replaceFirst(IMAGE_HASH_PLACEHOLDER);
+          actualEntries.add(normalizedName);
           LOG.info("Found entry in ZIP: {} (size: {} bytes)", entry.getName(), entry.getSize());
           zipInputStream.closeEntry();
         }
@@ -1004,7 +1015,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
       assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
       assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
-          .of("2408.09869.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+          .of("2408.09869.md", "artifacts/", FIRST_IMAGE_ARTIFACT_ENTRY));
     }
 
     @Test
@@ -1058,7 +1069,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
       assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
       assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
-          .of("2408.09869.md", "story.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+          .of("2408.09869.md", "story.md", "artifacts/", FIRST_IMAGE_ARTIFACT_ENTRY));
     }
 
     @Test
@@ -1114,7 +1125,7 @@ abstract class AbstractDoclingServeClientTests {
       assertThat(((ZipArchiveConvertDocumentResponse) response).getFileName()).isEqualTo("converted_docs.zip");
       assertThat(((ZipArchiveConvertDocumentResponse) response).getInputStream()).isNotNull();
       assertZipArchiveEntries(((ZipArchiveConvertDocumentResponse) response).getInputStream(), Set
-          .of("2408.09869.md", "story.md", "artifacts/", "artifacts/image_000000_4f05ea6de89ce20493a5d9cc2305a4feb948c7bb794d7b81ee29554ec56b8445.png"));
+          .of("2408.09869.md", "story.md", "artifacts/", FIRST_IMAGE_ARTIFACT_ENTRY));
     }
 
     @Test

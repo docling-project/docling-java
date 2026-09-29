@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,6 +35,26 @@ class TaskOperationsTests {
         .isInstanceOf(DoclingServeClientException.class)
         .hasMessageContaining("Invalid Content-Type");
     assertThat(closed).isTrue();
+  }
+
+  @Test
+  void convertTaskResultKeepsCloseFailureAsSuppressedOnUnexpectedContentType() {
+    var body = new ByteArrayInputStream(new byte[0]) {
+      @Override
+      public void close() throws IOException {
+        throw new IOException("close failed");
+      }
+    };
+    var taskOperations = new TaskOperations(new StubHttpOperations(body, "text/html"));
+    var request = TaskResultRequest.builder().taskId("task-1").build();
+
+    assertThatThrownBy(() -> taskOperations.convertTaskResult(request))
+        .isInstanceOf(DoclingServeClientException.class)
+        .hasMessageContaining("Invalid Content-Type")
+        .satisfies(t -> assertThat(t.getSuppressed())
+            .singleElement()
+            .isInstanceOf(IOException.class)
+            .hasFieldOrPropertyWithValue("message", "close failed"));
   }
 
   private static final class StubHttpOperations extends HttpOperations {

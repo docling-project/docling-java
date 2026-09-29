@@ -1,7 +1,6 @@
 package ai.docling.serve.client.operations;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import ai.docling.serve.api.DoclingServeTaskApi;
@@ -82,8 +81,13 @@ public final class TaskOperations implements DoclingServeTaskApi {
             .build();
       }
       default -> {
-        closeQuietly(response.getBody());
-        throw new DoclingServeClientException(null, "Invalid Content-Type in Task API response");
+        try (var ignored = response.getBody()) {
+          throw new DoclingServeClientException(null, "Invalid Content-Type in Task API response");
+        }
+        catch (IOException e) {
+          // never reached in practice: a close() failure is added as suppressed to the exception above
+          throw new DoclingServeClientException(e);
+        }
       }
     }
   }
@@ -104,15 +108,6 @@ public final class TaskOperations implements DoclingServeTaskApi {
   public ChunkDocumentResponse chunkTaskResult(TaskResultRequest request) {
     ValidationUtils.ensureNotNull(request, "request");
     return this.httpOperations.executeGet(createRequestContext("/v1/result/%s".formatted(request.getTaskId()), ChunkDocumentResponse.class));
-  }
-
-  private static void closeQuietly(InputStream inputStream) {
-    try {
-      inputStream.close();
-    }
-    catch (IOException ignored) {
-      // the Content-Type error is the failure worth reporting
-    }
   }
 
   private <O> RequestContext<Object, O> createRequestContext(String uri, Class<O> responseType) {

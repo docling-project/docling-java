@@ -31,10 +31,10 @@ public abstract class HttpOperations {
   /**
    * Executes an HTTP GET request using the details specified in the provided {@code RequestContext}.
    *
-   * @param <I> the type of the request payload
-   * @param <O> the type of the response object
+   * @param <I>            the type of the request payload
+   * @param <O>            the type of the response object
    * @param requestContext the context containing details such as the URI, request payload,
-   *        and expected response type of the GET operation
+   *                       and expected response type of the GET operation
    * @return an instance of the response type {@code O}, which represents the deserialized response data
    */
   protected abstract <I, O> O executeGet(RequestContext<I, O> requestContext);
@@ -42,9 +42,9 @@ public abstract class HttpOperations {
   /**
    * Executes an HTTP GET request using the details specified in the provided {@code RequestContext}.
    *
-   * @param <I> the type of the request payload
+   * @param <I>            the type of the request payload
    * @param requestContext the context containing details such as the URI, request payload,
-   *        and expected response type of the GET operation
+   *                       and expected response type of the GET operation
    * @return an instance of the {@link StreamResponse}, which represents the response.
    */
   protected abstract <I> StreamResponse executeGetWithStreamResponse(RequestContext<I, StreamResponse> requestContext);
@@ -54,10 +54,10 @@ public abstract class HttpOperations {
    * This method is designed to be implemented by subclasses and facilitates sending POST requests
    * with a specified request payload and receiving a deserialized response.
    *
-   * @param <I> the type of the request payload
-   * @param <O> the type of the response object
+   * @param <I>            the type of the request payload
+   * @param <O>            the type of the response object
    * @param requestContext the context containing details such as the URI, request payload, and
-   *        expected response type of the POST operation
+   *                       expected response type of the POST operation
    * @return an instance of the response type {@code O}, which represents the deserialized response data
    */
   protected abstract <I, O> O executePost(RequestContext<I, O> requestContext);
@@ -67,9 +67,9 @@ public abstract class HttpOperations {
    * This method is designed to be implemented by subclasses and facilitates sending POST requests
    * with a specified request payload and receiving a stream response.
    *
-   * @param <I> the type of the request payload
+   * @param <I>            the type of the request payload
    * @param requestContext the context containing details such as the URI, request payload, and
-   *        expected response type of the POST operation
+   *                       expected response type of the POST operation
    * @return an instance of the {@link StreamResponse}, which represents the response.
    */
   protected abstract <I> StreamResponse executePostWithStreamResponse(RequestContext<I, StreamResponse> requestContext);
@@ -81,7 +81,7 @@ public abstract class HttpOperations {
    * @param valueType the {@link Class} of the target type; must not be {@code null}
    * @param <T>       the type of the object to be deserialized
    * @return an instance of {@code T} deserialized from the provided JSON
-   * @throws RuntimeException if the JSON parsing fails
+   * @throws ai.docling.serve.client.JsonReadException if {@code json} is not valid JSON, or does not match {@code valueType}
    */
   protected abstract <T> T readValue(String json, Class<T> valueType);
 }

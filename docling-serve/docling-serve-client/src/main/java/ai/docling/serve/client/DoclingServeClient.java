@@ -174,7 +174,10 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
    * @param valueType the {@link Class} of the target type; must not be {@code null}
    * @param <T>       the type of the object to be deserialized
    * @return an instance of {@code T} deserialized from the provided JSON
-   * @throws RuntimeException if the JSON parsing fails
+   * @throws JsonReadException if {@code json} is not valid JSON, or does not match {@code valueType}. Implementations
+   *                           must throw it, with the failure of their JSON library as its cause, for these failures
+   *                           only: any other failure, such as one of a custom deserializer, must propagate as it is,
+   *                           so that it is not mistaken for a text that simply cannot be read
    */
   protected abstract <T> T readValue(String json, Class<T> valueType);
 
@@ -233,9 +236,21 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
       );
 
       responseBody
-          .map(body -> this.config.prettyPrint() ? writeValueAsString(readValue(body, Object.class)) : body)
+          .map(body -> this.config.prettyPrint() ? prettyPrintForLog(body) : body)
           .ifPresent(body -> stringBuilder.append("  BODY:\n%s".formatted(body)));
       LOG.info(stringBuilder.toString());
+    }
+  }
+
+  // A response is not always JSON (e.g. an error page from a gateway in front of docling-serve), and logging
+  // it must never replace the outcome of the request, so a body that is not JSON is logged as it is.
+  private String prettyPrintForLog(String body) {
+    try {
+      return writeValueAsString(readValue(body, Object.class));
+    }
+    catch (JsonReadException e) {
+      LOG.debug("The response body is not JSON, so it is logged as it is", e);
+      return body;
     }
   }
 

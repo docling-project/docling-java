@@ -2,6 +2,7 @@ package ai.docling.serve.client;
 
 import static ai.docling.serve.api.util.ValidationUtils.ensureNotNull;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -41,7 +42,12 @@ public class DoclingServeJackson3Client extends DoclingServeClient {
 
   @Override
   protected <T> T readValue(String json, Class<T> valueType) {
-    return this.jsonMapper.readValue(json, valueType);
+    try {
+      return this.jsonMapper.readValue(json, valueType);
+    }
+    catch (JacksonException e) {
+      throw new JsonReadException(e);
+    }
   }
 
   @Override

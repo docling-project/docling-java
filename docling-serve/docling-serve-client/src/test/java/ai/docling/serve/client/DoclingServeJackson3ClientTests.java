@@ -2,6 +2,12 @@ package ai.docling.serve.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -49,5 +55,24 @@ class DoclingServeJackson3ClientTests extends AbstractDoclingServeClientTests {
     }
 
     return useWiremock ? wiremockDoclingClient : doclingClient;
+  }
+
+  @Override
+  protected DoclingServeApi getDoclingClientWithFailingDeserializer() {
+    var failingDeserializers = new SimpleModule().addDeserializer(Object.class, new FailingDeserializer<>());
+
+    return DoclingServeJackson3Client.builder()
+        .baseUrl(wireMockServer.baseUrl())
+        .logResponses()
+        .prettyPrint()
+        .jsonParser(JsonMapper.builder().addModule(failingDeserializers))
+        .build();
+  }
+
+  static class FailingDeserializer<T> extends ValueDeserializer<T> {
+    @Override
+    public T deserialize(JsonParser parser, DeserializationContext context) {
+      throw new IllegalStateException("boom");
+    }
   }
 }

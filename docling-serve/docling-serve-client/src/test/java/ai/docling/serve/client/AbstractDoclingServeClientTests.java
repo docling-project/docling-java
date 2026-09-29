@@ -1,5 +1,6 @@
 package ai.docling.serve.client;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -44,6 +45,7 @@ import java.util.zip.ZipInputStream;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -151,6 +153,16 @@ abstract class AbstractDoclingServeClientTests {
 
   protected abstract DoclingServeApi getDoclingClient(boolean requiresAuth, boolean useWiremock);
 
+  /**
+   * A client that logs and pretty-prints responses, and whose JSON mapper throws an {@link IllegalStateException}
+   * with the message {@code boom} when it deserializes an {@link Object}, which is what logging a response does
+   * to pretty-print it. It is a failure that is not caused by the text being something other than JSON.
+   *
+   * <p>The failure is registered for {@link Object} only because Jackson does not consult a deserializer
+   * registered for a type that has a builder, such as {@link HealthCheckResponse}, over the builder.
+   */
+  protected abstract DoclingServeApi getDoclingClientWithFailingDeserializer();
+
   protected DoclingServeApi getDoclingClient(boolean requiresAuth) {
     return getDoclingClient(requiresAuth, false);
   }
@@ -161,6 +173,10 @@ abstract class AbstractDoclingServeClientTests {
 
   private <T> T readValue(String json, Class<T> valueType) {
     return ((DoclingServeClient) getDoclingClient()).readValue(json, valueType);
+  }
+
+  private <T> T readValue(DoclingServeApi client, String json, Class<T> valueType) {
+    return ((DoclingServeClient) client).readValue(json, valueType);
   }
 
   private <T> String writeValueAsString(T value) {
@@ -445,6 +461,97 @@ abstract class AbstractDoclingServeClientTests {
           .isNotNull()
           .extracting(HealthCheckResponse::getStatus)
           .isEqualTo("ok");
+    }
+  }
+
+  // The clients used by these tests log responses and pretty-print them, which is when a response that is not
+  // JSON, such as an error page from a gateway in front of docling-serve, used to fail while it was being logged
+  @Nested
+  class NonJsonResponseTests {
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void htmlErrorBodyKeepsStatusAndBody() {
+      stubHealth(502, "text/html", "<html>Bad Gateway</html>");
+
+      assertThatThrownBy(() -> getDoclingClient(false, true).health())
+          .asInstanceOf(InstanceOfAssertFactories.type(DoclingServeClientException.class))
+          .returns(502, DoclingServeClientException::getStatusCode)
+          .returns("<html>Bad Gateway</html>", DoclingServeClientException::getResponseBody);
+    }
+
+    @Test
+    void plainTextErrorBodyKeepsStatusAndBody() {
+      stubHealth(500, "text/plain", "Internal Server Error");
+
+      assertThatThrownBy(() -> getDoclingClient(false, true).health())
+          .asInstanceOf(InstanceOfAssertFactories.type(DoclingServeClientException.class))
+          .returns(500, DoclingServeClientException::getStatusCode)
+          .returns("Internal Server Error", DoclingServeClientException::getResponseBody);
+    }
+
+    @Test
+    void jsonErrorBodyKeepsStatusAndBody() {
+      stubHealth(500, "application/json", "{\"detail\":\"Something went wrong\"}");
+
+      assertThatThrownBy(() -> getDoclingClient(false, true).health())
+          .asInstanceOf(InstanceOfAssertFactories.type(DoclingServeClientException.class))
+          .returns(500, DoclingServeClientException::getStatusCode)
+          .returns("{\"detail\":\"Something went wrong\"}", DoclingServeClientException::getResponseBody);
+    }
+
+    @Test
+    void readValueReadsJson() {
+      assertThat(readValue(getDoclingClient(), "{\"status\": \"ok\"}", HealthCheckResponse.class))
+          .extracting(HealthCheckResponse::getStatus)
+          .isEqualTo("ok");
+    }
+
+    @Test
+    void readValueOfTextThatIsNotJsonThrowsJsonReadException() {
+      assertThatThrownBy(() -> readValue(getDoclingClient(), "<html>Bad Gateway</html>", Object.class))
+          .isExactlyInstanceOf(JsonReadException.class)
+          .isNotInstanceOf(DoclingServeClientException.class)
+          .hasCauseInstanceOf(Exception.class);
+    }
+
+    @Test
+    void readValueOfJsonOfAnotherShapeThrowsJsonReadException() {
+      assertThatThrownBy(() -> readValue(getDoclingClient(), "[1, 2]", HealthCheckResponse.class))
+          .isExactlyInstanceOf(JsonReadException.class)
+          .hasCauseInstanceOf(Exception.class);
+    }
+
+    @Test
+    void failureThatIsNotAParseFailureIsNotHiddenWhileLoggingAResponse() {
+      stubHealth(200, "application/json", "{\"status\": \"ok\"}");
+
+      assertThatThrownBy(() -> getDoclingClientWithFailingDeserializer().health())
+          .isExactlyInstanceOf(IllegalStateException.class)
+          .hasMessage("boom");
+    }
+
+    @Test
+    void readValueLetsAFailureThatIsNotAParseFailurePropagate() {
+      assertThatThrownBy(() -> readValue(getDoclingClientWithFailingDeserializer(), "{\"status\": \"ok\"}", Object.class))
+          .isExactlyInstanceOf(IllegalStateException.class)
+          .hasMessage("boom");
+    }
+
+
+    private void stubHealth(int status, String contentType, String body) {
+      getWiremockServer().stubFor(
+          get(urlPathEqualTo("/health"))
+              .willReturn(
+                  aResponse()
+                      .withStatus(status)
+                      .withHeader("Content-Type", contentType)
+                      .withBody(body)
+              )
+      );
     }
   }
 

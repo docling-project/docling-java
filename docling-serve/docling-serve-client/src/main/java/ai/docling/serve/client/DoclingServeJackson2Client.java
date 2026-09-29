@@ -53,7 +53,7 @@ public class DoclingServeJackson2Client extends DoclingServeClient {
       return this.jsonMapper.readValue(json, valueType);
     }
     catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+      throw new JsonReadException(e);
     }
   }
 

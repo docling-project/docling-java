@@ -33,8 +33,8 @@ class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
         .baseUrl(doclingContainer.getApiUrl())
         .build();
 
-    authDoclingClient = doclingClient.toBuilder().apiKey("key").build();
-    wiremockDoclingClient = doclingClient.toBuilder().baseUrl(wireMockServer.baseUrl()).build();
+    authDoclingClient = doclingClient.config().toBuilder().apiKey("key").build();
+    wiremockDoclingClient = doclingClient.config().toBuilder().baseUrl(wireMockServer.baseUrl()).build();
   }
 
   @AfterAll

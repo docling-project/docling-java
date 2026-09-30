@@ -30,7 +30,7 @@ import ai.docling.serve.api.health.HealthCheckResponse;
 
 /**
  * Tests for {@link DoclingServeClient#config()}, and for the settings kept by the {@code toBuilder()}
- * method of the client.
+ * method of the concrete clients.
  */
 abstract class AbstractDoclingServeClientConfigTests {
   // These tests never run async operations
@@ -41,6 +41,12 @@ abstract class AbstractDoclingServeClientConfigTests {
   protected abstract WireMockExtension getWireMock();
 
   protected abstract DoclingServeClient.DoclingServeClientBuilder<?, ?> newClientBuilder();
+
+  /**
+   * Copies the client with the {@code toBuilder()} method of its concrete type, which keeps the settings that
+   * are not part of {@link DoclingServeApiConfig}.
+   */
+  protected abstract DoclingServeClient copyOf(DoclingServeClient client);
 
   @Test
   void configReportsEverySetting() {
@@ -115,15 +121,13 @@ abstract class AbstractDoclingServeClientConfigTests {
   }
 
   @Test
-  @SuppressWarnings("removal")
   void toBuilderKeepsEverySetting() {
     var client = fullyConfiguredClient();
 
-    assertThat(client.toBuilder().build().config()).isEqualTo(client.config());
+    assertThat(copyOf(client).config()).isEqualTo(client.config());
   }
 
   @Test
-  @SuppressWarnings("removal")
   void toBuilderKeepsFollowingRedirects() {
     getWireMock().stubFor(get(urlPathEqualTo("/health")).willReturn(temporaryRedirect("/moved/health")));
     getWireMock().stubFor(get(urlPathEqualTo("/moved/health")).willReturn(okJson("{\"status\": \"ok\"}")));
@@ -137,7 +141,7 @@ abstract class AbstractDoclingServeClientConfigTests {
         .extracting(HealthCheckResponse::getStatus)
         .isEqualTo("ok");
 
-    assertThat(client.toBuilder().build().health())
+    assertThat(copyOf(client).health())
         .extracting(HealthCheckResponse::getStatus)
         .isEqualTo("ok");
   }

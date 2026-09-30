@@ -172,11 +172,11 @@ abstract class AbstractDoclingServeClientAsyncExecutorTests {
   }
 
   @Test
-  void toBuilderKeepsAsyncExecutor() throws Exception {
+  void copyThroughConfigKeepsAsyncExecutor() throws Exception {
     stubTask("/v1/convert/source/async", "success");
     getWireMock().stubFor(get(urlPathEqualTo(RESULT_PATH)).willReturn(okJson(CONVERT_RESULT)));
 
-    DoclingServeApi client = client(this.recordingExecutor).toBuilder().build();
+    DoclingServeApi client = client(this.recordingExecutor).config().toBuilder().build();
 
     client.convertSourceAsync(convertRequest())
         .toCompletableFuture()

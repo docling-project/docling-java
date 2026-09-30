@@ -24,4 +24,9 @@ class DoclingServeJackson3ClientConfigTests extends AbstractDoclingServeClientCo
   protected DoclingServeClient.DoclingServeClientBuilder<?, ?> newClientBuilder() {
     return DoclingServeJackson3Client.builder();
   }
+
+  @Override
+  protected DoclingServeClient copyOf(DoclingServeClient client) {
+    return ((DoclingServeJackson3Client) client).toBuilder().build();
+  }
 }

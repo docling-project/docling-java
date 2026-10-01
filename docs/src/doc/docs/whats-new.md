@@ -6,6 +6,7 @@ Docling Java {{ gradle.project_version }} includes important breaking changes, a
 
 ### {{ gradle.project_version }}
 
+* **`DoclingDocument` keeps required empty strings when it is serialized** — Serializing a `DoclingDocument` used to drop the `text` and `orig` fields when they were empty strings, such as `"text": ""` on a formula converted without formula enrichment, or on a list item that only introduces a nested list. These fields are required by the [`DoclingDocument` JSON schema](https://github.com/docling-project/docling-core/tree/main/docs/schemas), so a document written back to JSON failed validation and could not be chunked. The required `text` and `orig` fields are now always written, even when empty. Empty lists are still left out.
 
 ### 0.5.2
 

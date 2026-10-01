@@ -103,42 +103,60 @@ public class DoclingDocument {
   public static class DocumentOrigin {
     @JsonProperty("mimetype")
     private String mimetype;
-    
+
     @JsonProperty("binary_hash")
     private BigInteger binaryHash;
-    
+
     @JsonProperty("filename")
     private String filename;
-    
+
     @JsonProperty("uri")
     @Nullable
     private String uri;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   public enum ContentLayer {
-    @JsonProperty("body") BODY,
-    @JsonProperty("furniture") FURNITURE,
-    @JsonProperty("background") BACKGROUND,
-    @JsonProperty("invisible") INVISIBLE,
-    @JsonProperty("notes") NOTES
+    @JsonProperty("body")
+    BODY,
+    @JsonProperty("furniture")
+    FURNITURE,
+    @JsonProperty("background")
+    BACKGROUND,
+    @JsonProperty("invisible")
+    INVISIBLE,
+    @JsonProperty("notes")
+    NOTES
   }
 
   public enum GroupLabel {
-    @JsonProperty("unspecified") UNSPECIFIED,
-    @JsonProperty("list") LIST,
-    @JsonProperty("ordered_list") ORDERED_LIST,
-    @JsonProperty("chapter") CHAPTER,
-    @JsonProperty("section") SECTION,
-    @JsonProperty("sheet") SHEET,
-    @JsonProperty("slide") SLIDE,
-    @JsonProperty("form_area") FORM_AREA,
-    @JsonProperty("key_value_area") KEY_VALUE_AREA,
-    @JsonProperty("comment_section") COMMENT_SECTION,
-    @JsonProperty("inline") INLINE,
-    @JsonProperty("picture_area") PICTURE_AREA
+    @JsonProperty("unspecified")
+    UNSPECIFIED,
+    @JsonProperty("list")
+    LIST,
+    @JsonProperty("ordered_list")
+    ORDERED_LIST,
+    @JsonProperty("chapter")
+    CHAPTER,
+    @JsonProperty("section")
+    SECTION,
+    @JsonProperty("sheet")
+    SHEET,
+    @JsonProperty("slide")
+    SLIDE,
+    @JsonProperty("form_area")
+    FORM_AREA,
+    @JsonProperty("key_value_area")
+    KEY_VALUE_AREA,
+    @JsonProperty("comment_section")
+    COMMENT_SECTION,
+    @JsonProperty("inline")
+    INLINE,
+    @JsonProperty("picture_area")
+    PICTURE_AREA
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -150,32 +168,33 @@ public class DoclingDocument {
   public static class GroupItem {
     @JsonProperty("self_ref")
     private String selfRef;
-    
+
     @JsonProperty("parent")
     @Nullable
     private RefItem parent;
-    
+
     @JsonProperty("children")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
-    
+
     @JsonProperty("content_layer")
     private ContentLayer contentLayer;
-    
+
     @JsonProperty("meta")
     @Nullable
     private BaseMeta meta;
-    
+
     @JsonProperty("name")
     @Nullable
     private String name;
-    
+
     @JsonProperty("label")
     private GroupLabel label;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -189,7 +208,8 @@ public class DoclingDocument {
     private String ref;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -217,7 +237,8 @@ public class DoclingDocument {
     private List<Integer> range;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -288,7 +309,8 @@ public class DoclingDocument {
     private String code;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -311,6 +333,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("orig")
@@ -331,7 +354,8 @@ public class DoclingDocument {
     private List<Integer> charspan;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -350,7 +374,8 @@ public class DoclingDocument {
     private List<EntityMention> mentions;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -378,7 +403,8 @@ public class DoclingDocument {
     }
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -406,7 +432,8 @@ public class DoclingDocument {
     }
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -437,7 +464,8 @@ public class DoclingDocument {
     private TopicsMetaField topics;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -456,70 +484,97 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
-  @JsonTypeInfo(
-      use = JsonTypeInfo.Id.NAME,
-      include = JsonTypeInfo.As.EXISTING_PROPERTY,
-      property = "kind",
-      visible = true
-  )
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "kind", visible = true)
   @JsonSubTypes({
       @Type(value = TrackSource.class, name = "track")
   })
-  public sealed interface SourceType permits TrackSource { }
+  public sealed interface SourceType permits TrackSource {
+  }
 
   public enum DocItemLabel {
-    @JsonProperty("caption") CAPTION,
-    @JsonProperty("chart") CHART,
-    @JsonProperty("checkbox_selected") CHECKBOX_SELECTED,
-    @JsonProperty("checkbox_unselected") CHECKBOX_UNSELECTED,
-    @JsonProperty("code") CODE,
-    @JsonProperty("document_index") DOCUMENT_INDEX,
-    @JsonProperty("empty_value") EMPTY_VALUE,
-    @JsonProperty("footnote") FOOTNOTE,
-    @JsonProperty("form") FORM,
-    @JsonProperty("formula") FORMULA,
-    @JsonProperty("grading_scale") GRADING_SCALE,
-    @JsonProperty("handwritten_text") HANDWRITTEN_TEXT,
-    @JsonProperty("key_value_region") KEY_VALUE_REGION,
-    @JsonProperty("list_item") LIST_ITEM,
-    @JsonProperty("page_footer") PAGE_FOOTER,
-    @JsonProperty("page_header") PAGE_HEADER,
-    @JsonProperty("paragraph") PARAGRAPH,
-    @JsonProperty("picture") PICTURE,
-    @JsonProperty("reference") REFERENCE,
-    @JsonProperty("section_header") SECTION_HEADER,
-    @JsonProperty("table") TABLE,
-    @JsonProperty("text") TEXT,
-    @JsonProperty("title") TITLE,
-    @JsonProperty("field_region") FIELD_REGION,
-    @JsonProperty("field_heading") FIELD_HEADING,
-    @JsonProperty("field_item") FIELD_ITEM,
-    @JsonProperty("field_key") FIELD_KEY,
-    @JsonProperty("field_value") FIELD_VALUE,
-    @JsonProperty("field_hint") FIELD_HINT,
-    @JsonProperty("marker") MARKER
+    @JsonProperty("caption")
+    CAPTION,
+    @JsonProperty("chart")
+    CHART,
+    @JsonProperty("checkbox_selected")
+    CHECKBOX_SELECTED,
+    @JsonProperty("checkbox_unselected")
+    CHECKBOX_UNSELECTED,
+    @JsonProperty("code")
+    CODE,
+    @JsonProperty("document_index")
+    DOCUMENT_INDEX,
+    @JsonProperty("empty_value")
+    EMPTY_VALUE,
+    @JsonProperty("footnote")
+    FOOTNOTE,
+    @JsonProperty("form")
+    FORM,
+    @JsonProperty("formula")
+    FORMULA,
+    @JsonProperty("grading_scale")
+    GRADING_SCALE,
+    @JsonProperty("handwritten_text")
+    HANDWRITTEN_TEXT,
+    @JsonProperty("key_value_region")
+    KEY_VALUE_REGION,
+    @JsonProperty("list_item")
+    LIST_ITEM,
+    @JsonProperty("page_footer")
+    PAGE_FOOTER,
+    @JsonProperty("page_header")
+    PAGE_HEADER,
+    @JsonProperty("paragraph")
+    PARAGRAPH,
+    @JsonProperty("picture")
+    PICTURE,
+    @JsonProperty("reference")
+    REFERENCE,
+    @JsonProperty("section_header")
+    SECTION_HEADER,
+    @JsonProperty("table")
+    TABLE,
+    @JsonProperty("text")
+    TEXT,
+    @JsonProperty("title")
+    TITLE,
+    @JsonProperty("field_region")
+    FIELD_REGION,
+    @JsonProperty("field_heading")
+    FIELD_HEADING,
+    @JsonProperty("field_item")
+    FIELD_ITEM,
+    @JsonProperty("field_key")
+    FIELD_KEY,
+    @JsonProperty("field_value")
+    FIELD_VALUE,
+    @JsonProperty("field_hint")
+    FIELD_HINT,
+    @JsonProperty("marker")
+    MARKER
   }
 
   public enum Orientation {
-    @JsonProperty("rot_0") ROT_0,
-    @JsonProperty("rot_90") ROT_90,
-    @JsonProperty("rot_180") ROT_180,
-    @JsonProperty("rot_270") ROT_270
+    @JsonProperty("rot_0")
+    ROT_0,
+    @JsonProperty("rot_90")
+    ROT_90,
+    @JsonProperty("rot_180")
+    ROT_180,
+    @JsonProperty("rot_270")
+    ROT_270
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  @JsonTypeInfo(
-      use = JsonTypeInfo.Id.NAME,
-      include = JsonTypeInfo.As.EXISTING_PROPERTY,
-      property = "label",
-      visible = true
-  )
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "label", visible = true)
   @JsonSubTypes({
       @Type(value = TitleItem.class, name = "title"),
       @Type(value = SectionHeaderItem.class, name = "section_header"),
@@ -575,9 +630,12 @@ public class DoclingDocument {
   }
 
   public enum Script {
-    @JsonProperty("baseline") BASELINE,
-    @JsonProperty("sub") SUB,
-    @JsonProperty("super") SUPER
+    @JsonProperty("baseline")
+    BASELINE,
+    @JsonProperty("sub")
+    SUB,
+    @JsonProperty("super")
+    SUPER
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -603,7 +661,8 @@ public class DoclingDocument {
     private Script script;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -641,9 +700,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -665,7 +726,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -703,9 +765,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -730,7 +794,8 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -768,9 +833,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -795,7 +862,8 @@ public class DoclingDocument {
     private Integer level;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -833,9 +901,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -864,7 +934,8 @@ public class DoclingDocument {
     private String marker;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -902,9 +973,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -949,7 +1022,8 @@ public class DoclingDocument {
     private String codeLanguage;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -987,9 +1061,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1011,7 +1087,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1049,9 +1126,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1073,7 +1152,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1111,9 +1191,11 @@ public class DoclingDocument {
     private List<ProvenanceItem> prov;
 
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("formatting")
@@ -1139,7 +1221,8 @@ public class DoclingDocument {
     private String kind;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1152,42 +1235,42 @@ public class DoclingDocument {
     @JsonProperty("self_ref")
     @Nullable
     private String selfRef;
-    
+
     @JsonProperty("parent")
     private RefItem parent;
-    
+
     @JsonProperty("children")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
-    
+
     @JsonProperty("content_layer")
     private ContentLayer contentLayer;
-    
+
     @JsonProperty("meta")
     @Nullable
     private PictureMeta meta;
-    
+
     @JsonProperty("label")
     private String label;
-    
+
     @JsonProperty("prov")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
-    
+
     @JsonProperty("captions")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> captions;
-    
+
     @JsonProperty("references")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> references;
-    
+
     @JsonProperty("footnotes")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<RefItem> footnotes;
-    
+
     @JsonProperty("image")
     @Nullable
     private ImageRef image;
@@ -1208,7 +1291,8 @@ public class DoclingDocument {
     private List<Map<String, Object>> annotations;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1259,7 +1343,8 @@ public class DoclingDocument {
     private CodeMetaField code;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -1283,6 +1368,7 @@ public class DoclingDocument {
     private String createdBy;
 
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @JsonProperty("language")
@@ -1290,7 +1376,8 @@ public class DoclingDocument {
     private String language;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1303,16 +1390,18 @@ public class DoclingDocument {
     @JsonProperty("confidence")
     @Nullable
     private Double confidence;
-    
+
     @JsonProperty("created_by")
     @Nullable
     private String createdBy;
-    
+
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1328,7 +1417,8 @@ public class DoclingDocument {
     private List<PictureClassificationPrediction> predictions;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1341,16 +1431,17 @@ public class DoclingDocument {
     @JsonProperty("confidence")
     @Nullable
     private Double confidence;
-    
+
     @JsonProperty("created_by")
     @Nullable
     private String createdBy;
-    
+
     @JsonProperty("class_name")
     private String className;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1363,16 +1454,17 @@ public class DoclingDocument {
     @JsonProperty("confidence")
     @Nullable
     private Double confidence;
-    
+
     @JsonProperty("created_by")
     @Nullable
     private String createdBy;
-    
+
     @JsonProperty("smi")
     private String smi;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1385,20 +1477,21 @@ public class DoclingDocument {
     @JsonProperty("confidence")
     @Nullable
     private Double confidence;
-    
+
     @JsonProperty("created_by")
     @Nullable
     private String createdBy;
-    
+
     @JsonProperty("title")
     @Nullable
     private String title;
-    
+
     @JsonProperty("chart_data")
     private TableData chartData;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1410,17 +1503,18 @@ public class DoclingDocument {
   public static class ProvenanceItem {
     @JsonProperty("page_no")
     private Integer pageNo;
-    
+
     @JsonProperty("bbox")
     private BoundingBox bbox;
-    
+
     @JsonProperty("charspan")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("charspan")
     private List<Integer> charspan;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1432,22 +1526,23 @@ public class DoclingDocument {
   public static class BoundingBox {
     @JsonProperty("l")
     private Double l;
-    
+
     @JsonProperty("t")
     private Double t;
-    
+
     @JsonProperty("r")
     private Double r;
-    
+
     @JsonProperty("b")
     private Double b;
-    
+
     @JsonProperty("coord_origin")
     @Nullable
     private String coordOrigin;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1459,18 +1554,19 @@ public class DoclingDocument {
   public static class ImageRef {
     @JsonProperty("mimetype")
     private String mimetype;
-    
+
     @JsonProperty("dpi")
     private Integer dpi;
-    
+
     @JsonProperty("size")
     private Size size;
-    
+
     @JsonProperty("uri")
     private String uri;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1482,12 +1578,13 @@ public class DoclingDocument {
   public static class Size {
     @JsonProperty("width")
     private Double width;
-    
+
     @JsonProperty("height")
     private Double height;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1499,50 +1596,50 @@ public class DoclingDocument {
   public static class TableItem {
     @JsonProperty("self_ref")
     private String selfRef;
-    
+
     @JsonProperty("parent")
     @Nullable
     private RefItem parent;
-    
+
     @JsonProperty("children")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
-    
+
     @JsonProperty("content_layer")
     private ContentLayer contentLayer;
-    
+
     @JsonProperty("meta")
     @Nullable
     private FloatingMeta meta;
-    
+
     @JsonProperty("label")
     private String label;
-    
+
     @JsonProperty("prov")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
-    
+
     @JsonProperty("captions")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
-    
+
     @JsonProperty("references")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
-    
+
     @JsonProperty("footnotes")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
-    
+
     @JsonProperty("image")
     @Nullable
     private ImageRef image;
-    
+
     @JsonProperty("data")
     private TableData data;
 
@@ -1562,7 +1659,8 @@ public class DoclingDocument {
     private List<Map<String, Object>> annotations;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1597,7 +1695,8 @@ public class DoclingDocument {
     private DescriptionMetaField description;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1611,13 +1710,13 @@ public class DoclingDocument {
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<TableCell> tableCells;
-    
+
     @JsonProperty("num_rows")
     private Integer numRows;
-    
+
     @JsonProperty("num_cols")
     private Integer numCols;
-    
+
     @JsonProperty("grid")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("grid")
@@ -1628,7 +1727,8 @@ public class DoclingDocument {
     private Orientation orientation;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1640,37 +1740,38 @@ public class DoclingDocument {
   public static class TableCell {
     @JsonProperty("bbox")
     private BoundingBox bbox;
-    
+
     @JsonProperty("row_span")
     private Integer rowSpan;
-    
+
     @JsonProperty("col_span")
     private Integer colSpan;
-    
+
     @JsonProperty("start_row_offset_idx")
     private Integer startRowOffsetIdx;
-    
+
     @JsonProperty("end_row_offset_idx")
     private Integer endRowOffsetIdx;
-    
+
     @JsonProperty("start_col_offset_idx")
     private Integer startColOffsetIdx;
-    
+
     @JsonProperty("end_col_offset_idx")
     private Integer endColOffsetIdx;
-    
+
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
-    
+
     @JsonProperty("column_header")
     private boolean columnHeader;
-    
+
     @JsonProperty("row_header")
     private boolean rowHeader;
-    
+
     @JsonProperty("row_section")
     private boolean rowSection;
-    
+
     @JsonProperty("fillable")
     private boolean fillable;
 
@@ -1679,7 +1780,8 @@ public class DoclingDocument {
     private RefItem ref;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1691,50 +1793,50 @@ public class DoclingDocument {
   public static class KeyValueItem {
     @JsonProperty("self_ref")
     private String selfRef;
-    
+
     @JsonProperty("parent")
     @Nullable
     private RefItem parent;
-    
+
     @JsonProperty("children")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
-    
+
     @JsonProperty("content_layer")
     private ContentLayer contentLayer;
-    
+
     @JsonProperty("meta")
     @Nullable
     private FloatingMeta meta;
-    
+
     @JsonProperty("label")
     private String label;
-    
+
     @JsonProperty("prov")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
-    
+
     @JsonProperty("captions")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
-    
+
     @JsonProperty("references")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
-    
+
     @JsonProperty("footnotes")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
-    
+
     @JsonProperty("image")
     @Nullable
     private ImageRef image;
-    
+
     @JsonProperty("graph")
     private GraphData graph;
 
@@ -1749,7 +1851,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1763,21 +1866,26 @@ public class DoclingDocument {
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<GraphCell> cells;
-    
+
     @JsonProperty("links")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<GraphLink> links;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   public enum GraphCellLabel {
-    @JsonProperty("unspecified") UNSPECIFIED,
-    @JsonProperty("key") KEY,
-    @JsonProperty("value") VALUE,
-    @JsonProperty("checkbox") CHECKBOX
+    @JsonProperty("unspecified")
+    UNSPECIFIED,
+    @JsonProperty("key")
+    KEY,
+    @JsonProperty("value")
+    VALUE,
+    @JsonProperty("checkbox")
+    CHECKBOX
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1789,34 +1897,42 @@ public class DoclingDocument {
   public static class GraphCell {
     @JsonProperty("label")
     private GraphCellLabel label;
-    
+
     @JsonProperty("cell_id")
     private Integer cellId;
-    
+
     @JsonProperty("text")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String text;
-    
+
     @JsonProperty("orig")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String orig;
-    
+
     @JsonProperty("prov")
     @Nullable
     private ProvenanceItem prov;
-    
+
     @JsonProperty("item_ref")
     @Nullable
     private RefItem itemRef;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   public enum GraphLinkLabel {
-    @JsonProperty("unspecified") UNSPECIFIED,
-    @JsonProperty("to_value") TO_VALUE,
-    @JsonProperty("to_key") TO_KEY,
-    @JsonProperty("to_parent") TO_PARENT,
-    @JsonProperty("to_child") TO_CHILD
+    @JsonProperty("unspecified")
+    UNSPECIFIED,
+    @JsonProperty("to_value")
+    TO_VALUE,
+    @JsonProperty("to_key")
+    TO_KEY,
+    @JsonProperty("to_parent")
+    TO_PARENT,
+    @JsonProperty("to_child")
+    TO_CHILD
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1828,15 +1944,16 @@ public class DoclingDocument {
   public static class GraphLink {
     @JsonProperty("label")
     private GraphLinkLabel label;
-    
+
     @JsonProperty("source_cell_id")
     private Integer sourceCellId;
-    
+
     @JsonProperty("target_cell_id")
     private Integer targetCellId;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1848,50 +1965,50 @@ public class DoclingDocument {
   public static class FormItem {
     @JsonProperty("self_ref")
     private String selfRef;
-    
+
     @JsonProperty("parent")
     @Nullable
     private RefItem parent;
-    
+
     @JsonProperty("children")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("child")
     private List<RefItem> children;
-    
+
     @JsonProperty("content_layer")
     private ContentLayer contentLayer;
-    
+
     @JsonProperty("meta")
     @Nullable
     private FloatingMeta meta;
-    
+
     @JsonProperty("label")
     private String label;
-    
+
     @JsonProperty("prov")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular("prov")
     private List<ProvenanceItem> prov;
-    
+
     @JsonProperty("captions")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> captions;
-    
+
     @JsonProperty("references")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> references;
-    
+
     @JsonProperty("footnotes")
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     @lombok.Singular
     private List<RefItem> footnotes;
-    
+
     @JsonProperty("image")
     @Nullable
     private ImageRef image;
-    
+
     @JsonProperty("graph")
     private GraphData graph;
 
@@ -1906,7 +2023,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -1958,7 +2076,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   /**
@@ -2011,7 +2130,8 @@ public class DoclingDocument {
     private List<FineRef> comments;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -2023,19 +2143,21 @@ public class DoclingDocument {
   public static class PageItem {
     @JsonProperty("size")
     private Size size;
-    
+
     @JsonProperty("image")
     @Nullable
     private ImageRef image;
-    
+
     @JsonProperty("page_no")
     private Integer pageNo;
 
     @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-    public static class Builder { }
+    public static class Builder {
+    }
   }
 
   @tools.jackson.databind.annotation.JsonPOJOBuilder(withPrefix = "")
-  public static class Builder { }
+  public static class Builder {
+  }
 
 }

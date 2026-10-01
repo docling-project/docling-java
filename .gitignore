@@ -17,3 +17,5 @@ bin/
 !**/src/test/**/bin/
 
 .explyt/
+/.codex/
+.tasks/

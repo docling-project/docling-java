@@ -1,25 +1,121 @@
 package ai.docling.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import ai.docling.core.DoclingDocument.ContentLayer;
 import ai.docling.core.DoclingDocument.DocItemLabel;
+import ai.docling.core.DoclingDocument.FormulaItem;
 import ai.docling.core.DoclingDocument.GroupItem;
 import ai.docling.core.DoclingDocument.GroupLabel;
+import ai.docling.core.DoclingDocument.ListItem;
 import ai.docling.core.DoclingDocument.Orientation;
+import ai.docling.core.DoclingDocument.TableCell;
 import ai.docling.core.DoclingDocument.TitleItem;
 
 /**
  * Unit tests for {@link DoclingDocument}.
  */
 class DoclingDocumentTests {
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final TextNode EMPTY_TEXT = TextNode.valueOf("");
+  private static final String FORMULA_ORIG = "Then came the frost . . . . . . . and the snow";
+
+  // A formula converted without formula enrichment: docling sets text to "" and keeps the cell text in orig
+  private static final String FORMULA_ITEM = """
+      {
+        "self_ref": "#/texts/0",
+        "parent": {"$ref": "#/body"},
+        "children": [],
+        "content_layer": "body",
+        "label": "formula",
+        "prov": [],
+        "orig": "%s",
+        "text": ""
+      }
+      """.formatted(FORMULA_ORIG);
+
+  // A list item that only introduces a nested list, so it has no text of its own
+  private static final String CONTAINER_ONLY_LIST_ITEM = """
+      {
+        "self_ref": "#/texts/1",
+        "parent": {"$ref": "#/groups/0"},
+        "children": [{"$ref": "#/groups/1"}],
+        "content_layer": "body",
+        "label": "list_item",
+        "prov": [],
+        "orig": "",
+        "text": "",
+        "enumerated": false,
+        "marker": "-"
+      }
+      """;
+
+  private static final String TABLE_CELL = """
+      {
+        "text": "",
+        "row_span": 1,
+        "col_span": 1,
+        "start_row_offset_idx": 0,
+        "end_row_offset_idx": 1,
+        "start_col_offset_idx": 0,
+        "end_col_offset_idx": 1,
+        "column_header": false,
+        "row_header": false,
+        "row_section": false,
+        "fillable": false
+      }
+      """;
+
+  // A rich table cell is a table cell whose content is a document item, referenced by ref
+  private static final String RICH_TABLE_CELL = """
+      {
+        "text": "",
+        "row_span": 1,
+        "col_span": 1,
+        "start_row_offset_idx": 0,
+        "end_row_offset_idx": 1,
+        "start_col_offset_idx": 1,
+        "end_col_offset_idx": 2,
+        "column_header": false,
+        "row_header": false,
+        "row_section": false,
+        "fillable": false,
+        "ref": {"$ref": "#/groups/2"}
+      }
+      """;
+
+  private static final String DOCUMENT_WITH_EMPTY_REQUIRED_STRINGS = """
+      {
+        "schema_name": "DoclingDocument",
+        "version": "1.8.0",
+        "name": "empty-required-strings",
+        "texts": [%s, %s],
+        "tables": [
+          {
+            "self_ref": "#/tables/0",
+            "content_layer": "body",
+            "label": "table",
+            "data": {
+              "num_rows": 1,
+              "num_cols": 2,
+              "table_cells": [%s, %s]
+            }
+          }
+        ],
+        "pictures": [],
+        "key_value_items": []
+      }
+      """.formatted(FORMULA_ITEM, CONTAINER_ONLY_LIST_ITEM, TABLE_CELL, RICH_TABLE_CELL);
 
   @Test
   void shouldBuildEmptyDocument() {
@@ -46,7 +142,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldSerializeFurnitureField() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     GroupItem furniture = GroupItem.builder()
         .selfRef("#/furniture")
         .contentLayer(ContentLayer.FURNITURE)
@@ -59,7 +154,7 @@ class DoclingDocumentTests {
         .furniture(furniture)
         .build();
 
-    String json = mapper.writeValueAsString(document);
+    String json = MAPPER.writeValueAsString(document);
 
     assertThat(json).contains("\"furniture\"");
     assertThat(json).contains("\"content_layer\":\"furniture\"");
@@ -67,7 +162,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeFurnitureField() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "test-document",
@@ -81,7 +175,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getFurniture()).isNotNull();
     assertThat(document.getFurniture().getSelfRef()).isEqualTo("#/furniture");
@@ -91,7 +185,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeCurrentBaseMetaFields() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "meta-document",
@@ -129,7 +222,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getBody().getMeta().getSummary().getText()).isEqualTo("Short summary");
     assertThat(document.getBody().getMeta().getLanguage().getCode()).isEqualTo("en");
@@ -138,7 +231,7 @@ class DoclingDocumentTests {
     assertThat(document.getBody().getMeta().getKeywords().getValues()).containsExactly("document", "conversion");
     assertThat(document.getBody().getMeta().getTopics().getValues()).containsExactly("engineering");
 
-    String serialized = mapper.writeValueAsString(document);
+    String serialized = MAPPER.writeValueAsString(document);
 
     assertThat(serialized).contains("\"language\"");
     assertThat(serialized).contains("\"entities\"");
@@ -148,7 +241,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeFieldRegionsAndFieldItems() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "field-document",
@@ -186,14 +278,13 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getFieldRegions()).hasSize(1);
     assertThat(document.getFieldRegions().get(0).getLabel()).isEqualTo(DocItemLabel.FIELD_REGION);
     assertThat(document.getFieldRegions().get(0).getSource().get(0))
         .isInstanceOfSatisfying(
-            DoclingDocument.TrackSource.class,
-            track -> assertThat(track.getIdentifier()).isEqualTo("caption-track"));
+            DoclingDocument.TrackSource.class, track -> assertThat(track.getIdentifier()).isEqualTo("caption-track"));
     assertThat(document.getFieldRegions().get(0).getComments().get(0).getRef()).isEqualTo("#/texts/0");
     assertThat(document.getFieldRegions().get(0).getComments().get(0).getRange()).containsExactly(1, 5);
     assertThat(document.getFieldItems()).hasSize(1);
@@ -202,7 +293,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldSerializeFieldSourcesAndFineRefsUsingDoclingJsonShape() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     DoclingDocument.FieldRegionItem fieldRegion = DoclingDocument.FieldRegionItem.builder()
         .selfRef("#/field_regions/0")
         .contentLayer(ContentLayer.BODY)
@@ -223,7 +313,7 @@ class DoclingDocumentTests {
         .fieldRegion(fieldRegion)
         .build();
 
-    String json = mapper.writeValueAsString(document);
+    String json = MAPPER.writeValueAsString(document);
 
     assertThat(json).contains("\"kind\":\"track\"");
     assertThat(json).contains("\"start_time\":1.25");
@@ -238,7 +328,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeNullFieldCollectionsAsEmptyLists() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "null-fields-document",
@@ -247,7 +336,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getFieldRegions()).isEmpty();
     assertThat(document.getFieldItems()).isEmpty();
@@ -255,7 +344,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeFieldItemWithMetaProvenanceSourceAndComments() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "rich-field-document",
@@ -303,7 +391,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getFieldItems()).hasSize(1);
     DoclingDocument.FieldItem fieldItem = document.getFieldItems().get(0);
@@ -319,7 +407,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeCurrentTableDataFields() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "table-document",
@@ -346,7 +433,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getTables()).hasSize(1);
     assertThat(document.getTables().get(0).getData().getOrientation()).isEqualTo(Orientation.ROT_90);
@@ -355,7 +442,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeCurrentFieldTextVariants() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "field-text-document",
@@ -393,21 +479,19 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     assertThat(document.getTexts()).hasSize(2);
     assertThat(document.getTexts().get(0))
         .isInstanceOfSatisfying(
-            DoclingDocument.FieldHeadingItem.class,
-            heading -> {
+            DoclingDocument.FieldHeadingItem.class, heading -> {
               assertThat(heading.getLevel()).isEqualTo(2);
               assertThat(heading.getSource().get(0)).isInstanceOf(DoclingDocument.TrackSource.class);
               assertThat(heading.getComments().get(0).getRange()).containsExactly(0, 4);
             });
     assertThat(document.getTexts().get(1))
         .isInstanceOfSatisfying(
-            DoclingDocument.FieldValueItem.class,
-            value -> {
+            DoclingDocument.FieldValueItem.class, value -> {
               assertThat(value.getKind()).isEqualTo("fillable");
               assertThat(value.getLabel()).isEqualTo(DocItemLabel.FIELD_VALUE);
             });
@@ -415,7 +499,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializePictureMetaIncludingCode() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "picture-meta-document",
@@ -448,7 +531,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     DoclingDocument.PictureMeta meta = document.getPictures().get(0).getMeta();
     assertThat(meta.getDescription().getText()).isEqualTo("A bar chart");
@@ -459,7 +542,7 @@ class DoclingDocumentTests {
     assertThat(meta.getCode().getLanguage()).isEqualTo("Python");
     assertThat(meta.getCode().getConfidence()).isEqualTo(0.8);
 
-    String serialized = mapper.writeValueAsString(document);
+    String serialized = MAPPER.writeValueAsString(document);
 
     assertThat(serialized).contains("\"code\"");
     assertThat(serialized).contains("\"language\":\"Python\"");
@@ -467,7 +550,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeserializeTableCellsAsTypedTableCells() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "table-cells-document",
@@ -502,7 +584,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     List<DoclingDocument.TableCell> cells = document.getTables().get(0).getData().getTableCells();
     assertThat(cells).hasSize(2);
@@ -516,7 +598,6 @@ class DoclingDocumentTests {
 
   @Test
   void shouldDeduplicateKeywordsAndTopicsPreservingOrder() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
     String json = """
         {
           "name": "dedup-document",
@@ -532,7 +613,7 @@ class DoclingDocumentTests {
         }
         """;
 
-    DoclingDocument document = mapper.readValue(json, DoclingDocument.class);
+    DoclingDocument document = MAPPER.readValue(json, DoclingDocument.class);
 
     // Order-preserving, deduplicated — matching the Python UniqueList invariant.
     assertThat(document.getBody().getMeta().getKeywords().getValues())
@@ -544,14 +625,96 @@ class DoclingDocumentTests {
   @Test
   void shouldRejectNonTrackKindOnTrackSource() {
     assertThatThrownBy(
-            () -> DoclingDocument.TrackSource.builder().kind("bogus").startTime(0.0).endTime(1.0).build())
+        () -> DoclingDocument.TrackSource.builder().kind("bogus").startTime(0.0).endTime(1.0).build())
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("track");
 
     // The fixed discriminator default is still produced without setting it.
-    DoclingDocument.TrackSource source =
-        DoclingDocument.TrackSource.builder().startTime(0.0).endTime(1.0).build();
+    DoclingDocument.TrackSource source = DoclingDocument.TrackSource.builder().startTime(0.0).endTime(1.0).build();
     assertThat(source.getKind()).isEqualTo("track");
+  }
+
+  @Test
+  void shouldKeepEmptyTextOfFormulaItemWhenSerializing() throws Exception {
+    var formula = MAPPER.readValue(FORMULA_ITEM, FormulaItem.class);
+
+    assertThat(formula)
+        .returns("", FormulaItem::getText)
+        .returns(FORMULA_ORIG, FormulaItem::getOrig);
+
+    assertThatObject(writeAndReadTree(formula))
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(TextNode.valueOf(FORMULA_ORIG), node -> node.path("orig"))
+        .returns(false, node -> node.has("children"))
+        .returns(false, node -> node.has("prov"))
+        .returns(false, node -> node.has("comments"))
+        .returns(false, node -> node.has("source"));
+  }
+
+  @Test
+  void shouldKeepEmptyTextAndOrigOfContainerOnlyListItemWhenSerializing() throws Exception {
+    var listItem = MAPPER.readValue(CONTAINER_ONLY_LIST_ITEM, ListItem.class);
+
+    assertThat(listItem)
+        .returns("", ListItem::getText)
+        .returns("", ListItem::getOrig);
+
+    assertThatObject(writeAndReadTree(listItem))
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(EMPTY_TEXT, node -> node.path("orig"))
+        .returns(TextNode.valueOf("#/groups/1"), node -> node.at("/children/0/$ref"))
+        .returns(false, node -> node.has("prov"))
+        .returns(false, node -> node.has("comments"))
+        .returns(false, node -> node.has("source"));
+  }
+
+  @Test
+  void shouldKeepEmptyTextOfTableCellsWhenSerializing() throws Exception {
+    var cell = MAPPER.readValue(TABLE_CELL, TableCell.class);
+    var richCell = MAPPER.readValue(RICH_TABLE_CELL, TableCell.class);
+
+    assertThat(List.of(cell, richCell))
+        .extracting(TableCell::getText)
+        .containsExactly("", "");
+
+    assertThatObject(writeAndReadTree(cell))
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(false, node -> node.has("ref"));
+
+    assertThatObject(writeAndReadTree(richCell))
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(TextNode.valueOf("#/groups/2"), node -> node.at("/ref/$ref"));
+  }
+
+  @Test
+  void shouldKeepEmptyRequiredStringsWhenSerializingDocument() throws Exception {
+    var document = MAPPER.readValue(DOCUMENT_WITH_EMPTY_REQUIRED_STRINGS, DoclingDocument.class);
+    var writtenDocument = writeAndReadTree(document);
+    var writtenFormula = writtenDocument.at("/texts/0");
+    var writtenListItem = writtenDocument.at("/texts/1");
+    var writtenCells = writtenDocument.at("/tables/0/data/table_cells");
+
+    assertThatObject(writtenFormula)
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(TextNode.valueOf(FORMULA_ORIG), node -> node.path("orig"))
+        .returns(false, node -> node.has("prov"));
+
+    assertThatObject(writtenListItem)
+        .returns(EMPTY_TEXT, node -> node.path("text"))
+        .returns(EMPTY_TEXT, node -> node.path("orig"));
+
+    assertThatObject(writtenCells)
+        .returns(EMPTY_TEXT, node -> node.at("/0/text"))
+        .returns(EMPTY_TEXT, node -> node.at("/1/text"));
+
+    assertThatObject(writtenDocument)
+        .returns(false, node -> node.has("pictures"))
+        .returns(false, node -> node.has("key_value_items"));
+  }
+
+  // Writes the value to a JSON string, as an application storing a document would, and reads it back as a tree
+  private static JsonNode writeAndReadTree(Object value) throws Exception {
+    return MAPPER.readTree(MAPPER.writeValueAsString(value));
   }
 
 }

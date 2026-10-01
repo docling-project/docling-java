@@ -15,6 +15,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
@@ -33,11 +34,13 @@ import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -60,7 +63,11 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import ai.docling.core.DoclingDocument;
+import ai.docling.core.DoclingDocument.BaseTextItem;
 import ai.docling.core.DoclingDocument.DocItemLabel;
+import ai.docling.core.DoclingDocument.FormulaItem;
+import ai.docling.core.DoclingDocument.ListItem;
+import ai.docling.core.DoclingDocument.TableCell;
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
@@ -608,6 +615,198 @@ abstract class AbstractDoclingServeClientTests {
                       .withBody(body)
               )
       );
+    }
+  }
+
+  // docling-serve sends "text": "" for a formula converted without formula enrichment and for a list item that only
+  // introduces a nested list. The text and orig fields are required strings in the DoclingDocument schema, so a document
+  // written back to JSON must keep them
+  @Nested
+  class EmptyRequiredStringTests {
+    private static final String TASK_ID = "empty-strings-task";
+    private static final String FORMULA_ORIG = "Then came the frost . . . . . . . and the snow";
+
+    private static final String CONVERT_RESPONSE = """
+        {
+          "document": {
+            "filename": "misprocessed.pdf",
+            "json_content": {
+              "schema_name": "DoclingDocument",
+              "version": "1.8.0",
+              "name": "misprocessed",
+              "texts": [
+                {
+                  "self_ref": "#/texts/0",
+                  "parent": {"$ref": "#/body"},
+                  "children": [],
+                  "content_layer": "body",
+                  "label": "formula",
+                  "prov": [],
+                  "orig": "%s",
+                  "text": ""
+                },
+                {
+                  "self_ref": "#/texts/1",
+                  "parent": {"$ref": "#/groups/0"},
+                  "children": [{"$ref": "#/groups/1"}],
+                  "content_layer": "body",
+                  "label": "list_item",
+                  "prov": [],
+                  "orig": "",
+                  "text": "",
+                  "enumerated": false,
+                  "marker": "-"
+                }
+              ],
+              "tables": [
+                {
+                  "self_ref": "#/tables/0",
+                  "content_layer": "body",
+                  "label": "table",
+                  "data": {
+                    "num_rows": 1,
+                    "num_cols": 2,
+                    "table_cells": [
+                      {
+                        "text": "",
+                        "start_row_offset_idx": 0,
+                        "end_row_offset_idx": 1,
+                        "start_col_offset_idx": 0,
+                        "end_col_offset_idx": 1
+                      },
+                      {
+                        "text": "",
+                        "start_row_offset_idx": 0,
+                        "end_row_offset_idx": 1,
+                        "start_col_offset_idx": 1,
+                        "end_col_offset_idx": 2,
+                        "ref": {"$ref": "#/groups/2"}
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "status": "success",
+          "errors": [],
+          "processing_time": 0.5,
+          "timings": {}
+        }
+        """.formatted(FORMULA_ORIG);
+
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void convertSourceKeepsEmptyRequiredStrings() {
+      getWiremockServer().stubFor(
+          post(urlPathEqualTo("/v1/convert/source"))
+              .willReturn(okJson(CONVERT_RESPONSE))
+      );
+
+      var response = getDoclingClient(false, true)
+          .convertSource(jsonConvertRequest());
+
+      assertKeepsEmptyRequiredStrings(response);
+    }
+
+    @Test
+    void convertSourceAsyncKeepsEmptyRequiredStrings() throws Exception {
+      var wireMockServer = getWiremockServer();
+
+      wireMockServer.stubFor(
+          post(urlPathEqualTo("/v1/convert/source/async"))
+              .willReturn(okJson(taskStatus("pending")))
+      );
+
+      // Reporting success on the first poll means the client does not wait for its poll interval
+      wireMockServer.stubFor(
+          get(urlPathEqualTo("/v1/status/poll/%s".formatted(TASK_ID)))
+              .willReturn(okJson(taskStatus("success")))
+      );
+
+      wireMockServer.stubFor(
+          get(urlPathEqualTo("/v1/result/%s".formatted(TASK_ID)))
+              .willReturn(okJson(CONVERT_RESPONSE))
+      );
+
+      var response = getDoclingClient(false, true)
+          .convertSourceAsync(jsonConvertRequest())
+          .toCompletableFuture()
+          .get(10, TimeUnit.SECONDS);
+
+      assertKeepsEmptyRequiredStrings(response);
+    }
+
+    private void assertKeepsEmptyRequiredStrings(ConvertDocumentResponse response) {
+      var document = assertThat(response)
+          .asInstanceOf(InstanceOfAssertFactories.type(InBodyConvertDocumentResponse.class))
+          .extracting(inBodyResponse -> inBodyResponse.getDocument().getJsonContent())
+          .isNotNull()
+          .actual();
+
+      var cells = document.getTables()
+          .get(0)
+          .getData()
+          .getTableCells();
+
+      // Reading keeps the empty strings: only writing the document back used to drop them
+      assertThat(document.getTexts())
+          .hasExactlyElementsOfTypes(FormulaItem.class, ListItem.class)
+          .extracting(BaseTextItem::getText, BaseTextItem::getOrig)
+          .containsExactly(tuple("", FORMULA_ORIG), tuple("", ""));
+
+      assertThat(cells)
+          .extracting(TableCell::getText)
+          .containsExactly("", "");
+
+      var writtenDocument = writeAndRead(document);
+
+      assertThat(writtenDocument)
+          .extractingByKey("texts", InstanceOfAssertFactories.list(Map.class))
+          .allSatisfy(text -> assertThat(text).doesNotContainKeys("prov", "comments", "source"))
+          .extracting(text -> text.get("text"), text -> text.get("orig"))
+          .containsExactly(tuple("", FORMULA_ORIG), tuple("", ""));
+
+      assertThat(writtenDocument)
+          .extractingByKey("tables", InstanceOfAssertFactories.list(Map.class))
+          .singleElement(InstanceOfAssertFactories.MAP)
+          .extractingByKey("data", InstanceOfAssertFactories.MAP)
+          .extractingByKey("table_cells", InstanceOfAssertFactories.list(Map.class))
+          .extracting(cell -> cell.get("text"), cell -> cell.containsKey("ref"))
+          .containsExactly(tuple("", false), tuple("", true));
+    }
+
+    // Writes the document with the client's own JSON mapper, as an application storing it would, and reads it back
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> writeAndRead(DoclingDocument document) {
+      return readValue(writeValueAsString(document), Map.class);
+    }
+
+    private ConvertDocumentRequest jsonConvertRequest() {
+      return ConvertDocumentRequest.builder()
+          .source(HttpSource.builder()
+              .url(URI.create("https://github.com/user-attachments/files/29854351/misprocessed.pdf"))
+              .build())
+          .options(ConvertDocumentOptions.builder()
+              .toFormat(OutputFormat.JSON)
+              .build())
+          .build();
+    }
+
+    private String taskStatus(String status) {
+      return """
+          {
+            "task_id": "%s",
+            "task_type": "convert",
+            "task_status": "%s",
+            "task_position": 0,
+            "task_meta": null
+          }
+          """.formatted(TASK_ID, status);
     }
   }
 

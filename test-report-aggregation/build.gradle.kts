@@ -37,3 +37,10 @@ tasks.named("check") {
       tasks.named<JacocoReport>("testCodeCoverageReport")
     )
 }
+
+// This project doesn't apply docling-java-shared, so set the JaCoCo version here too.
+// Otherwise the aggregated report falls back to Gradle's bundled JaCoCo, which may not
+// be able to read class files from the newest JDK in the CI matrix.
+jacoco {
+  toolVersion = libs.versions.jacoco.get()
+}

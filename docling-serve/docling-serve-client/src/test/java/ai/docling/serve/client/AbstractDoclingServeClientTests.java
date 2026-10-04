@@ -588,7 +588,9 @@ abstract class AbstractDoclingServeClientTests {
     @ValueSource(strings = {
         "{\"error\":\"gateway says no\"}",
         "{}",
-        "{\"detail\":[]}"
+        "{\"detail\":[]}",
+        "null",
+        "{\"detail\":null}"
     })
     void jsonBodyWithoutValidationDetailsKeepsStatusAndBody(String body) {
       stubHealth("application/json", body);

@@ -362,22 +362,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         }
       }
 
-      var validationError = statusCode == 422 ? parseValidationError(body.toString()) : Optional.<ValidationError>empty();
+      var responseBody = body.toString();
+      var validationError = (statusCode == 422) ? parseValidationError(responseBody) : Optional.<ValidationError>empty();
 
-      if (validationError.isPresent()) {
-        var errorText = validationError.get()
-            .getErrorDetails()
-            .stream()
-            .map(ValidationErrorDetail::getMessage)
-            .filter(Objects::nonNull)
-            .collect(Collectors.joining("\n"));
-
-        throw new ValidationException(
-            validationError.get(), "An error occurred while making %s request to %s:\n%s".formatted(request.method(), request.uri(), errorText)
-        );
-      }
-
-      throw new DoclingServeClientException("An error occurred: %s".formatted(body.toString()), statusCode, body.toString());
+      throw validationError
+          .<RuntimeException>map(error -> new ValidationException(
+              error, "An error occurred while making %s request to %s:\n%s".formatted(
+                  request.method(), request.uri(), error.getErrorDetails()
+                      .stream()
+                      .map(ValidationErrorDetail::getMessage)
+                      .filter(Objects::nonNull)
+                      .collect(Collectors.joining("\n")))))
+          .orElseGet(() -> new DoclingServeClientException("An error occurred: %s".formatted(responseBody), statusCode, responseBody));
     }
 
     if (StreamResponse.class.equals(expectedReturnType)) {

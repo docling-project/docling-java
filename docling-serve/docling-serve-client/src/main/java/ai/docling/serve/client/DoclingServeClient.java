@@ -362,27 +362,18 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
         }
       }
 
-      if (statusCode == 422) {
-        // ValidationError is deserialized leniently, so any JSON object yields one. Only a
-        // ValidationError with details is a validation error; anything else is a generic error.
-        var validationError = Optional.ofNullable(readValue(body.toString(), ValidationError.class))
-            .filter(error -> !error.getErrorDetails().isEmpty());
+      var responseBody = body.toString();
+      var validationError = (statusCode == 422) ? parseValidationError(responseBody) : Optional.<ValidationError>empty();
 
-        if (validationError.isPresent()) {
-          var errorText = validationError.get()
-              .getErrorDetails()
-              .stream()
-              .map(ValidationErrorDetail::getMessage)
-              .filter(Objects::nonNull)
-              .collect(Collectors.joining("\n"));
-
-          throw new ValidationException(
-              validationError.get(), "An error occurred while making %s request to %s:\n%s".formatted(request.method(), request.uri(), errorText)
-          );
-        }
-      }
-
-      throw new DoclingServeClientException("An error occurred: %s".formatted(body.toString()), statusCode, body.toString());
+      throw validationError
+          .<RuntimeException>map(error -> new ValidationException(
+              error, "An error occurred while making %s request to %s:\n%s".formatted(
+                  request.method(), request.uri(), error.getErrorDetails()
+                      .stream()
+                      .map(ValidationErrorDetail::getMessage)
+                      .filter(Objects::nonNull)
+                      .collect(Collectors.joining("\n")))))
+          .orElseGet(() -> new DoclingServeClientException("An error occurred: %s".formatted(responseBody), statusCode, responseBody));
     }
 
     if (StreamResponse.class.equals(expectedReturnType)) {
@@ -394,6 +385,21 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     }
     else {
       return readValue(body.toString(), expectedReturnType);
+    }
+  }
+
+  // A 422 from something other than docling-serve (e.g. a gateway) may not carry a validation body;
+  // fall back to the generic error so the status code and body are not lost to a parse failure.
+  // ValidationError is deserialized leniently, so any JSON object parses into one - only a
+  // ValidationError with details is treated as an actual validation error.
+  private Optional<ValidationError> parseValidationError(String body) {
+    try {
+      return Optional.ofNullable(readValue(body, ValidationError.class))
+          .filter(error -> !error.getErrorDetails().isEmpty());
+    }
+    catch (JsonReadException e) {
+      LOG.debug("422 response body is not a validation error", e);
+      return Optional.empty();
     }
   }
 

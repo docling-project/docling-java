@@ -2331,7 +2331,8 @@ provided by the <code>docling-serve-client</code> module.</p>
 you use. The reference client throws standard Java exceptions for HTTP and I/O failures.</p>
 <h3 id="validation-errors">Validation errors<a class="headerlink" href="#validation-errors" title="Permanent link">#</a></h3>
 <p>In the case of a request validation error (i.e. <code>docling-serve</code> throws a <code>422</code> error), the docling-java API will throw an <code>ai.docling.serve.api.validation.ValidationException</code> which can be caught and inspected.
-A <code>422</code> response that carries no validation details, such as one produced by a gateway or proxy in front of <code>docling-serve</code>, is reported as a <code>DoclingServeClientException</code>, like any other error response, so that the status code and the response body remain available.</p>
+A <code>422</code> response that carries no validation details, such as one produced by a gateway or proxy in front of <code>docling-serve</code>, is reported as a <code>DoclingServeClientException</code>, like any other error response, so that the status code and the response body remain available.
+This also covers a <code>422</code> body that cannot be read as JSON at all, such as an HTML or plain-text error page from a gateway: it is treated the same as a body with no validation details, not lost to a parse failure.</p>
 <h2 id="logging-and-builders">Logging and builders<a class="headerlink" href="#logging-and-builders" title="Permanent link">#</a></h2>
 <p><code>DoclingServeApi.builder()</code> exposes <code>logRequests()</code> and <code>logResponses()</code> for simple diagnostics.
 To create a modified copy of an existing API, start from its configuration:</p>

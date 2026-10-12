@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/core/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/getting-started/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/testcontainers/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/testing/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/whats-new/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/docling-serve/serve-api-provider-migration/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/docling-serve/serve-api/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/docling-serve/serve-client/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
     <url>
          <loc>https://docling-project.github.io/docling-java/0.7.1/includes/docling-serve/serve-compatibility/</loc>
-         <lastmod>2026-10-05</lastmod>
+         <lastmod>2026-10-12</lastmod>
     </url>
 </urlset>

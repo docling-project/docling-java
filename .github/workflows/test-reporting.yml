@@ -65,7 +65,7 @@ jobs:
           fail-emoji: ':red_circle:'
 
       - name: Publish JUnit test report (PR comment with collapsed failures)
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        uses: mikepenz/action-junit-report@b7b80d7ac5b1da46d6aaff9fb57ad50d8453bcb3 # v6.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

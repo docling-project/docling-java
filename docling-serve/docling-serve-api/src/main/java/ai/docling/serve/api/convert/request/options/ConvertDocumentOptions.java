@@ -6,15 +6,16 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
-import ai.docling.serve.api.serialization.DurationSerializationFormat;
-import ai.docling.serve.api.serialization.Jackson2DurationSerializer;
-import ai.docling.serve.api.serialization.Jackson3DurationSerializer;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import ai.docling.serve.api.serialization.DurationSerializationFormat;
+import ai.docling.serve.api.serialization.Jackson2DurationSerializer;
+import ai.docling.serve.api.serialization.Jackson3DurationSerializer;
 
 /**
  * Options for configuring the document conversion process with Docling.
@@ -234,7 +235,7 @@ public class ConvertDocumentOptions {
   private String vlmPipelineModelApi;
 
   /**
-   * Whether heading hierarchy inference is enabled. Derived from {@link #headingHierarchyOptions()}
+   * Whether heading hierarchy inference is enabled. Derived from {@link #getHeadingHierarchyOptions()}
    * — {@code true} when options are present, {@code false} otherwise.
    */
   @JsonProperty("do_pdf_heading_hierarchy")
@@ -252,6 +253,7 @@ public class ConvertDocumentOptions {
   @Nullable
   private HeadingHierarchyOptions headingHierarchyOptions;
 
+  @JsonIgnoreProperties("do_pdf_heading_hierarchy")
   public static class Builder {
   }
 }

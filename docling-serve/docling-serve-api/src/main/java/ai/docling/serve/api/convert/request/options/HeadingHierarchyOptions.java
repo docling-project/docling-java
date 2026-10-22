@@ -57,7 +57,7 @@ public class HeadingHierarchyOptions {
 
   /**
    * Refine the style fallback with font weight, slant and all-caps detection. Ignored when
-   * {@link #useStyle()} is off.
+   * {@link #getUseStyle()} is off.
    *
    * @param useFontStyle true to use font style, or null for the default (true)
    * @return the use-font-style flag

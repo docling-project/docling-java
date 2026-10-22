@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.6.6/whats-new/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.7.0/whats-new/">
       
       
         <link rel="prev" href="../getting-started/">
@@ -479,9 +479,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#066" class="md-nav__link">
+  <a href="#070" class="md-nav__link">
     <span class="md-ellipsis">
-      0.6.6
+      0.7.0
     </span>
   </a>
   
@@ -530,16 +530,16 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#066_1" class="md-nav__link">
+  <a href="#070_1" class="md-nav__link">
     <span class="md-ellipsis">
-      0.6.6
+      0.7.0
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#066_2" class="md-nav__link">
+  <a href="#066" class="md-nav__link">
     <span class="md-ellipsis">
       0.6.6
     </span>
@@ -958,9 +958,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#066" class="md-nav__link">
+  <a href="#070" class="md-nav__link">
     <span class="md-ellipsis">
-      0.6.6
+      0.7.0
     </span>
   </a>
   
@@ -1009,16 +1009,16 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#066_1" class="md-nav__link">
+  <a href="#070_1" class="md-nav__link">
     <span class="md-ellipsis">
-      0.6.6
+      0.7.0
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#066_2" class="md-nav__link">
+  <a href="#066" class="md-nav__link">
     <span class="md-ellipsis">
       0.6.6
     </span>
@@ -1147,9 +1147,9 @@
 
 
 <h1 id="whats-new-in-docling-java">What's New in Docling Java<a class="headerlink" href="#whats-new-in-docling-java" title="Permanent link">#</a></h1>
-<p>Docling Java 0.6.6 includes important breaking changes, along with new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each change.</p>
+<p>Docling Java 0.7.0 includes important breaking changes, along with new features, enhancements, and bug fixes. This page includes the highlights of the release, but you can also check out the full <a href="https://github.com/docling-project/docling-java/releases">release notes</a> for more details about each change.</p>
 <h2 id="general">General<a class="headerlink" href="#general" title="Permanent link">#</a></h2>
-<h3 id="066">0.6.6<a class="headerlink" href="#066" title="Permanent link">#</a></h3>
+<h3 id="070">0.7.0<a class="headerlink" href="#070" title="Permanent link">#</a></h3>
 <ul>
 <li><strong><code>DoclingDocument</code> keeps required empty strings when it is serialized</strong> — Serializing a <code>DoclingDocument</code> used to drop the <code>text</code> and <code>orig</code> fields when they were empty strings, such as <code>"text": ""</code> on a formula converted without formula enrichment, or on a list item that only introduces a nested list. These fields are required by the <a href="https://github.com/docling-project/docling-core/tree/main/docs/schemas"><code>DoclingDocument</code> JSON schema</a>, so a document written back to JSON failed validation and could not be chunked. The required <code>text</code> and <code>orig</code> fields are now always written, even when empty. Empty lists are still left out.</li>
 </ul>
@@ -1168,8 +1168,9 @@
 <li>New <code>docling-core</code> module with <code>DoclingDocument</code> API mirroring the <a href="https://github.com/docling-project/docling-core">docling-core</a> Python library's document representation model.</li>
 </ul>
 <h2 id="docling-serve">Docling Serve<a class="headerlink" href="#docling-serve" title="Permanent link">#</a></h2>
-<h3 id="066_1">0.6.6<a class="headerlink" href="#066_1" title="Permanent link">#</a></h3>
+<h3 id="070_1">0.7.0<a class="headerlink" href="#070_1" title="Permanent link">#</a></h3>
 <ul>
+<li><strong>New <code>HeadingHierarchyOptions</code> and <code>headingHierarchyOptions</code> on <code>ConvertDocumentOptions</code></strong> — When set, <code>headingHierarchyOptions</code> enables PDF section-header level inference from bookmarks, outline numbering and visual style. The helper getter <code>doPdfHeadingHierarchy()</code> is derived from the presence of these options (returns <code>true</code> when non-null, <code>false</code> otherwise), so callers only need to pass the options to enable hierarchy inference. The options class covers all docling-serve fields (<code>useBookmarks</code>, <code>useNumbering</code>, <code>useStyle</code>, <code>useFontStyle</code>, <code>styleSizeTolerance</code>, <code>numberingSchemes</code>, <code>maxLevel</code>, <code>bookmarkMatchThreshold</code>).</li>
 <li><strong>Breaking: new <code>DoclingServeApiProvider</code> SPI</strong> — Implementations are now provided through <code>ai.docling.serve.api.spi.DoclingServeApiProvider</code>, which receives an immutable <code>DoclingServeApiConfig</code>, so new options can be added without breaking implementations. A provider can declare the options it doesn't honor via <code>unsupportedOptions()</code>, to have them ignored, logged or rejected when a caller sets them. <code>DoclingServeApi</code> has a new abstract <code>config()</code> method. <code>DoclingServeApiBuilderFactory</code>, <code>DoclingServeApi.DoclingApiBuilder</code> and <code>DoclingServeApi.toBuilder()</code> are deprecated for removal; legacy factories are still used when no provider is found. <code>docling-serve-api</code> now depends on <code>slf4j-api</code>. See <a href="../docling-serve/serve-api-provider-migration/">Migrating to <code>DoclingServeApiProvider</code></a>.</li>
 <li><strong>Breaking: <code>DoclingServeApi.builder()</code> returns a <code>DoclingServeApiBuilder</code></strong> — It used to return the builder of the implementation through a generic <code>&lt;T, B&gt; B</code> return type. Fluent chains and <code>var</code> declarations are unaffected, but code declaring the builder type must be updated. Client-specific settings such as <code>httpClientBuilder</code> are available from <code>DoclingServeClient.builder()</code>, which detects the version of Jackson the same way, and the JSON mapper from <code>DoclingServeJackson3Client.builder()</code> / <code>DoclingServeJackson2Client.builder()</code>, which are now public. An API can be copied with <code>api.config().toBuilder()</code>.</li>
 <li><strong><code>DoclingServeClientBuilderFactory</code> is deprecated</strong> — Use <code>DoclingServeApi.builder()</code> for the options shared by every implementation, or the new <code>DoclingServeClient.builder()</code> for client-specific settings: it returns the same builder as <code>DoclingServeClientBuilderFactory.newBuilder()</code>. The factory will be removed in a future release.</li>
@@ -1180,7 +1181,7 @@
 <li><strong>A <code>422</code> response without validation details is a <code>DoclingServeClientException</code></strong> — A <code>422</code> response whose body is a JSON object without any validation details, such as <code>{}</code>, <code>{"detail": []}</code> or an error object from a gateway or proxy in front of <code>docling-serve</code>, used to throw a <code>ValidationException</code> with an empty <code>ValidationError</code> and a blank message. It now throws a <code>DoclingServeClientException</code> with the status code and the response body, like any other error response. Only a <code>422</code> response that carries validation details throws a <code>ValidationException</code>.</li>
 <li><strong>A <code>422</code> response whose body is not JSON at all no longer loses its status code and body</strong> — A <code>422</code> from something other than <code>docling-serve</code>, such as a gateway that returns an HTML or plain-text error page, made <code>readValue</code> throw before the client could fall back, replacing the real error with a raw parse failure. That parse failure (a <code>JsonReadException</code>) is now caught and treated the same as a <code>422</code> without validation details: a <code>DoclingServeClientException</code> carrying the status code and the response body. A failure that is not a <code>JsonReadException</code>, such as a broken custom deserializer, still propagates unchanged.</li>
 </ul>
-<h3 id="066_2">0.6.6<a class="headerlink" href="#066_2" title="Permanent link">#</a></h3>
+<h3 id="066">0.6.6<a class="headerlink" href="#066" title="Permanent link">#</a></h3>
 <ul>
 <li><strong>New <code>DocumentRequest</code> sealed base class</strong> — <code>ConvertDocumentRequest</code>, <code>BatchConvertDocumentRequest</code>, and <code>ChunkDocumentRequest</code> now extend a common <code>DocumentRequest</code> abstract class in the <code>ai.docling.serve.api.request</code> package. This enables polymorphism when working with different request types — for example, accepting a <code>DocumentRequest</code> and dispatching to the correct endpoint based on the concrete type via pattern matching.</li>
 <li><strong>New <code>ProcessedDocumentResponse</code> sealed base class</strong> — <code>ConvertDocumentResponse</code> and <code>ChunkDocumentResponse</code> now extend a common <code>ProcessedDocumentResponse</code> abstract class in the <code>ai.docling.serve.api.response</code> package. This enables polymorphic handling of document processing responses — for example, using <code>ProcessedDocumentResponse</code> as a type bound in generic APIs that work with both conversion and chunking results.</li>

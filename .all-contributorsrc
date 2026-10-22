@@ -246,15 +246,24 @@
       "contributions": [
         "code",
         "bug"
-       ]
-     },
-     {
+      ]
+    },
+    {
       "login": "Naman-Gururani",
       "name": "Naman-Gururani",
       "avatar_url": "https://avatars.githubusercontent.com/u/91726734?v=4",
       "profile": "https://github.com/Naman-Gururani",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "Krambamboli",
+      "name": "Olischn",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43171471?v=4",
+      "profile": "https://github.com/Krambamboli",
+      "contributions": [
+        "ideas"
       ]
     }
   ]

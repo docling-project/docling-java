@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.7.1/docling-serve/serve-api-provider-migration/">
+        <link rel="canonical" href="https://docling-project.github.io/docling-java/0.7.2/docling-serve/serve-api-provider-migration/">
       
       
         <link rel="prev" href="../serve-client/">
@@ -1086,7 +1086,7 @@
 
 
 <h1 id="migrating-to-doclingserveapiprovider">Migrating to <code>DoclingServeApiProvider</code><a class="headerlink" href="#migrating-to-doclingserveapiprovider" title="Permanent link">#</a></h1>
-<p>Docling Java 0.7.1 replaces the <code>DoclingServeApiBuilderFactory</code> service provider interface (SPI) with <code>DoclingServeApiProvider</code>. This page explains how to move an implementation to the new SPI, and how to update code that builds a <code>DoclingServeApi</code>.</p>
+<p>Docling Java 0.7.2 replaces the <code>DoclingServeApiBuilderFactory</code> service provider interface (SPI) with <code>DoclingServeApiProvider</code>. This page explains how to move an implementation to the new SPI, and how to update code that builds a <code>DoclingServeApi</code>.</p>
 <p>This page is for you if you:</p>
 <ul>
 <li>implement <code>DoclingServeApiBuilderFactory</code>, <code>DoclingServeApi</code> or <code>DoclingServeApi.DoclingApiBuilder</code>, or</li>
@@ -1250,7 +1250,7 @@ com.example.MyProvider
 <p>If your builder implements <code>DoclingServeApi.DoclingApiBuilder</code>, it keeps compiling, but the interface is deprecated for removal and won't gain new options. <code>asyncExecutor</code>, for example, isn't part of it.</p>
 <p>Before the interface is removed, drop the <code>implements DoclingApiBuilder&lt;...&gt;</code> clause and the <code>@Override</code> annotations of its methods. The methods themselves can stay. Add new options such as <code>asyncExecutor(Executor)</code> to your builder directly if your implementation supports them.</p>
 <h2 id="require-this-version-of-docling-java">Require this version of Docling Java<a class="headerlink" href="#require-this-version-of-docling-java" title="Permanent link">#</a></h2>
-<p>Shipping both a <code>DoclingServeApiBuilderFactory</code> and a <code>DoclingServeApiProvider</code> to support several versions of Docling Java isn't recommended: with this version, the factory is ignored and a warning is logged every time an API is built. Require Docling Java 0.7.1 or later, and ship only the provider.</p>
+<p>Shipping both a <code>DoclingServeApiBuilderFactory</code> and a <code>DoclingServeApiProvider</code> to support several versions of Docling Java isn't recommended: with this version, the factory is ignored and a warning is logged every time an API is built. Require Docling Java 0.7.2 or later, and ship only the provider.</p>
 <h2 id="update-code-that-builds-a-doclingserveapi">Update code that builds a <code>DoclingServeApi</code><a class="headerlink" href="#update-code-that-builds-a-doclingserveapi" title="Permanent link">#</a></h2>
 <h3 id="the-builder-type">The builder type<a class="headerlink" href="#the-builder-type" title="Permanent link">#</a></h3>
 <p><code>DoclingServeApi.builder()</code> used to return the builder of the implementation, through a generic <code>&lt;T, B&gt; B</code> return type. It now returns a <code>DoclingServeApiBuilder</code>, whatever the implementation.</p>

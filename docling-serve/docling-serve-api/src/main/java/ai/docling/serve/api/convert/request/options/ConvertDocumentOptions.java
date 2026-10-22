@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -233,6 +234,26 @@ public class ConvertDocumentOptions {
   @Nullable
   private String vlmPipelineModelApi;
 
+  /**
+   * Whether heading hierarchy inference is enabled. Derived from {@link #getHeadingHierarchyOptions()}
+   * — {@code true} when options are present, {@code false} otherwise.
+   */
+  @JsonProperty("do_pdf_heading_hierarchy")
+  public boolean doPdfHeadingHierarchy() {
+    return headingHierarchyOptions != null;
+  }
+
+  /**
+   * Options for inferring PDF section-header levels (H1–H6) from bookmarks, numbering and style.
+   * Setting this enables heading hierarchy inference; leave it unset to keep all headings at
+   * level 1. Use the defaults ({@code HeadingHierarchyOptions.builder().build()}) to enable it
+   * without any fine-tuning.
+   */
+  @JsonProperty("pdf_heading_hierarchy_options")
+  @Nullable
+  private HeadingHierarchyOptions headingHierarchyOptions;
+
+  @JsonIgnoreProperties("do_pdf_heading_hierarchy")
   public static class Builder {
   }
 }

@@ -67,6 +67,7 @@ import ai.docling.core.DoclingDocument.BaseTextItem;
 import ai.docling.core.DoclingDocument.DocItemLabel;
 import ai.docling.core.DoclingDocument.FormulaItem;
 import ai.docling.core.DoclingDocument.ListItem;
+import ai.docling.core.DoclingDocument.SectionHeaderItem;
 import ai.docling.core.DoclingDocument.TableCell;
 import ai.docling.serve.api.DoclingServeApi;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
@@ -82,6 +83,7 @@ import ai.docling.serve.api.convert.request.BatchConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.CallbackSpec;
 import ai.docling.serve.api.convert.request.ConvertDocumentRequest;
 import ai.docling.serve.api.convert.request.options.ConvertDocumentOptions;
+import ai.docling.serve.api.convert.request.options.HeadingHierarchyOptions;
 import ai.docling.serve.api.convert.request.options.ImageRefMode;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
 import ai.docling.serve.api.convert.request.options.TableFormerMode;
@@ -1257,6 +1259,52 @@ abstract class AbstractDoclingServeClientTests {
 
       assertThat(inBodyResponse.getStatus()).isNotEmpty();
       assertThat(inBodyResponse.getDocument()).isNotNull();
+    }
+
+    @Test
+    void shouldInferHeadingHierarchyFromPdfNumbering() {
+      var options = HeadingHierarchyOptions.builder()
+          .maxLevel(4)
+          .build();
+
+      var convOptions = ConvertDocumentOptions.builder()
+          .toFormat(OutputFormat.JSON)
+          .headingHierarchyOptions(options)
+          .build();
+
+      var request = ConvertDocumentRequest.builder()
+          .options(convOptions)
+          .build();
+
+      var response = getDoclingClient().convertFiles(request, Path.of("src", "test", "resources", "2408.09869.pdf"));
+
+      assertThat(response).isNotNull();
+      assertThat(response.getResponseType()).isEqualTo(ResponseType.IN_BODY);
+
+      var inBodyResponse = (InBodyConvertDocumentResponse) response;
+      assertThat(inBodyResponse.getStatus()).isNotEmpty();
+
+      DoclingDocument doc = inBodyResponse.getDocument().getJsonContent();
+      assertThat(doc).isNotNull();
+
+      List<SectionHeaderItem> headers = doc.getTexts().stream()
+          .filter(SectionHeaderItem.class::isInstance)
+          .map(SectionHeaderItem.class::cast)
+          .toList();
+
+      assertThat(headers).isNotEmpty();
+
+      // Verify that numbering-based hierarchy was applied (all headings at level 1 would be a
+      // failure — this PDF has sections like "3.1 PDFbackends" that should be below "3")
+      assertThat(headers.stream().allMatch(h -> (h.getLevel() != null)))
+          .as("All section headers should have a level assigned")
+          .isTrue();
+      assertThat(headers.stream().map(SectionHeaderItem::getLevel).distinct().count())
+          .as("Multiple heading levels should be present after hierarchy inference")
+          .isGreaterThan(1);
+      // There should be at least one level-2 header (e.g. "3.1 PDFbackends")
+      assertThat(headers)
+          .anyMatch(h -> "3.1 PDFbackends".equals(h.getText()) && (h.getLevel() >= 2));
     }
 
     @Test

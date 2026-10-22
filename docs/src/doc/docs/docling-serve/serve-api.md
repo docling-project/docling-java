@@ -177,6 +177,7 @@ Options (`ai.docling.serve.api.convert.request.options.ConvertDocumentOptions`) 
 - OCR (e.g., `doOcr`, `forceOcr`, `ocrEngine`, `ocrLang`)
 - PDF processing (e.g., `pdfBackend`)
 - Tables (e.g., `tableMode`, `tableCellMatching`)
+- PDF heading hierarchy inference (e.g., `headingHierarchyOptions`)
 - Pipelines and page ranges (e.g., `pipeline`, `pageRange`)
 - Timeouts and error behavior (e.g., `documentTimeout`, `abortOnError`)
 - Enrichments (code/formula/picture), image handling, scaling, page break placeholder

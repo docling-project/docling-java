@@ -39,4 +39,50 @@ class ConvertDocumentOptionsTests {
     assertThat(options.getOcrLang()).containsExactly("en", "de");
   }
 
+  @Test
+  void convertDocumentOptionsWithHeadingHierarchy() {
+    var hierarchyOptions = HeadingHierarchyOptions.builder()
+        .useBookmarks(true)
+        .useNumbering(false)
+        .maxLevel(4)
+        .bookmarkMatchThreshold(0.85)
+        .build();
+
+    var options = ConvertDocumentOptions.builder()
+        .headingHierarchyOptions(hierarchyOptions)
+        .build();
+
+    assertThat(options)
+        .extracting(
+            ConvertDocumentOptions::doPdfHeadingHierarchy, ConvertDocumentOptions::getHeadingHierarchyOptions, o -> o.getHeadingHierarchyOptions().getUseBookmarks(), o -> o
+                .getHeadingHierarchyOptions().getUseNumbering(), o -> o.getHeadingHierarchyOptions().getMaxLevel(), o -> o.getHeadingHierarchyOptions().getBookmarkMatchThreshold())
+        .containsExactly(true, hierarchyOptions, true, false, 4, 0.85);
+  }
+
+  @Test
+  void convertDocumentOptionsWithoutHeadingHierarchy() {
+    var options = ConvertDocumentOptions.builder().build();
+
+    assertThat(options)
+        .satisfies(o -> assertThat(o.doPdfHeadingHierarchy()).isFalse())
+        .satisfies(o -> assertThat(o.getHeadingHierarchyOptions()).isNull());
+  }
+
+  @Test
+  void convertDocumentOptionsToBuilderWithHeadingHierarchy() {
+    var hierarchyOptions = HeadingHierarchyOptions.builder()
+        .maxLevel(3)
+        .build();
+
+    var original = ConvertDocumentOptions.builder()
+        .headingHierarchyOptions(hierarchyOptions)
+        .build();
+
+    var rebuilt = original.toBuilder().build();
+
+    assertThat(rebuilt)
+        .extracting(
+            ConvertDocumentOptions::doPdfHeadingHierarchy, ConvertDocumentOptions::getHeadingHierarchyOptions, o -> o.getHeadingHierarchyOptions().getMaxLevel())
+        .containsExactly(original.doPdfHeadingHierarchy(), original.getHeadingHierarchyOptions(), 3);
+  }
 }

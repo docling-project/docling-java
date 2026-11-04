@@ -156,6 +156,38 @@ abstract class AbstractDoclingServeClientAsyncExecutorTests {
   }
 
   @Test
+  void failedTaskReportsTheErrorMessageOfTheServer() {
+    getWireMock().stubFor(
+        post(urlPathEqualTo("/v1/convert/source/async"))
+            .willReturn(okJson(taskStatus("pending")))
+    );
+
+    getWireMock().stubFor(
+        get(urlPathEqualTo(POLL_PATH))
+            .willReturn(okJson("""
+                {
+                  "task_id": "%s",
+                  "task_status": "failure",
+                  "task_meta": {
+                    "num_docs": 1,
+                    "num_processed": 1,
+                    "num_succeeded": 0,
+                    "num_failed": 1
+                  },
+                  "error_message": "Input document is not valid"
+                }
+                """.formatted(TASK_ID)))
+    );
+
+    var future = client(null)
+        .convertSourceAsync(convertRequest())
+        .toCompletableFuture();
+
+    assertThatThrownBy(() -> future.get(10, TimeUnit.SECONDS))
+        .hasRootCauseMessage("Async conversion failed for task %s: Task failed: Input document is not valid".formatted(TASK_ID));
+  }
+
+  @Test
   void asyncOperationsWorkWithoutCustomExecutor() throws Exception {
     stubTask("/v1/convert/source/async", "success");
     getWireMock().stubFor(get(urlPathEqualTo(RESULT_PATH)).willReturn(okJson(CONVERT_RESULT)));

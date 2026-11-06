@@ -33,12 +33,14 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -652,6 +654,126 @@ abstract class AbstractDoclingServeClientTests {
                       .withBody(body)
               )
       );
+    }
+  }
+
+  // A failed async task carries the reason in error_message. task_meta only holds document counts, so the client
+  // falls back to it only when no reason is given
+  @Nested
+  class AsyncTaskFailureTests {
+    private static final String TASK_ID = "failed-task";
+    private static final String ERROR_MESSAGE = "Input document is not valid";
+    private static final String TASK_META = """
+        {
+          "num_docs": 1,
+          "num_processed": 1,
+          "num_succeeded": 0,
+          "num_failed": 1
+        }
+        """;
+    private static final String TASK_META_STRING = "TaskStatusMetadata(numDocs=1, numProcessed=1, numSucceeded=0, numFailed=1)";
+
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void convertReportsTheErrorMessage() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      assertConvertFailsWith("Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    // docling-serve never sends a blank error_message, so only this test guards the blank check
+    @Test
+    void convertWithBlankErrorMessageReportsTheTaskMetadata() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, "\"\""));
+
+      assertConvertFailsWith("Task failed: %s".formatted(TASK_META_STRING));
+    }
+
+    @Test
+    void convertWithoutTaskMetadataReportsTheErrorMessage() {
+      stubFailedTask("/v1/convert/source/async", failure(null, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      assertConvertFailsWith("Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    @Test
+    void convertWithoutErrorMessageReportsTheTaskMetadata() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, null));
+
+      assertConvertFailsWith("Task failed: %s".formatted(TASK_META_STRING));
+    }
+
+    @Test
+    void chunkReportsTheErrorMessage() {
+      stubFailedTask("/v1/chunk/hybrid/source/async", failure(TASK_META, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      var request = HybridChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://example.com/document.pdf")).build())
+          .build();
+
+      var future = getDoclingClient(false, true)
+          .chunkSourceWithHybridChunkerAsync(request)
+          .toCompletableFuture();
+
+      assertFailsWith(future, "Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    private void assertConvertFailsWith(String reason) {
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://example.com/document.pdf")).build())
+          .build();
+
+      var future = getDoclingClient(false, true)
+          .convertSourceAsync(request)
+          .toCompletableFuture();
+
+      assertFailsWith(future, reason);
+    }
+
+    private void assertFailsWith(CompletableFuture<?> future, String reason) {
+      assertThatThrownBy(() -> future.get(10, TimeUnit.SECONDS))
+          .hasRootCauseMessage("Async conversion failed for task %s: %s".formatted(TASK_ID, reason));
+    }
+
+    private void stubFailedTask(String asyncPath, String pollResponse) {
+      getWiremockServer().stubFor(
+          post(urlPathEqualTo(asyncPath))
+              .willReturn(okJson("""
+                  {
+                    "task_id": "%s",
+                    "task_type": "convert",
+                    "task_status": "pending",
+                    "task_position": 0,
+                    "task_meta": null
+                  }
+                  """.formatted(TASK_ID)))
+      );
+
+      getWiremockServer().stubFor(
+          get(urlPathEqualTo("/v1/status/poll/%s".formatted(TASK_ID)))
+              .willReturn(okJson(pollResponse))
+      );
+    }
+
+    // A null argument leaves the field out of the response
+    private String failure(@Nullable String taskMeta, @Nullable String errorMessage) {
+      var fields = new ArrayList<String>();
+      fields.add("\"task_id\": \"%s\"".formatted(TASK_ID));
+      fields.add("\"task_status\": \"failure\"");
+
+      if (taskMeta != null) {
+        fields.add("\"task_meta\": %s".formatted(taskMeta));
+      }
+
+      if (errorMessage != null) {
+        fields.add("\"error_message\": %s".formatted(errorMessage));
+      }
+
+      return "{%s}".formatted(String.join(", ", fields));
     }
   }
 

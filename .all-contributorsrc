@@ -265,6 +265,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "RaphaelFakhri",
+      "name": "Raphael Fakhri",
+      "avatar_url": "https://avatars.githubusercontent.com/u/153192858?v=4",
+      "profile": "https://raphaelfakhri.com",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ]
 }

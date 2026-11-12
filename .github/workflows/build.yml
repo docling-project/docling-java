@@ -17,6 +17,10 @@ defaults:
   run:
     shell: bash
 
+env:
+  # The docling-serve image is large; pulling it can exceed Testcontainers' default 120s pull timeout
+  TESTCONTAINERS_PULL_TIMEOUT: 600
+
 permissions:
   contents: write
   pull-requests: write

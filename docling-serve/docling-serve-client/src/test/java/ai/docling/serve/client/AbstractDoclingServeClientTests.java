@@ -221,6 +221,16 @@ abstract class AbstractDoclingServeClientTests {
         .isInstanceOf(DoclingServeClient.class);
   }
 
+  // DoclingServeApiConfig.toBuilder() goes through the provider, which prefers Jackson 3, so deriving these clients
+  // from it would run the Jackson 2 suite against the Jackson 3 client
+  @Test
+  void everyClientIsTheImplementationUnderTest() {
+    var expectedType = getDoclingClient(false, false).getClass();
+
+    assertThat(getDoclingClient(true, false)).isExactlyInstanceOf(expectedType);
+    assertThat(getDoclingClient(false, true)).isExactlyInstanceOf(expectedType);
+  }
+
   @Test
   void pathPartFromBaseUrl() {
     // From https://github.com/docling-project/docling-java/issues/294

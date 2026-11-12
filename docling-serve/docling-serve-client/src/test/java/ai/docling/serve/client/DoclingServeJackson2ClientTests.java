@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.DoclingServeApiConfig;
 import ai.docling.serve.api.validation.ValidationError;
 
 /**
@@ -28,15 +29,20 @@ class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
   @BeforeAll
   static void setUp() {
     wireMockServer.start();
-    doclingClient = DoclingServeJackson2Client.builder()
+    doclingClient = newClient(DoclingServeApi.builder()
         .logRequests()
         .logResponses()
         .prettyPrint()
         .baseUrl(doclingContainer.getApiUrl())
-        .build();
+        .config());
 
-    authDoclingClient = doclingClient.config().toBuilder().apiKey("key").build();
-    wiremockDoclingClient = doclingClient.config().toBuilder().baseUrl(wireMockServer.baseUrl()).build();
+    authDoclingClient = newClient(doclingClient.config().toBuilder().apiKey("key").config());
+    wiremockDoclingClient = newClient(doclingClient.config().toBuilder().baseUrl(wireMockServer.baseUrl()).config());
+  }
+
+  // Not DoclingServeApiConfig.toBuilder().build(): it goes through the provider, which prefers Jackson 3
+  private static DoclingServeApi newClient(DoclingServeApiConfig config) {
+    return DoclingServeJackson2Client.builder().config(config).build();
   }
 
   @AfterAll

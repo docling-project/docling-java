@@ -44,6 +44,11 @@ on:
         required: true
         type: boolean
         default: true
+      updateDefaultImage:
+        description: Open a PR bumping the default docling-serve image version to the newest passing tag
+        required: true
+        type: boolean
+        default: true
 
 concurrency:
   group: "workflow = ${{ github.workflow }}, ref = ${{ github.event.ref }}, pr = ${{ github.event.pull_request.id }}"
@@ -131,7 +136,11 @@ jobs:
             ${{ env.TAGS }} ${{ env.CREATE_GITHUB_ISSUE_FLAG }}
 
       - name: Copy output markdown to docs
-        run: find docling-testing/docling-version-tests/${{ env.OUTPUT_DIR }} -name 'results.md' -exec cp -r '{}' docs/src/doc/docs/includes/docling-serve/serve-compatibility.md ';'
+        id: copy-results
+        run: |
+          RESULTS_FILE="$(find docling-testing/docling-version-tests/${{ env.OUTPUT_DIR }} -name 'results.md' | sort | tail -n 1)"
+          echo "results-file=$RESULTS_FILE" >> "$GITHUB_OUTPUT"
+          cp "$RESULTS_FILE" docs/src/doc/docs/includes/docling-serve/serve-compatibility.md
 
       - name: Generate fresh token for PR
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
@@ -167,3 +176,33 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.pr-token.outputs.token }}
         run: gh pr merge --merge --admin --delete-branch "${{ steps.create-pr.outputs.pull-request-url }}"
+
+      - name: Bump default docling-serve image version
+        id: bump-image
+        if: (inputs.updateDefaultImage != false) && (env.IMAGE == 'docling-project/docling-serve') && (env.REGISTRY == 'ghcr.io')
+        run: ./.github/scripts/docling-serve-image-bump.sh "${{ steps.copy-results.outputs.results-file }}"
+
+      - name: Create image bump PR
+        if: steps.bump-image.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ steps.pr-token.outputs.token }}
+          add-paths: docling-testcontainers/src/main/java/ai/docling/testcontainers/serve/config/DoclingServeContainerConfig.java
+          commit-message: "chore(testcontainers): bump default docling-serve image to ${{ steps.bump-image.outputs.new }}"
+          branch: update-docling-serve-image/${{ steps.bump-image.outputs.new }}
+          delete-branch: true
+          base: main
+          signoff: true
+          sign-commits: true
+          title: "chore(testcontainers): bump default docling-serve image to ${{ steps.bump-image.outputs.new }}"
+          body: |
+            Bumps the default docling-serve image version from `${{ steps.bump-image.outputs.current }}` to `${{ steps.bump-image.outputs.new }}`.
+
+            `${{ steps.bump-image.outputs.new }}` is the newest tag that passed the version tests in [${{ github.workflow }} run # ${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). See the [compatibility table](${{ github.server_url }}/${{ github.repository }}/blob/main/docs/src/doc/docs/includes/docling-serve/serve-compatibility.md).
+
+            Newer tags that did not pass: ${{ steps.bump-image.outputs.skipped || 'none' }}
+          labels: |
+            automation
+            version-upgrade
+            module:docling-testcontainers
+            area:docling-serve

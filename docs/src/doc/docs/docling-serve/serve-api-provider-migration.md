@@ -49,6 +49,7 @@ public final class MyProvider implements DoclingServeApiProvider {
     var builder = MyDoclingServeApi.builder()
         .baseUrl(config.baseUrl())
         .apiKey(config.apiKey())
+        .bearerToken(config.bearerToken())
         .logRequests(config.logRequests())
         .logResponses(config.logResponses())
         .prettyPrint(config.prettyPrint())
@@ -66,7 +67,7 @@ public final class MyProvider implements DoclingServeApiProvider {
 }
 ```
 
-Every accessor returns the effective value: the caller's setting, or the default when the caller didn't set it. The only exceptions are `apiKey()` and `asyncExecutor()`, which return `null` when not set.
+Every accessor returns the effective value: the caller's setting, or the default when the caller didn't set it. The only exceptions are `apiKey()`, `bearerToken()` and `asyncExecutor()`, which return `null` when not set.
 
 !!! warning
     When `asyncExecutor()` returns `null`, keep your implementation's default behavior. Don't replace it with `ForkJoinPool.commonPool()`: `CompletableFuture` doesn't always use the common pool by default, and `CompletableFuture.delayedExecutor(...)` doesn't guard against a common pool without worker threads, for example on a single-CPU container.

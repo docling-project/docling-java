@@ -29,19 +29,24 @@ class DoclingServeJackson2ClientTests extends AbstractDoclingServeClientTests {
   @BeforeAll
   static void setUp() {
     wireMockServer.start();
-    doclingClient = newClient(DoclingServeApi.builder()
+    doclingClient = buildClient(DoclingServeApi.builder()
         .logRequests()
         .logResponses()
         .prettyPrint()
         .baseUrl(doclingContainer.getApiUrl())
         .config());
 
-    authDoclingClient = newClient(doclingClient.config().toBuilder().apiKey("key").config());
-    wiremockDoclingClient = newClient(doclingClient.config().toBuilder().baseUrl(wireMockServer.baseUrl()).config());
+    authDoclingClient = buildClient(doclingClient.config().toBuilder().apiKey("key").config());
+    wiremockDoclingClient = buildClient(doclingClient.config().toBuilder().baseUrl(wireMockServer.baseUrl()).config());
+  }
+
+  @Override
+  protected DoclingServeApi newClient(DoclingServeApiConfig config) {
+    return buildClient(config);
   }
 
   // Not DoclingServeApiConfig.toBuilder().build(): it goes through the provider, which prefers Jackson 3
-  private static DoclingServeApi newClient(DoclingServeApiConfig config) {
+  private static DoclingServeApi buildClient(DoclingServeApiConfig config) {
     return DoclingServeJackson2Client.builder().config(config).build();
   }
 

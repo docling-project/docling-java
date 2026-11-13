@@ -81,6 +81,17 @@ public final class DoclingServeApiBuilder {
   }
 
   /**
+   * Sets the bearer token used to authenticate requests.
+   *
+   * @param bearerToken the bearer token, or {@code null} to unset it
+   * @return this builder
+   * @see DoclingServeApiConfig#BEARER_TOKEN
+   */
+  public DoclingServeApiBuilder bearerToken(@Nullable String bearerToken) {
+    return set(DoclingServeApiConfig.BEARER_TOKEN, bearerToken);
+  }
+
+  /**
    * Enables logging of requests.
    *
    * @return this builder

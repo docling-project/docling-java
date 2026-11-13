@@ -718,6 +718,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#http-client-customization-timeouts-proxies-tls" class="md-nav__link">
     <span class="md-ellipsis">
       HTTP client customization (timeouts, proxies, TLS)
@@ -1491,6 +1500,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#http-client-customization-timeouts-proxies-tls" class="md-nav__link">
     <span class="md-ellipsis">
       HTTP client customization (timeouts, proxies, TLS)
@@ -2210,6 +2228,25 @@ concrete client keeps its JSON mapper.</p>
 </code></pre></div>
 <p>Note: When using plain <code>http://</code>, the client enforces HTTP/1.1 for compatibility with FastAPI,
 which avoids HTTP/2 downgrade mishaps in some environments.</p>
+<h3 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">#</a></h3>
+<p>docling-serve can require an API key of its own, and it can also be put behind a proxy that
+authenticates the caller. Two credentials are supported, and they can be combined if your proxy asks
+for one and docling-serve itself for the other:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// docling-serve&#39;s own API key, sent as X-Api-Key, when the server is started with</span>
+<span class="c1">// DOCLING_SERVE_API_KEY set</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">withApiKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">apiKey</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&quot;DOCLING_SERVE_API_KEY&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="c1">// A bearer token, sent as Authorization: Bearer &lt;token&gt;, which is what a proxy in front of</span>
+<span class="c1">// docling-serve authenticates on, such as its oauth-proxy deployment</span>
+<span class="n">DoclingServeApi</span><span class="w"> </span><span class="n">withBearerToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">&quot;https://serve.example.com&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">bearerToken</span><span class="p">(</span><span class="n">accessToken</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<p>Both values are masked when request logging is enabled.</p>
 <h3 id="http-client-customization-timeouts-proxies-tls">HTTP client customization (timeouts, proxies, TLS)<a class="headerlink" href="#http-client-customization-timeouts-proxies-tls" title="Permanent link">#</a></h3>
 <p>You can supply and tune a <code>java.net.http.HttpClient.Builder</code> through the client-specific builder:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.http.HttpClient</span><span class="p">;</span>

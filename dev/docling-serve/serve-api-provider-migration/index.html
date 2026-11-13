@@ -1121,6 +1121,7 @@
 <span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyDoclingServeApi</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">baseUrl</span><span class="p">())</span>
 <span class="w">        </span><span class="p">.</span><span class="na">apiKey</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">apiKey</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">bearerToken</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">bearerToken</span><span class="p">())</span>
 <span class="w">        </span><span class="p">.</span><span class="na">logRequests</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">logRequests</span><span class="p">())</span>
 <span class="w">        </span><span class="p">.</span><span class="na">logResponses</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">logResponses</span><span class="p">())</span>
 <span class="w">        </span><span class="p">.</span><span class="na">prettyPrint</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">prettyPrint</span><span class="p">())</span>
@@ -1137,7 +1138,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Every accessor returns the effective value: the caller's setting, or the default when the caller didn't set it. The only exceptions are <code>apiKey()</code> and <code>asyncExecutor()</code>, which return <code>null</code> when not set.</p>
+<p>Every accessor returns the effective value: the caller's setting, or the default when the caller didn't set it. The only exceptions are <code>apiKey()</code>, <code>bearerToken()</code> and <code>asyncExecutor()</code>, which return <code>null</code> when not set.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>When <code>asyncExecutor()</code> returns <code>null</code>, keep your implementation's default behavior. Don't replace it with <code>ForkJoinPool.commonPool()</code>: <code>CompletableFuture</code> doesn't always use the common pool by default, and <code>CompletableFuture.delayedExecutor(...)</code> doesn't guard against a common pool without worker threads, for example on a single-CPU container.</p>

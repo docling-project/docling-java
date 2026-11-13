@@ -134,6 +134,30 @@ DoclingServeApi api = DoclingServeApi.builder()
 Note: When using plain `http://`, the client enforces HTTP/1.1 for compatibility with FastAPI,
 which avoids HTTP/2 downgrade mishaps in some environments.
 
+### Authentication
+
+docling-serve can require an API key of its own, and it can also be put behind a proxy that
+authenticates the caller. Two credentials are supported, and they can be combined if your proxy asks
+for one and docling-serve itself for the other:
+
+```java
+// docling-serve's own API key, sent as X-Api-Key, when the server is started with
+// DOCLING_SERVE_API_KEY set
+DoclingServeApi withApiKey = DoclingServeApi.builder()
+    .baseUrl("http://localhost:8000")
+    .apiKey(System.getenv("DOCLING_SERVE_API_KEY"))
+    .build();
+
+// A bearer token, sent as Authorization: Bearer <token>, which is what a proxy in front of
+// docling-serve authenticates on, such as its oauth-proxy deployment
+DoclingServeApi withBearerToken = DoclingServeApi.builder()
+    .baseUrl("https://serve.example.com")
+    .bearerToken(accessToken)
+    .build();
+```
+
+Both values are masked when request logging is enabled.
+
 ### HTTP client customization (timeouts, proxies, TLS)
 
 You can supply and tune a `java.net.http.HttpClient.Builder` through the client-specific builder:

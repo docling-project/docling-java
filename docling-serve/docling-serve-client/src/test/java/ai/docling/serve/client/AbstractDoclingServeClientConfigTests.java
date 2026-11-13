@@ -5,6 +5,7 @@ import static ai.docling.serve.api.DoclingServeApiConfig.ASYNC_EXECUTOR;
 import static ai.docling.serve.api.DoclingServeApiConfig.ASYNC_POLL_INTERVAL;
 import static ai.docling.serve.api.DoclingServeApiConfig.ASYNC_TIMEOUT;
 import static ai.docling.serve.api.DoclingServeApiConfig.BASE_URL;
+import static ai.docling.serve.api.DoclingServeApiConfig.BEARER_TOKEN;
 import static ai.docling.serve.api.DoclingServeApiConfig.CONNECT_TIMEOUT;
 import static ai.docling.serve.api.DoclingServeApiConfig.LOG_REQUESTS;
 import static ai.docling.serve.api.DoclingServeApiConfig.LOG_RESPONSES;
@@ -55,6 +56,7 @@ abstract class AbstractDoclingServeClientConfigTests {
     assertThat(config)
         .returns(URI.create(getWireMock().baseUrl()), DoclingServeApiConfig::baseUrl)
         .returns("key", DoclingServeApiConfig::apiKey)
+        .returns("token", DoclingServeApiConfig::bearerToken)
         .returns(true, DoclingServeApiConfig::logRequests)
         .returns(true, DoclingServeApiConfig::logResponses)
         .returns(true, DoclingServeApiConfig::prettyPrint)
@@ -65,7 +67,7 @@ abstract class AbstractDoclingServeClientConfigTests {
         .returns(EXECUTOR, DoclingServeApiConfig::asyncExecutor);
 
     assertThat(config.explicitlySetOptions())
-        .containsExactly(BASE_URL, API_KEY, LOG_REQUESTS, LOG_RESPONSES, PRETTY_PRINT, CONNECT_TIMEOUT, READ_TIMEOUT, ASYNC_POLL_INTERVAL, ASYNC_TIMEOUT, ASYNC_EXECUTOR);
+        .containsExactly(BASE_URL, API_KEY, BEARER_TOKEN, LOG_REQUESTS, LOG_RESPONSES, PRETTY_PRINT, CONNECT_TIMEOUT, READ_TIMEOUT, ASYNC_POLL_INTERVAL, ASYNC_TIMEOUT, ASYNC_EXECUTOR);
   }
 
   @Test
@@ -77,6 +79,7 @@ abstract class AbstractDoclingServeClientConfigTests {
     assertThat(config)
         .returns(URI.create("http://localhost:5001"), DoclingServeApiConfig::baseUrl)
         .returns(null, DoclingServeApiConfig::apiKey)
+        .returns(null, DoclingServeApiConfig::bearerToken)
         .returns(false, DoclingServeApiConfig::logRequests)
         .returns(false, DoclingServeApiConfig::logResponses)
         .returns(false, DoclingServeApiConfig::prettyPrint)
@@ -150,6 +153,7 @@ abstract class AbstractDoclingServeClientConfigTests {
     return newClientBuilder()
         .baseUrl(getWireMock().baseUrl())
         .apiKey("key")
+        .bearerToken("token")
         .logRequests()
         .logResponses()
         .prettyPrint()

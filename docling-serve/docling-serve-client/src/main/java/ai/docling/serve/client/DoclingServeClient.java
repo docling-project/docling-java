@@ -215,7 +215,7 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
   }
 
   private boolean isSensitiveHeader(String headerName) {
-    return API_KEY_HEADER_NAME.equalsIgnoreCase(headerName);
+    return API_KEY_HEADER_NAME.equalsIgnoreCase(headerName) || AUTHORIZATION_HEADER_NAME.equalsIgnoreCase(headerName);
   }
 
   private Map.Entry<String, List<String>> maskSensitiveHeaderValues(Map.Entry<String, List<String>> entry) {
@@ -328,6 +328,12 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
 
     if (Utils.isNotNullOrBlank(apiKey)) {
       requestBuilder.header(API_KEY_HEADER_NAME, apiKey);
+    }
+
+    var bearerToken = this.config.bearerToken();
+
+    if (Utils.isNotNullOrBlank(bearerToken)) {
+      requestBuilder.header(AUTHORIZATION_HEADER_NAME, "Bearer " + bearerToken);
     }
 
     return requestBuilder;
@@ -601,6 +607,21 @@ public abstract class DoclingServeClient extends HttpOperations implements Docli
     @Override
     public B apiKey(@Nullable String apiKey) {
       this.settings.apiKey(apiKey);
+      return (B) this;
+    }
+
+    /**
+     * Sets the bearer token used to authenticate requests.
+     *
+     * <p>Deliberately not part of {@link DoclingApiBuilder}: that interface is deprecated and will not gain
+     * new configuration options, so a third-party implementation of it keeps compiling.
+     *
+     * @param bearerToken the bearer token, or {@code null} to unset it
+     * @return this builder instance for method chaining
+     * @see DoclingServeApiConfig#BEARER_TOKEN
+     */
+    public B bearerToken(@Nullable String bearerToken) {
+      this.settings.bearerToken(bearerToken);
       return (B) this;
     }
 

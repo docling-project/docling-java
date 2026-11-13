@@ -45,6 +45,19 @@ public final class DoclingServeApiConfig {
   public static final ConfigOption<String> API_KEY = ConfigOption.of("apiKey", String.class);
 
   /**
+   * The bearer token used to authenticate requests, sent as {@code Authorization: Bearer <token>}.
+   * Not set by default.
+   *
+   * <p>This is what a proxy that authenticates on bearer tokens expects, such as the
+   * {@code oauth-proxy} deployment in the docling-serve docs. It is independent of {@link #API_KEY},
+   * which is what docling-serve itself checks against the {@code X-Api-Key} header when
+   * {@code DOCLING_SERVE_API_KEY} is set.
+   *
+   * <p>Providers must honor this option when it is set.
+   */
+  public static final ConfigOption<String> BEARER_TOKEN = ConfigOption.of("bearerToken", String.class);
+
+  /**
    * Whether requests are logged. Defaults to {@code false}.
    *
    * <p>Providers may declare this option as unsupported if they have no request logging.
@@ -110,7 +123,7 @@ public final class DoclingServeApiConfig {
    * adapter, and the tests guarding that every option has an accessor and a setter.
    */
   static final List<ConfigOption<?>> ALL_OPTIONS = List.of(
-      BASE_URL, API_KEY, LOG_REQUESTS, LOG_RESPONSES, PRETTY_PRINT, CONNECT_TIMEOUT, READ_TIMEOUT, ASYNC_POLL_INTERVAL, ASYNC_TIMEOUT, ASYNC_EXECUTOR);
+      BASE_URL, API_KEY, BEARER_TOKEN, LOG_REQUESTS, LOG_RESPONSES, PRETTY_PRINT, CONNECT_TIMEOUT, READ_TIMEOUT, ASYNC_POLL_INTERVAL, ASYNC_TIMEOUT, ASYNC_EXECUTOR);
 
   private static final URI DEFAULT_BASE_URL = URI.create("http://localhost:5001");
   private static final Duration DEFAULT_CONNECT_TIMEOUT = Duration.ofSeconds(5);
@@ -156,6 +169,16 @@ public final class DoclingServeApiConfig {
    */
   public @Nullable String apiKey() {
     return get(API_KEY);
+  }
+
+  /**
+   * The bearer token used to authenticate requests.
+   *
+   * @return the bearer token, or {@code null} if not set
+   * @see #BEARER_TOKEN
+   */
+  public @Nullable String bearerToken() {
+    return get(BEARER_TOKEN);
   }
 
   /**

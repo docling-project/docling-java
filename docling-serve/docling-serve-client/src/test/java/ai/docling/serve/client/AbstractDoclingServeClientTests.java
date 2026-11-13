@@ -72,6 +72,7 @@ import ai.docling.core.DoclingDocument.ListItem;
 import ai.docling.core.DoclingDocument.SectionHeaderItem;
 import ai.docling.core.DoclingDocument.TableCell;
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.DoclingServeApiConfig;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
@@ -112,6 +113,7 @@ import ai.docling.serve.api.util.FileUtils;
 import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
+import ai.docling.serve.client.operations.HttpOperations;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -165,6 +167,15 @@ abstract class AbstractDoclingServeClientTests {
   protected abstract WireMockServer getWiremockServer();
 
   protected abstract DoclingServeApi getDoclingClient(boolean requiresAuth, boolean useWiremock);
+
+  /**
+   * A client of the implementation under test, for the given config.
+   *
+   * <p>The shared suite runs against more than one implementation, so tests that need a client of their own take
+   * it from here. {@link DoclingServeApiConfig#toBuilder()} and {@link DoclingServeApi#builder()} both go through
+   * the provider, which always builds the implementation it prefers.
+   */
+  protected abstract DoclingServeApi newClient(DoclingServeApiConfig config);
 
   /**
    * A client that logs and pretty-prints responses, and whose JSON mapper throws an {@link IllegalStateException}
@@ -495,6 +506,58 @@ abstract class AbstractDoclingServeClientTests {
           .isNotNull()
           .extracting(HealthCheckResponse::getStatus)
           .isEqualTo("ok");
+    }
+  }
+
+  @Nested
+  class BearerTokenTests {
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void sendsTheBearerTokenInTheAuthorizationHeader() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config().toBuilder().bearerToken("my-token").config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer my-token")));
+    }
+
+    @Test
+    void sendsNoAuthorizationHeaderWhenNoBearerTokenIsSet() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withoutHeader(HttpOperations.AUTHORIZATION_HEADER_NAME));
+    }
+
+    @Test
+    void bearerTokenIsIndependentOfTheApiKey() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config().toBuilder()
+          .apiKey("key")
+          .bearerToken("my-token")
+          .config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer my-token"))
+          .withHeader(HttpOperations.API_KEY_HEADER_NAME, equalTo("key")));
+    }
+
+    private void stubHealth() {
+      getWiremockServer().stubFor(get(urlPathEqualTo("/health")).willReturn(okJson("{\"status\": \"ok\"}")));
     }
   }
 

@@ -16,6 +16,7 @@ import ai.docling.serve.api.DoclingServeTaskApi;
 import ai.docling.serve.api.task.request.TaskResultRequest;
 import ai.docling.serve.api.task.request.TaskStatusPollRequest;
 import ai.docling.serve.api.task.response.TaskStatusPollResponse;
+import ai.docling.serve.api.util.Utils;
 import ai.docling.serve.api.util.ValidationUtils;
 
 /**
@@ -128,8 +129,11 @@ public abstract class AsyncOperations {
       }
 
       case FAILURE -> {
-        var errorMessage = Optional.ofNullable(statusResponse.getTaskStatusMetadata())
-            .map(metadata -> "Task failed: %s".formatted(metadata))
+        // Prefer the reason reported by Docling Serve, as the task metadata only holds document counts
+        var errorMessage = Optional.ofNullable(statusResponse.getErrorMessage())
+            .filter(Utils::isNotNullOrBlank)
+            .or(() -> Optional.ofNullable(statusResponse.getTaskStatusMetadata()).map(Object::toString))
+            .map(reason -> "Task failed: %s".formatted(reason))
             .orElse("Task failed");
 
         yield CompletableFuture.failedStage(

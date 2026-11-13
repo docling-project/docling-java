@@ -56,7 +56,7 @@ class LegacyProviderAdapterTests {
   @Test
   void optionsAddedAfterTheDeprecationAreUnsupported() {
     assertThat(new LegacyProviderAdapter(new RecordingLegacyFactory()).unsupportedOptions())
-        .containsExactly(Map.entry(DoclingServeApiConfig.ASYNC_EXECUTOR, Unsupported.FAIL));
+        .containsOnly(Map.entry(DoclingServeApiConfig.ASYNC_EXECUTOR, Unsupported.FAIL), Map.entry(DoclingServeApiConfig.BEARER_TOKEN, Unsupported.FAIL));
   }
 
   @Test

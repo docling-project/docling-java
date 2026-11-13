@@ -205,6 +205,20 @@ GitHub Actions workflow ([`version-tests.yml`](../../.github/workflows/version-t
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+#### Automatic default image bump
+
+After the compatibility table PR, the workflow runs
+[`.github/scripts/docling-serve-image-bump.sh`](../../.github/scripts/docling-serve-image-bump.sh)
+against the generated `results.md`. It picks the newest stable `vX.Y.Z` tag that passed
+(`✅ SUCCESS`) within the current major version of `DoclingServeContainerConfig.DOCLING_IMAGE_VERSION`
+and, if it is newer, opens a PR (branch `update-docling-serve-image/<version>`) for human review
+that updates the constant. Tags that failed are listed in the PR description.
+
+- Scheduled runs always bump; manual runs can disable it with the `updateDefaultImage` input
+  (default `true`).
+- The bump only runs for the `ghcr.io/docling-project/docling-serve` image.
+- To try it locally: `DRY_RUN=true .github/scripts/docling-serve-image-bump.sh path/to/results.md`
+
 ## Requirements
 
 - **Java 17+** (tested on 17, 21, 25)

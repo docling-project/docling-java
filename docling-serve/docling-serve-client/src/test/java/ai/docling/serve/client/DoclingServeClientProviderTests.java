@@ -69,6 +69,25 @@ class DoclingServeClientProviderTests {
   }
 
   @Test
+  void bearerTokenIsApplied() {
+    wireMock.stubFor(
+        get(urlPathEqualTo("/path/health"))
+            .withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer token"))
+            .willReturn(okJson("{\"status\": \"ok\"}")));
+
+    var client = DoclingServeApi.builder()
+        .baseUrl(wireMock.baseUrl() + "/path")
+        .bearerToken("token")
+        .build();
+
+    assertThat(client.health())
+        .extracting(HealthCheckResponse::getStatus)
+        .isEqualTo("ok");
+
+    wireMock.verify(1, getRequestedFor(urlPathEqualTo("/path/health")).withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer token")));
+  }
+
+  @Test
   void asyncExecutorIsApplied() throws Exception {
     wireMock.stubFor(post(urlPathEqualTo("/v1/convert/source/async")).willReturn(okJson(taskStatus("success"))));
     wireMock.stubFor(get(urlPathEqualTo("/v1/status/poll/task-1")).willReturn(okJson(taskStatus("success"))));

@@ -33,12 +33,14 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -70,6 +72,7 @@ import ai.docling.core.DoclingDocument.ListItem;
 import ai.docling.core.DoclingDocument.SectionHeaderItem;
 import ai.docling.core.DoclingDocument.TableCell;
 import ai.docling.serve.api.DoclingServeApi;
+import ai.docling.serve.api.DoclingServeApiConfig;
 import ai.docling.serve.api.chunk.request.HierarchicalChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.HybridChunkDocumentRequest;
 import ai.docling.serve.api.chunk.request.options.HierarchicalChunkerOptions;
@@ -110,6 +113,7 @@ import ai.docling.serve.api.util.FileUtils;
 import ai.docling.serve.api.validation.ValidationError;
 import ai.docling.serve.api.validation.ValidationErrorDetail;
 import ai.docling.serve.api.validation.ValidationException;
+import ai.docling.serve.client.operations.HttpOperations;
 import ai.docling.testcontainers.serve.DoclingServeContainer;
 import ai.docling.testcontainers.serve.config.DoclingServeContainerConfig;
 
@@ -165,6 +169,15 @@ abstract class AbstractDoclingServeClientTests {
   protected abstract DoclingServeApi getDoclingClient(boolean requiresAuth, boolean useWiremock);
 
   /**
+   * A client of the implementation under test, for the given config.
+   *
+   * <p>The shared suite runs against more than one implementation, so tests that need a client of their own take
+   * it from here. {@link DoclingServeApiConfig#toBuilder()} and {@link DoclingServeApi#builder()} both go through
+   * the provider, which always builds the implementation it prefers.
+   */
+  protected abstract DoclingServeApi newClient(DoclingServeApiConfig config);
+
+  /**
    * A client that logs and pretty-prints responses, and whose JSON mapper throws an {@link IllegalStateException}
    * with the message {@code boom} when it deserializes an {@link Object}, which is what logging a response does
    * to pretty-print it. It is a failure that is not caused by the text being something other than JSON.
@@ -217,6 +230,16 @@ abstract class AbstractDoclingServeClientTests {
     assertThat(client)
         .isNotNull()
         .isInstanceOf(DoclingServeClient.class);
+  }
+
+  // DoclingServeApiConfig.toBuilder() goes through the provider, which prefers Jackson 3, so deriving these clients
+  // from it would run the Jackson 2 suite against the Jackson 3 client
+  @Test
+  void everyClientIsTheImplementationUnderTest() {
+    var expectedType = getDoclingClient(false, false).getClass();
+
+    assertThat(getDoclingClient(true, false)).isExactlyInstanceOf(expectedType);
+    assertThat(getDoclingClient(false, true)).isExactlyInstanceOf(expectedType);
   }
 
   @Test
@@ -486,6 +509,58 @@ abstract class AbstractDoclingServeClientTests {
     }
   }
 
+  @Nested
+  class BearerTokenTests {
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void sendsTheBearerTokenInTheAuthorizationHeader() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config().toBuilder().bearerToken("my-token").config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer my-token")));
+    }
+
+    @Test
+    void sendsNoAuthorizationHeaderWhenNoBearerTokenIsSet() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withoutHeader(HttpOperations.AUTHORIZATION_HEADER_NAME));
+    }
+
+    @Test
+    void bearerTokenIsIndependentOfTheApiKey() {
+      stubHealth();
+
+      var client = newClient(getDoclingClient(false, true).config().toBuilder()
+          .apiKey("key")
+          .bearerToken("my-token")
+          .config());
+
+      assertThat(client.health().getStatus()).isEqualTo("ok");
+
+      getWiremockServer().verify(getRequestedFor(urlPathEqualTo("/health"))
+          .withHeader(HttpOperations.AUTHORIZATION_HEADER_NAME, equalTo("Bearer my-token"))
+          .withHeader(HttpOperations.API_KEY_HEADER_NAME, equalTo("key")));
+    }
+
+    private void stubHealth() {
+      getWiremockServer().stubFor(get(urlPathEqualTo("/health")).willReturn(okJson("{\"status\": \"ok\"}")));
+    }
+  }
+
   // The clients used by these tests log responses and pretty-print them, which is when a response that is not
   // JSON, such as an error page from a gateway in front of docling-serve, used to fail while it was being logged
   @Nested
@@ -652,6 +727,126 @@ abstract class AbstractDoclingServeClientTests {
                       .withBody(body)
               )
       );
+    }
+  }
+
+  // A failed async task carries the reason in error_message. task_meta only holds document counts, so the client
+  // falls back to it only when no reason is given
+  @Nested
+  class AsyncTaskFailureTests {
+    private static final String TASK_ID = "failed-task";
+    private static final String ERROR_MESSAGE = "Input document is not valid";
+    private static final String TASK_META = """
+        {
+          "num_docs": 1,
+          "num_processed": 1,
+          "num_succeeded": 0,
+          "num_failed": 1
+        }
+        """;
+    private static final String TASK_META_STRING = "TaskStatusMetadata(numDocs=1, numProcessed=1, numSucceeded=0, numFailed=1)";
+
+    @AfterEach
+    void resetStubs() {
+      getWiremockServer().resetAll();
+    }
+
+    @Test
+    void convertReportsTheErrorMessage() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      assertConvertFailsWith("Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    // docling-serve never sends a blank error_message, so only this test guards the blank check
+    @Test
+    void convertWithBlankErrorMessageReportsTheTaskMetadata() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, "\"\""));
+
+      assertConvertFailsWith("Task failed: %s".formatted(TASK_META_STRING));
+    }
+
+    @Test
+    void convertWithoutTaskMetadataReportsTheErrorMessage() {
+      stubFailedTask("/v1/convert/source/async", failure(null, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      assertConvertFailsWith("Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    @Test
+    void convertWithoutErrorMessageReportsTheTaskMetadata() {
+      stubFailedTask("/v1/convert/source/async", failure(TASK_META, null));
+
+      assertConvertFailsWith("Task failed: %s".formatted(TASK_META_STRING));
+    }
+
+    @Test
+    void chunkReportsTheErrorMessage() {
+      stubFailedTask("/v1/chunk/hybrid/source/async", failure(TASK_META, "\"%s\"".formatted(ERROR_MESSAGE)));
+
+      var request = HybridChunkDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://example.com/document.pdf")).build())
+          .build();
+
+      var future = getDoclingClient(false, true)
+          .chunkSourceWithHybridChunkerAsync(request)
+          .toCompletableFuture();
+
+      assertFailsWith(future, "Task failed: %s".formatted(ERROR_MESSAGE));
+    }
+
+    private void assertConvertFailsWith(String reason) {
+      var request = ConvertDocumentRequest.builder()
+          .source(HttpSource.builder().url(URI.create("https://example.com/document.pdf")).build())
+          .build();
+
+      var future = getDoclingClient(false, true)
+          .convertSourceAsync(request)
+          .toCompletableFuture();
+
+      assertFailsWith(future, reason);
+    }
+
+    private void assertFailsWith(CompletableFuture<?> future, String reason) {
+      assertThatThrownBy(() -> future.get(10, TimeUnit.SECONDS))
+          .hasRootCauseMessage("Async conversion failed for task %s: %s".formatted(TASK_ID, reason));
+    }
+
+    private void stubFailedTask(String asyncPath, String pollResponse) {
+      getWiremockServer().stubFor(
+          post(urlPathEqualTo(asyncPath))
+              .willReturn(okJson("""
+                  {
+                    "task_id": "%s",
+                    "task_type": "convert",
+                    "task_status": "pending",
+                    "task_position": 0,
+                    "task_meta": null
+                  }
+                  """.formatted(TASK_ID)))
+      );
+
+      getWiremockServer().stubFor(
+          get(urlPathEqualTo("/v1/status/poll/%s".formatted(TASK_ID)))
+              .willReturn(okJson(pollResponse))
+      );
+    }
+
+    // A null argument leaves the field out of the response
+    private String failure(@Nullable String taskMeta, @Nullable String errorMessage) {
+      var fields = new ArrayList<String>();
+      fields.add("\"task_id\": \"%s\"".formatted(TASK_ID));
+      fields.add("\"task_status\": \"failure\"");
+
+      if (taskMeta != null) {
+        fields.add("\"task_meta\": %s".formatted(taskMeta));
+      }
+
+      if (errorMessage != null) {
+        fields.add("\"error_message\": %s".formatted(errorMessage));
+      }
+
+      return "{%s}".formatted(String.join(", ", fields));
     }
   }
 

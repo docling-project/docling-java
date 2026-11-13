@@ -29,6 +29,12 @@ public abstract class HttpOperations {
   public static final String API_KEY_HEADER_NAME = "X-Api-Key";
 
   /**
+   * The header name used to specify a bearer token in HTTP requests.
+   * The value is sent as {@code Bearer <token>}, which is what an OAuth proxy in front of docling-serve expects.
+   */
+  public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
+
+  /**
    * Executes an HTTP GET request using the details specified in the provided {@code RequestContext}.
    *
    * @param <I>            the type of the request payload

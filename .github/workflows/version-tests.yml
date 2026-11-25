@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'docling-project/docling-java'
     steps:
-      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+      - uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
         id: app-token
         with:
           app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}
@@ -143,7 +143,7 @@ jobs:
           cp "$RESULTS_FILE" docs/src/doc/docs/includes/docling-serve/serve-compatibility.md
 
       - name: Generate fresh token for PR
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
         id: pr-token
         with:
           app-id: ${{ vars.DOCLING_JAVA_CI_APP_ID }}

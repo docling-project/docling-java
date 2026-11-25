@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.27.7"
 awaitility = "4.3.0"
-graalvm-buildtools = "1.1.18"
+graalvm-buildtools = "1.1.19"
 jackson2 = "2.23.0"
 jackson3 = "3.3.0"
 jacoco = "0.8.16"
